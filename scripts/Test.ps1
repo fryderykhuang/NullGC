@@ -12,9 +12,9 @@ Push-Location $SolutionDir
 $Env:Platform = 'x64'
 foreach ($project in $Tests)
 {
-    dotnet test -c Debug -a x64 .\$project\$project.csproj
+    dotnet test -c Debug -a x64 -v n .\$project\$project.csproj
     if (!$?) { throw }
-    dotnet test -c Release -a x64 .\$project\$project.csproj
+    dotnet test -c Release -a x64 -v n .\$project\$project.csproj
     if (!$?) { throw }
 }
 
