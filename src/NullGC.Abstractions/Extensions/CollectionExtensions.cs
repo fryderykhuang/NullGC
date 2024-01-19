@@ -15,7 +15,7 @@ public static class CollectionExtensions
     {
         ref var ret = ref CollectionsMarshal.GetValueRefOrNullRef(dict, key);
         exists = !Unsafe.IsNullRef(ref ret);
-        return ref ret;
+        return ref ret!;
     }
     
     public static ref TValue? GetValueRefOrAddDefault<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, out bool exist) where TKey : notnull

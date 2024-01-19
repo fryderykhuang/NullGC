@@ -1,4 +1,5 @@
-﻿namespace NullGC;
+﻿#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
+namespace NullGC;
 
 public delegate TR FuncT1RefReadOnly<T1, in T2, out TR>(ref readonly T1 t1, T2 t2);
 

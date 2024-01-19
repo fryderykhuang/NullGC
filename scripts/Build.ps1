@@ -1,7 +1,6 @@
 ﻿. $PSScriptRoot\Variables.ps1
 Push-Location $SolutionDir
 
-$Env:Platform = ''
 foreach ($project in $Projects)
 {
     dotnet build --no-restore -c Debug .\$project\$project.csproj

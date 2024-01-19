@@ -26,6 +26,7 @@ internal static class ThrowHelper
     [DoesNotReturn]
     public static void ThrowArgumentOutOfRange_IndexMustBeLessException()
     {
+        // ReSharper disable once NotResolvedInText
         throw new ArgumentOutOfRangeException("index", "IndexMustBeLessException");
     }
 
@@ -57,6 +58,7 @@ internal static class ThrowHelper
     [DoesNotReturn]
     public static void ThrowStartIndexArgumentOutOfRange_ArgumentOutOfRange_IndexMustBeLessOrEqual()
     {
+        // ReSharper disable once NotResolvedInText
         throw new ArgumentOutOfRangeException("ArgumentOutOfRange_IndexMustBeLessOrEqual");
     }
 
@@ -71,29 +73,12 @@ internal static class ThrowHelper
     {
         throw new ArgumentException("Argument_IncompatibleArrayType");
     }
-
-    [DoesNotReturn]
-    public static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException()
-    {
-        throw new ArgumentOutOfRangeException("IndexMustBeLessOrEqualException");
-    }
-
+    
     [DoesNotReturn]
     public static void ThrowCountArgumentOutOfRange_ArgumentOutOfRange_Count()
     {
+        // ReSharper disable once NotResolvedInText
         throw new ArgumentOutOfRangeException("ArgumentOutOfRange_Count");
-    }
-
-    [DoesNotReturn]
-    public static void ThrowStartIndexArgumentOutOfRange_ArgumentOutOfRange_IndexMustBeLess()
-    {
-        throw new ArgumentOutOfRangeException("ArgumentOutOfRange_IndexMustBeLess");
-    }
-
-    [DoesNotReturn]
-    public static void ThrowInvalidOperationException_InvalidOperation_EnumOpCantHappen()
-    {
-        throw new InvalidOperationException("InvalidOperation_EnumOpCantHappen");
     }
 
     [DoesNotReturn]
@@ -112,18 +97,6 @@ internal static class ThrowHelper
     public static void ThrowAddingDuplicateWithKeyArgumentException<TKey>(TKey key) where TKey : notnull
     {
         throw new ArgumentException($"AddingDuplicateWithKey {key}");
-    }
-
-    [DoesNotReturn]
-    public static void ThrowWrongKeyTypeArgumentException(object? key, Type type)
-    {
-        throw new ArgumentException($"WrongKeyType {key} {type}");
-    }
-
-    [DoesNotReturn]
-    public static void ThrowNotSupportedException(string message)
-    {
-        throw new NotSupportedException(message);
     }
 
     [DoesNotReturn]

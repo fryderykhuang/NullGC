@@ -143,7 +143,7 @@ public sealed class DefaultAllocatorContextImpl : IAllocatorContextImpl, IDispos
         if (Unsafe.IsNullRef(in ret))
             ThrowHelper.ThrowInvalidOperationException($"Provider with ID '{providerId}' is not found.");
 
-        return ref ret;
+        return ref ret!;
     }
 
     private ContextContainer? RentContext()

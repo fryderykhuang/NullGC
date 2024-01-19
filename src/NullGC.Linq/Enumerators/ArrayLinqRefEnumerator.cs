@@ -50,7 +50,19 @@ public struct ArrayLinqRefEnumerator<T> : ILinqRefEnumerator<T>, IArray<T>
     }
 
     T IEnumerator<T>.Current => Current;
-    public unsafe T* CurrentPtr => (T*) Unsafe.AsPointer(ref _array[_index]);
+#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
+    public unsafe T* CurrentPtr
+#pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
+    {
+        get
+        {
+            CommunityToolkit.Diagnostics.ThrowHelper
+                .ThrowNotSupportedException();
+            return default;
+            //(T*) Unsafe.AsPointer(ref _array[_index]);
+        }
+    }
+
     object? IEnumerator.Current => Current;
 
     public int? Count => _length;

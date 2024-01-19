@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
+#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
 
 namespace NullGC.Linq.Enumerators;
 public struct SkipRef<T, TPrevious> : ILinqRefEnumerator<T>,

@@ -26,7 +26,7 @@ internal class InProcConfig : ConfigBase
 {
     public InProcConfig()
     {
-        AddJob(Job.ShortRun.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")})
+        AddJob(Job.ShortRun//.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")})
                 .WithToolchain(InProcessNoEmitToolchain.Instance))
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
             .AddDiagnoser(new MemoryDiagnoser(new MemoryDiagnoserConfig(true)))
@@ -38,7 +38,7 @@ internal class FastConfig : ConfigBase
 {
     public FastConfig()
     {
-        AddJob(Job.ShortRun.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
+        AddJob(Job.ShortRun)//.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
             .AddDiagnoser(new MemoryDiagnoser(new MemoryDiagnoserConfig(true)))
             .AddLogger(new ConsoleLogger());
@@ -49,7 +49,7 @@ internal class NormalConfig : ConfigBase
 {
     public NormalConfig()
     {
-        AddJob(Job.MediumRun.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
+        AddJob(Job.MediumRun)//.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
             .AddDiagnoser(new MemoryDiagnoser(new MemoryDiagnoserConfig(true)))
             .AddLogger(new ConsoleLogger());
     }
@@ -59,7 +59,7 @@ internal class CicdConfig : ConfigBase
 {
     public CicdConfig()
     {
-        AddJob(Job.ShortRun.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
+        AddJob(Job.ShortRun)//.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
             .AddDiagnoser(new MemoryDiagnoser(new MemoryDiagnoserConfig(true)))
             .AddExporter(new JsonExporter()).AddExporter(new HtmlExporter())
             .AddColumnProvider(DefaultColumnProviders.Instance)
@@ -106,6 +106,15 @@ internal class ConfigBase : IConfig
         this.exporters.AddRange(newExporters);
         return this;
     }
+    
+    public ConfigBase AddHardwareCounters(params HardwareCounter[] newHardwareCounters)
+    {
+        foreach (var counter in newHardwareCounters)
+        {
+            this.hardwareCounters.Add(counter);
+        }
+        return this;
+    }
 
     public IEnumerable<IColumnProvider> GetColumnProviders()
     {
@@ -146,13 +155,13 @@ internal class ConfigBase : IConfig
         yield return (IValidator) ParamsValidator.FailOnError;
     }
 
-    public IOrderer Orderer => null;
+    public IOrderer? Orderer => null;
 
     public ICategoryDiscoverer? CategoryDiscoverer => null;
 
     public ConfigUnionRule UnionRule => ConfigUnionRule.Union;
 
-    public CultureInfo CultureInfo => null;
+    public CultureInfo? CultureInfo => null;
 
     public ConfigOptions Options { get; set; } = ConfigOptions.Default;
 

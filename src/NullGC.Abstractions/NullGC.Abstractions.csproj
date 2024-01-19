@@ -14,10 +14,10 @@
         <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.2"/>
     </ItemGroup>
 
-    <ItemGroup>
+<!--    <ItemGroup>-->
 <!--        <None Include="bin/x86/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\win-x86\lib\net8.0"/>-->
 <!--        <None Include="bin/x86/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\linux-x86\lib\net8.0"/>-->
-        <None Include="bin/x64/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\win-x64\lib\net8.0"/>
-        <None Include="bin/x64/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\linux-x64\lib\net8.0"/>
-    </ItemGroup>
+<!--        <None Include="bin/x64/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\win-x64\lib\net8.0"/>-->
+<!--        <None Include="bin/x64/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\linux-x64\lib\net8.0"/>-->
+<!--    </ItemGroup>-->
 </Project>

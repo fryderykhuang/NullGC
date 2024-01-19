@@ -15,7 +15,7 @@ public static partial class LinqExtensions
     {
         ref var ret = ref FirstOrNullRef(src, predicate);
         if (Unsafe.IsNullRef(ref ret)) ThrowHelper.SequenceContainsNoElement();
-        return ref ret;
+        return ref ret!;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -59,7 +59,7 @@ public static partial class LinqExtensions
     {
         ref var ret = ref FirstOrNullRef<T, TEnumerator, TArg>(src, predicate, arg);
         if (Unsafe.IsNullRef(ref ret)) ThrowHelper.SequenceContainsNoElement();
-        return ref ret;
+        return ref ret!;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

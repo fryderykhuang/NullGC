@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
 
 namespace NullGC;
 
@@ -387,7 +388,7 @@ public readonly struct StructComparer<T> : IComparer<T>
     public StructComparer(Comparison<T> comparer) => _comparer = comparer;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int Compare(T? x, T? y) => _comparer(x, y);
+    public int Compare(T? x, T? y) => _comparer(x!, y!);
 }
 
 public struct StructComparerWithPtrArg<T, TArg> : IComparer<T> where TArg : unmanaged
@@ -410,7 +411,7 @@ public struct StructComparerWithPtrArg<T, TArg> : IComparer<T> where TArg : unma
     {
         unsafe
         {
-            return _comparer(x, y, ref Unsafe.AsRef<TArg>(_arg));
+            return _comparer(x!, y!, ref Unsafe.AsRef<TArg>(_arg));
         }
     }
 }
