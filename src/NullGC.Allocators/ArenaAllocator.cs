@@ -20,10 +20,10 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
 
 
     private ValueDictionary<nuint, FreeList>
-        _freeList = new(Environment.ProcessorCount, (int) AllocatorProviderIds.DefaultUncachedUnscoped);
+        _freeList = new(Environment.ProcessorCount, (int) AllocatorTypes.DefaultUncachedUnscoped);
 
     private ValueList<Page> _pages = new(Environment.ProcessorCount,
-        (int) AllocatorProviderIds.DefaultUncachedUnscoped);
+        (int) AllocatorTypes.DefaultUncachedUnscoped);
 
     private ulong _totalAllocated;
     private ulong _totalFreed;

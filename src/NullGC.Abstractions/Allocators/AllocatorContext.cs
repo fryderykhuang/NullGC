@@ -70,7 +70,7 @@ public static class AllocatorContext
         Impl.ClearProvidersAndAllocations();
     }
 
-    public static IMemoryAllocator GetAllocator(int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public static IMemoryAllocator GetAllocator(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         GuardImpl();
         return Impl.GetAllocator(allocatorProviderId);
@@ -81,7 +81,7 @@ public static class AllocatorContext
     /// </summary>
     /// <param name="allocatorProviderId"></param>
     /// <returns></returns>
-    public static IDisposable BeginAllocationScope(int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public static IDisposable BeginAllocationScope(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         GuardImpl();
         return Impl.BeginAllocationScope(allocatorProviderId);

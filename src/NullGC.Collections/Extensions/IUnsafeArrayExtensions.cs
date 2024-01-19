@@ -280,7 +280,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueList<T> ToValueList<T, TCollection>(this TCollection src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
         where TCollection : IUnsafeArray<T> where T : unmanaged
     {
         var ret = new ValueList<T>(src.Length, allocatorProviderId);
@@ -290,21 +290,21 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueList<T> ToValueList<T>(this ValueList<T> src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default) where T : unmanaged
+        int allocatorProviderId = (int) AllocatorTypes.Default) where T : unmanaged
     {
         return ToValueList<T, ValueList<T>>(src, allocatorProviderId);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueList<T> ToValueList<T>(this ValueArray<T> src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default) where T : unmanaged
+        int allocatorProviderId = (int) AllocatorTypes.Default) where T : unmanaged
     {
         return ToValueList<T, ValueArray<T>>(src, allocatorProviderId);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueArray<T> ToValueArray<T, TCollection>(this TCollection src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
         where TCollection : IUnsafeArray<T> where T : unmanaged
     {
         var ret = new ValueArray<T>(src.Length, allocatorProviderId);
@@ -314,7 +314,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueArray<T> ToValueArray<T>(this ValueArray<T> src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
         where T : unmanaged
     {
         return ToValueArray<T, ValueArray<T>>(src, allocatorProviderId);
@@ -322,7 +322,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueArray<T> ToValueArray<T>(this ValueList<T> src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
         where T : unmanaged
     {
         return ToValueArray<T, ValueList<T>>(src, allocatorProviderId);
@@ -330,7 +330,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueArray<T> ToValueArray<T>(this IEnumerable<T> src,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
         where T : unmanaged
     {
         if (src.GetType().IsAssignableTo(typeof(ValueArray<T>)))

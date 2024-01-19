@@ -53,9 +53,9 @@ public sealed class DefaultAllocatorContextImpl : IAllocatorContextImpl, IDispos
         if (_allocatorProviders is null) FinalizeConfiguration();
     }
 
-    public IMemoryAllocator GetAllocator(int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public IMemoryAllocator GetAllocator(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
-        if (allocatorProviderId == (int) AllocatorProviderIds.DefaultUncachedUnscoped)
+        if (allocatorProviderId == (int) AllocatorTypes.DefaultUncachedUnscoped)
             return _defaultUncachedUnscopedAllocator.GetAllocator();
         GuardConfigured();
         var cont = GetPerProviderContainer(allocatorProviderId);
@@ -65,7 +65,7 @@ public sealed class DefaultAllocatorContextImpl : IAllocatorContextImpl, IDispos
             return cont.Provider.GetAllocator();
     }
 
-    public IDisposable BeginAllocationScope(int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public IDisposable BeginAllocationScope(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         GuardConfigured();
         var cont = GetPerProviderContainer(allocatorProviderId);
@@ -100,8 +100,8 @@ public sealed class DefaultAllocatorContextImpl : IAllocatorContextImpl, IDispos
     public void SetAllocatorProvider(IAllocatorProvider provider, int allocatorProviderId, bool scoped)
     {
         GuardNotConfigured();
-        Guard.IsNotEqualTo(allocatorProviderId, (int) AllocatorProviderIds.DefaultUncachedUnscoped);
-        Guard.IsNotEqualTo(allocatorProviderId, (int) AllocatorProviderIds.Invalid);
+        Guard.IsNotEqualTo(allocatorProviderId, (int) AllocatorTypes.DefaultUncachedUnscoped);
+        Guard.IsNotEqualTo(allocatorProviderId, (int) AllocatorTypes.Invalid);
         ref var cont = ref _tmpAllocatorProviders.GetValueRefOrAddDefault(allocatorProviderId, out var exists);
         if (exists)
             ThrowHelper.ThrowArgumentException(nameof(allocatorProviderId),

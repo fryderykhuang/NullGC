@@ -14,7 +14,7 @@ public readonly struct Class<T> : IDisposable where T : unmanaged
     public readonly unsafe T* Value;
     public readonly int AllocatorProviderId;
 
-    public Class(int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public Class(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         AllocatorProviderId = allocatorProviderId;
         unsafe
@@ -31,13 +31,13 @@ public readonly struct Class<T> : IDisposable where T : unmanaged
     /// Allocate memory for <typeparamref name="T"/> from default scoped allocator, dispose is not mandatory.
     /// </summary>
     /// <returns></returns>
-    public static Class<T> CreateScoped() => new((int) AllocatorProviderIds.Default);
+    public static Class<T> CreateScoped() => new((int) AllocatorTypes.Default);
 
     /// <summary>
     /// Allocate memory for <typeparamref name="T"/> from default unscoped allocator, dispose is mandatory when lifetime ends.
     /// </summary>
     /// <returns></returns>
-    public static Class<T> CreateUnscoped() => new((int) AllocatorProviderIds.DefaultUnscoped);
+    public static Class<T> CreateUnscoped() => new((int) AllocatorTypes.DefaultUnscoped);
 
     public ref T Ref
     {
@@ -53,7 +53,7 @@ public readonly struct Class<T> : IDisposable where T : unmanaged
 
     public void Dispose()
     {
-        if (AllocatorProviderId == (int) AllocatorProviderIds.Invalid)
+        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
             return;
         
         unsafe

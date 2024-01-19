@@ -14,8 +14,7 @@ internal class Program
     private static async Task Main(string[] args)
     {
         var dir = args[0];
-        var urlBase = args[1];
-        var output = args[2];
+        var output = args[1];
 
         var lst = new List<BenchmarkResultFile>();
         foreach (var item in Directory.GetFiles(dir, "*.html"))
@@ -25,7 +24,7 @@ internal class Program
             if (m.Success)
                 lst.Add(new BenchmarkResultFile
                 {
-                    Title = urlBase + m.Groups["class"].Value, Url = args[1] + UrlEncoder.Default.Encode(fn),
+                    Title = m.Groups["class"].Value, Url = args[1] + UrlEncoder.Default.Encode(fn),
                     Content = await File.ReadAllTextAsync(item)
                 });
         }

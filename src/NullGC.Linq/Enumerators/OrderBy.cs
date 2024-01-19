@@ -5,11 +5,126 @@ using NullGC.Collections;
 
 namespace NullGC.Linq.Enumerators;
 
-internal interface IOrderByInternals
+public static class OrderBy
 {
-    int MinIndex { get; set; }
-    int MaxIndex { get; set; }
+    public static ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext> Ascending<T, TKey, TNext>(
+        Func<T, TKey> keySelector, TNext next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext>(
+            new FuncInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, false, next);
+    }
+
+    public static
+        ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext>> Ascending<T, TKey, TNext>(
+            Func<T, TKey> keySelector, ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext> next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext>>(
+            new FuncInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, false,
+            next);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext> Descending<T, TKey, TNext>(
+        Func<T, TKey> keySelector, TNext next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext>(
+            new FuncInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, true,
+            next);
+    }
+
+    public static
+        ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext>> Descending<T, TKey, TNext>(
+            Func<T, TKey> keySelector, ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext> next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext>>(
+            new FuncInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, true,
+            next);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext> Ascending<T, TKey, TNext>(
+        FuncT1In<T, TKey> keySelector, TNext next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext>(
+            new FuncT1InInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, false, next);
+    }
+
+    public static
+        ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext>> Ascending<T, TKey, TNext>(
+            FuncT1In<T, TKey> keySelector,
+            ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext> next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext>>(
+            new FuncT1InInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, false, next);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext> Descending<T, TKey, TNext>(
+        FuncT1In<T, TKey> keySelector, TNext next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T>
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext>(
+            new FuncT1InInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, true, next);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey2, FuncT1InInvoker<T, TKey2>, Comparer<TKey2>, TNext>>
+        Descending<T, TKey, TKey2, TNext>(
+            FuncT1In<T, TKey> keySelector,
+            ValueEnumerableSorter<T, TKey2, FuncT1InInvoker<T, TKey2>, Comparer<TKey2>, TNext> next)
+        where T : unmanaged where TKey : unmanaged where TNext : struct, IValueEnumerableSorter<T> where TKey2 : unmanaged
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>,
+            ValueEnumerableSorter<T, TKey2, FuncT1InInvoker<T, TKey2>, Comparer<TKey2>, TNext>>(
+            new FuncT1InInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, true, next);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>> Ascending<T,
+        TKey>(
+        Func<T, TKey> keySelector)
+        where T : unmanaged where TKey : unmanaged
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>>(
+            new FuncInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, false);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>> Descending<T,
+        TKey>(
+        Func<T, TKey> keySelector)
+        where T : unmanaged where TKey : unmanaged
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>>(
+            new FuncInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, true);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>> Ascending<T,
+        TKey>(
+        FuncT1In<T, TKey> keySelector)
+        where T : unmanaged where TKey : unmanaged
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>>(
+            new FuncT1InInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, false);
+    }
+
+    public static ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>> Descending<T,
+        TKey>(
+        FuncT1In<T, TKey> keySelector)
+        where T : unmanaged where TKey : unmanaged
+    {
+        return new ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, DummyEnumerableSorter<T>>(
+            new FuncT1InInvoker<T, TKey>(keySelector), Comparer<TKey>.Default, true);
+    }
 }
+
 
 // public struct OrderBy<T, TPrevious, TKeySel, TKey, TComparer> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>,
 //     ILinqPtrEnumerator<T>,
@@ -138,7 +253,7 @@ public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByRefToFixedRef(TPrevious prev, TKeySel? keySelector, TComparer comparer, bool isDescending = false,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
         if (typeof(TNext) != typeof(DummyEnumerableSorter<T>))
@@ -154,7 +269,7 @@ public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByRefToFixedRef(TPrevious prev, ValueEnumerableSorter<T, TKey, TKeySel, TComparer, TNext> sorter,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
         _sorter = sorter;
@@ -281,7 +396,7 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByValueToFixedRef(TPrevious prev, TKeySel? keySelector, TComparer comparer, bool isDescending = false,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
 
@@ -297,7 +412,7 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByValueToFixedRef(TPrevious prev, ValueEnumerableSorter<T, TKey, TKeySel, TComparer, TNext> sorter,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
         _sorter = sorter;
@@ -601,7 +716,7 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByPtrToPtr(TPrevious prev, TKeySel? keySelector, TComparer comparer, bool isDescending = false,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
         if (typeof(TNext) != typeof(DummyEnumerableSorter<T>))
@@ -616,7 +731,7 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByPtrToPtr(TPrevious prev, ValueEnumerableSorter<T, TKey, TKeySel, TComparer, TNext> sorter,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
         _sorter = sorter;
@@ -761,7 +876,7 @@ public struct OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByFixedRefToFixedRef(TPrevious prev, TKeySel? keySelector, TComparer comparer, bool isDescending = false,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
 
@@ -777,7 +892,7 @@ public struct OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public OrderByFixedRefToFixedRef(TPrevious prev, ValueEnumerableSorter<T, TKey, TKeySel, TComparer, TNext> sorter,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _previous = prev;
         _sorter = sorter;

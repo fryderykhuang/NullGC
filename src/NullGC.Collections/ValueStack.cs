@@ -28,14 +28,14 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
         _size = size;
     }
 
-    public ValueStack(int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public ValueStack(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _array = ValueArray<T>.Empty;
     }
 
     // Create a stack with a specific initial capacity.  The initial capacity
     // must be a non-negative number.
-    public ValueStack(int capacity, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public ValueStack(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         Guard.IsGreaterThanOrEqualTo(capacity, 0);
         _array = new ValueArray<T>(capacity, allocatorProviderId, true);
@@ -43,7 +43,7 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
 
     // Fills a Stack with the contents of a particular collection.  The items are
     // pushed onto the stack in the same order they are read by the enumerator.
-    public ValueStack(IEnumerable<T> collection, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public ValueStack(IEnumerable<T> collection, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         if (collection == null)
             throw new ArgumentNullException(nameof(collection));

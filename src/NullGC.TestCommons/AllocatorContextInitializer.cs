@@ -12,14 +12,14 @@ public static class AllocatorContextInitializer
         nativeTracker = nt;
         var at = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, nt));
         allocTracker = at;
-        AllocatorContext.SetAllocatorProvider(at, (int) AllocatorProviderIds.Default, true);
+        AllocatorContext.SetAllocatorProvider(at, (int) AllocatorTypes.Default, true);
     }
 
     public static void SetupDefaultUnscopedAllocationContext(out IMemoryAllocationTrackable allocTracker,
         out IMemoryAllocationTrackable nativeTracker)
     {
         var nt = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(), 1000);
-        AllocatorContext.SetAllocatorProvider(nt, (int) AllocatorProviderIds.Default, false);
+        AllocatorContext.SetAllocatorProvider(nt, (int) AllocatorTypes.Default, false);
         allocTracker = nativeTracker = nt;
     }
     
@@ -27,7 +27,7 @@ public static class AllocatorContextInitializer
         out IMemoryAllocationTrackable nativeTracker)
     {
         var nt = new DefaultAlignedNativeMemoryAllocator();
-        AllocatorContext.SetAllocatorProvider(nt, (int) AllocatorProviderIds.Default, false);
+        AllocatorContext.SetAllocatorProvider(nt, (int) AllocatorTypes.Default, false);
         allocTracker = nativeTracker = null;
     }
 }

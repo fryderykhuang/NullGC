@@ -23,17 +23,17 @@ public class AllocatorTests : IDisposable
     {
         Assert.Throws<ArgumentException>(() =>
             AllocatorContext.SetAllocatorProvider(new DefaultAlignedNativeMemoryAllocator(),
-                (int) AllocatorProviderIds.Invalid, true));
+                (int) AllocatorTypes.Invalid, true));
     }
 
     [Fact]
     public void AllocatorContext_SetAllocatorProvider_WillThrowIfAllocatorProviderWithSameIdIsAlreadySet()
     {
         AllocatorContext.SetAllocatorProvider(new DefaultAlignedNativeMemoryAllocator(),
-            (int) AllocatorProviderIds.Default, true);
+            (int) AllocatorTypes.Default, true);
         Assert.Throws<ArgumentException>(() =>
             AllocatorContext.SetAllocatorProvider(new DefaultAlignedNativeMemoryAllocator(),
-                (int) AllocatorProviderIds.Default, true));
+                (int) AllocatorTypes.Default, true));
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class AllocatorTests : IDisposable
         var nativeBuffer = new DefaultAllocationPooler(nativeAllocator, 1000);
         AllocatorContext.SetAllocatorProvider(
             new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, nativeBuffer)),
-            (int) AllocatorProviderIds.Default, true);
+            (int) AllocatorTypes.Default, true);
         IMemoryAllocator allocator;
         using (AllocatorContext.BeginAllocationScope())
         {
@@ -76,7 +76,7 @@ public class AllocatorTests : IDisposable
         var nativeAllocator = new DefaultAlignedNativeMemoryAllocator();
         AllocatorContext.SetAllocatorProvider(
             new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, nativeAllocator)),
-            (int) AllocatorProviderIds.Default, true);
+            (int) AllocatorTypes.Default, true);
         IMemoryAllocator allocator;
         using (AllocatorContext.BeginAllocationScope())
         {
@@ -108,7 +108,7 @@ public class AllocatorTests : IDisposable
     {
         var cache = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(), 1000);
         var arenaAllocatorPool = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, cache));
-        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorProviderIds.Default, true);
+        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorTypes.Default, true);
 
         IMemoryAllocator allocator;
         using (AllocatorContext.BeginAllocationScope())
@@ -148,7 +148,7 @@ public class AllocatorTests : IDisposable
     {
         var cache = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(), 1000);
         var arenaAllocatorPool = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, cache));
-        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorProviderIds.Default, true);
+        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorTypes.Default, true);
 
         Assert.Empty(((DefaultAllocatorContextImpl)AllocatorContext.Impl).ContextPool);
         var mainThreadId = Thread.CurrentThread.ManagedThreadId;
@@ -162,13 +162,13 @@ public class AllocatorTests : IDisposable
             // Assert.Null(ContextContainer.GetPerProviderContainer(0).ContextContainer.Value);
             using (AllocatorContext.BeginAllocationScope())
             {
-                Assert.NotNull(((DefaultAllocatorContextImpl)AllocatorContext.Impl).GetPerProviderContainer((int)AllocatorProviderIds.Default).Context!.Value);
+                Assert.NotNull(((DefaultAllocatorContextImpl)AllocatorContext.Impl).GetPerProviderContainer((int)AllocatorTypes.Default).Context!.Value);
                 Assert.Empty(((DefaultAllocatorContextImpl)AllocatorContext.Impl).ContextPool);
                 AllocatorContext.GetAllocator();
                 Assert.Empty(((DefaultAllocatorContextImpl)AllocatorContext.Impl).ContextPool);
             }
 
-            Assert.NotNull(((DefaultAllocatorContextImpl)AllocatorContext.Impl).GetPerProviderContainer((int)AllocatorProviderIds.Default).Context!.Value);
+            Assert.NotNull(((DefaultAllocatorContextImpl)AllocatorContext.Impl).GetPerProviderContainer((int)AllocatorTypes.Default).Context!.Value);
 
             Assert.Empty(((DefaultAllocatorContextImpl)AllocatorContext.Impl).ContextPool);
             Assert.NotEqual(execCtx, Thread.CurrentThread.ExecutionContext);
@@ -256,7 +256,7 @@ public class AllocatorTests : IDisposable
     {
         var allocPooler = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(), 1000);
         var arenaAllocatorPool = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, allocPooler));
-        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorProviderIds.Default, true);
+        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorTypes.Default, true);
 
         using (AllocatorContext.BeginAllocationScope())
         {
@@ -290,7 +290,7 @@ public class AllocatorTests : IDisposable
     {
         var allocPooler = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(), 1000);
         var arenaAllocatorPool = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, allocPooler));
-        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorProviderIds.Default, true);
+        AllocatorContext.SetAllocatorProvider(arenaAllocatorPool, (int) AllocatorTypes.Default, true);
         var arenaAllocatorPool2 = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, allocPooler));
         AllocatorContext.SetAllocatorProvider(arenaAllocatorPool2, 16, true);
 

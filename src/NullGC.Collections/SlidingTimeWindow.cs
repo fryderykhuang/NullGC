@@ -6,7 +6,7 @@ namespace NullGC.Collections;
 
 public struct SlidingTimeWindow<T> : IDisposable where T : unmanaged, INumber<T>
 {
-    private FixedCountValueDeque<Bucket> _wnd;
+    private ValueFixedSizeDeque<Bucket> _wnd;
 
     private readonly int _resolutionMs;
 
@@ -14,9 +14,9 @@ public struct SlidingTimeWindow<T> : IDisposable where T : unmanaged, INumber<T>
     {
         public readonly T Sum;
         public readonly int Count;
-        public readonly ref readonly FixedCountValueDeque<Bucket> Buckets;
+        public readonly ref readonly ValueFixedSizeDeque<Bucket> Buckets;
 
-        public CurrentWindow(ref readonly FixedCountValueDeque<Bucket> currentWindow, T sum, int count)
+        public CurrentWindow(ref readonly ValueFixedSizeDeque<Bucket> currentWindow, T sum, int count)
         {
             Buckets = ref currentWindow;
             Sum = sum;
@@ -55,10 +55,10 @@ public struct SlidingTimeWindow<T> : IDisposable where T : unmanaged, INumber<T>
     /// <param name="noDataBucket">The filler bucket for the time duration when no data is present.</param>
     /// <param name="allocatorProviderId"></param>
     public SlidingTimeWindow(int resolutionMs, int windowSize, Bucket noDataBucket,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _resolutionMs = resolutionMs;
-        _wnd = new FixedCountValueDeque<Bucket>(windowSize, allocatorProviderId);
+        _wnd = new ValueFixedSizeDeque<Bucket>(windowSize, allocatorProviderId);
         _noDataBucket = noDataBucket;
     }
 

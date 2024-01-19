@@ -21,13 +21,13 @@ public static class DefaultAllocatorContextImplExtensions
     {
         var memPoolerUnscoped = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(),
             defaultTtlMs);
-        ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorProviderIds.DefaultUnscoped, false);
+        ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorTypes.DefaultUnscoped, false);
         var cache = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(),
             defaultTtlMs, cleanupTh, cacheLostObserveWindowSize: cacheLostObserveWindowSize);
         cacheAllocStats = cache;
         var allocatorPooler = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, cache));
         frontStats = allocatorPooler;
-        ac.SetAllocatorProvider(allocatorPooler, (int) AllocatorProviderIds.Default, true);
+        ac.SetAllocatorProvider(allocatorPooler, (int) AllocatorTypes.Default, true);
         return ac;
     }
 
@@ -39,10 +39,10 @@ public static class DefaultAllocatorContextImplExtensions
         var memPoolerUnscoped =
             new DefaultAllocationPooler(uncached, cleanupThresholdBytes: cleanupTh, ttlMs: cacheTtl,
                 cacheLostObserveWindowSize: cacheLostObserveWindowSize);
-        ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorProviderIds.DefaultUnscoped, false);
+        ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorTypes.DefaultUnscoped, false);
         var cache = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(), cacheTtl);
         cacheAllocStats = null;
-        ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorProviderIds.Default, false);
+        ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorTypes.Default, false);
         frontStats = cache;
         return ac;
     }
@@ -50,8 +50,8 @@ public static class DefaultAllocatorContextImplExtensions
     public static IAllocatorContextImpl ConfigureDefaultUncachedUnscoped(this IAllocatorContextImpl ac)
     {
         var uncached = new DefaultAlignedNativeMemoryAllocator();
-        ac.SetAllocatorProvider(uncached, (int) AllocatorProviderIds.DefaultUnscoped, false);
-        ac.SetAllocatorProvider(uncached, (int) AllocatorProviderIds.Default, false);
+        ac.SetAllocatorProvider(uncached, (int) AllocatorTypes.DefaultUnscoped, false);
+        ac.SetAllocatorProvider(uncached, (int) AllocatorTypes.Default, false);
         return ac;
     }
 }

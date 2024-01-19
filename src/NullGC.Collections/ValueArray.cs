@@ -22,13 +22,13 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
         }
     }
 
-    public ValueArray(int length, int allocatorProviderId = (int) AllocatorProviderIds.Default, bool noClear = false)
+    public ValueArray(int length, int allocatorProviderId = (int) AllocatorTypes.Default, bool noClear = false)
     {
         unsafe
         {
             if (length > Array.MaxLength || length * (long) sizeof(T) > uint.MaxValue)
                 CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(length));
-            Debug.Assert(allocatorProviderId != (int) AllocatorProviderIds.Invalid);
+            Debug.Assert(allocatorProviderId != (int) AllocatorTypes.Invalid);
             AllocatorProviderId = allocatorProviderId;
             var size = checked((uint) (sizeof(T) * length));
             if (size > 0)
@@ -55,7 +55,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(length));
         _items = buf;
         _length = length;
-        AllocatorProviderId = (int) AllocatorProviderIds.Invalid;
+        AllocatorProviderId = (int) AllocatorTypes.Invalid;
     }
 
     private unsafe ValueArray(T* buf, int length, int allocatorProviderId)
@@ -162,7 +162,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
     {
         unsafe
         {
-            if (AllocatorProviderId != (int) AllocatorProviderIds.Invalid)
+            if (AllocatorProviderId != (int) AllocatorTypes.Invalid)
             {
                 _length = 0;
                 if (_items == (void*) 0) return;
@@ -251,7 +251,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
     {
         if (minLength <= _length)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(minLength));
-        if (AllocatorProviderId == (int) AllocatorProviderIds.Invalid)
+        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowInvalidOperationException("Invalid allocator provider.");
 
         unsafe
@@ -293,7 +293,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
 
     internal void ResizeByAllocateNew(int newLength, bool noClear = false)
     {
-        if (AllocatorProviderId == (int) AllocatorProviderIds.Invalid)
+        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowInvalidOperationException("Invalid allocator provider.");
         var allocator = AllocatorContext.GetAllocator(AllocatorProviderId);
         unsafe
@@ -318,7 +318,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
 
     internal int Grow(int minLength, int maxLength, bool noClear = false)
     {
-        if (AllocatorProviderId == (int) AllocatorProviderIds.Invalid)
+        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowInvalidOperationException("Invalid allocator provider ID.");
         if (minLength <= _length)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(minLength));

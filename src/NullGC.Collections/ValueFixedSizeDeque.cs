@@ -1,13 +1,11 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using CommunityToolkit.Diagnostics;
 using NullGC.Allocators;
-using NullGC.Collections.Extensions;
 
 namespace NullGC.Collections;
 
-public struct FixedCountValueDeque<T> : IDisposable, IList<T> where T : unmanaged
+public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
 {
     private ValueArray<T> _items;
     private int _head = 0;
@@ -25,7 +23,7 @@ public struct FixedCountValueDeque<T> : IDisposable, IList<T> where T : unmanage
         get => _items.Length == 0 || (_afterTail + 1) % _items.Length == _head;
     }
 
-    public FixedCountValueDeque(int capacity, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public ValueFixedSizeDeque(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _items = new ValueArray<T>(capacity + 1, allocatorProviderId);
     }

@@ -107,7 +107,7 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
 
     public ValueLinkedList() => _items = new ValueArray<Node>(0);
 
-    public ValueLinkedList(int capacity, int allocatorProviderId = (int) AllocatorProviderIds.Default) =>
+    public ValueLinkedList(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default) =>
         _items = new ValueArray<Node>(capacity, allocatorProviderId);
 
     public int Capacity

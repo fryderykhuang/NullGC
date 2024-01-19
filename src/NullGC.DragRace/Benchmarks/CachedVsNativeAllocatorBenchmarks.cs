@@ -51,11 +51,11 @@ public class CachedVsNativeAllocatorBenchmarks : BenchmarkBase
             var c = rand.Next(1, _maxConsecutiveAllocs);
             for (int j = 0; j < c; ++j)
             {
-                _lst[j] = AllocatorContext.GetAllocator((int)AllocatorProviderIds.DefaultUncachedUnscoped).Allocate((UIntPtr) rand.Next(0, 1 * 1024 * 1024));
+                _lst[j] = AllocatorContext.GetAllocator((int)AllocatorTypes.DefaultUncachedUnscoped).Allocate((UIntPtr) rand.Next(0, 1 * 1024 * 1024));
             }
             for (int j = 0; j < c; ++j)
             {
-                AllocatorContext.GetAllocator((int)AllocatorProviderIds.DefaultUncachedUnscoped).Free(_lst[j]);
+                AllocatorContext.GetAllocator((int)AllocatorTypes.DefaultUncachedUnscoped).Free(_lst[j]);
             }
         }
     }

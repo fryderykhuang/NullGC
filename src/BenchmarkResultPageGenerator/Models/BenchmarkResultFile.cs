@@ -2,8 +2,8 @@
 {
     public class BenchmarkResultFile
     {
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
+        public required string Url { get; set; }
+        public required string Title { get; set; }
+        public required string Content { get; set; }
     }
 }

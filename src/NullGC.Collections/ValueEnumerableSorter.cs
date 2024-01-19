@@ -36,7 +36,7 @@ public struct ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> :
     private TNext _next;
 
     public ValueEnumerableSorter(TKeySel? keySelector, TComparer comparer, bool descending, TNext next)
-        : this(keySelector, comparer, descending, (int) AllocatorProviderIds.Default, next)
+        : this(keySelector, comparer, descending, (int) AllocatorTypes.Default, next)
     {
     }
 
@@ -56,7 +56,7 @@ public struct ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> :
     }
 
     public ValueEnumerableSorter(TKeySel? keySelector, TComparer comparer, bool descending,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         _flags |= descending ? Flags.Descending : 0;
         if (keySelector.HasValue)
@@ -158,7 +158,7 @@ public struct ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> :
     }
 
     // public ValueEnumerableSorter(TKeySel? keySelector, TComparer comparer,
-    //     bool descending, TNext? next = null, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    //     bool descending, TNext? next = null, int allocatorProviderId = (int) AllocatorTypes.Default)
     // {
     //     _keySelector = keySelector;
     //     _comparer = comparer;

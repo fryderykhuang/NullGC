@@ -60,24 +60,24 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     readonly ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
-    public ValueDictionary(int allocatorProviderId = (int) AllocatorProviderIds.Default) : this(0, null,
+    public ValueDictionary(int allocatorProviderId = (int) AllocatorTypes.Default) : this(0, null,
         allocatorProviderId)
     {
     }
 
-    public ValueDictionary(int capacity, int allocatorProviderId = (int) AllocatorProviderIds.Default) : this(capacity,
+    public ValueDictionary(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default) : this(capacity,
         null, allocatorProviderId)
     {
     }
 
     public ValueDictionary(IEqualityComparer<TKey>? comparer,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default) : this(0, comparer,
+        int allocatorProviderId = (int) AllocatorTypes.Default) : this(0, comparer,
         allocatorProviderId)
     {
     }
 
     public ValueDictionary(int capacity, IEqualityComparer<TKey>? comparer,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default)
+        int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         if (capacity < 0) ThrowHelper.ThrowArgumentOutOfRangeException("capacity");
 
@@ -101,7 +101,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
     public ValueDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey>? comparer,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default) :
+        int allocatorProviderId = (int) AllocatorTypes.Default) :
         this(dictionary.Count, comparer, allocatorProviderId)
     {
         Guard.IsNotNull(dictionary, nameof(dictionary));
@@ -112,7 +112,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
     public ValueDictionary(ValueDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey>? comparer = null,
-        int allocatorProviderId = (int) AllocatorProviderIds.Default) : this(dictionary.Count, comparer,
+        int allocatorProviderId = (int) AllocatorTypes.Default) : this(dictionary.Count, comparer,
         allocatorProviderId)
     {
         AddRange(dictionary);
@@ -120,7 +120,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
     public ValueDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection,
-        IEqualityComparer<TKey>? comparer = null, int allocatorProviderId = (int) AllocatorProviderIds.Default) :
+        IEqualityComparer<TKey>? comparer = null, int allocatorProviderId = (int) AllocatorTypes.Default) :
         this((collection as ICollection<KeyValuePair<TKey, TValue>>)?.Count ?? 0, comparer, allocatorProviderId)
     {
         // ReSharper disable once PossibleMultipleEnumeration

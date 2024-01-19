@@ -10,7 +10,7 @@ public struct SlidingWindow<T> : IDisposable where T : unmanaged, INumber<T>
 {
     public readonly ref struct CurrentWindow
     {
-        public CurrentWindow(T sum, ref readonly FixedCountValueDeque<T> window)
+        public CurrentWindow(T sum, ref readonly ValueFixedSizeDeque<T> window)
         {
             Sum = sum;
             Window = ref window;
@@ -18,16 +18,16 @@ public struct SlidingWindow<T> : IDisposable where T : unmanaged, INumber<T>
 
         public readonly T Sum;
         public readonly int Count => Window.Count;
-        public readonly ref readonly FixedCountValueDeque<T> Window;
+        public readonly ref readonly ValueFixedSizeDeque<T> Window;
     }
 
-    private FixedCountValueDeque<T> _wnd;
+    private ValueFixedSizeDeque<T> _wnd;
     private T _wndSum;
 
-    public SlidingWindow(int windowSize, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public SlidingWindow(int windowSize, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         Guard.IsGreaterThan(windowSize, 0);
-        _wnd = new FixedCountValueDeque<T>(windowSize, allocatorProviderId);
+        _wnd = new ValueFixedSizeDeque<T>(windowSize, allocatorProviderId);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

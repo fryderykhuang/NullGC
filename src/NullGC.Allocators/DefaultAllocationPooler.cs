@@ -35,9 +35,9 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
 
     private int _consecutivePrunes;
     private ulong _currentPoolSize;
-    private ValueLinkedList<LruItem> _lruList = new(8, (int) AllocatorProviderIds.DefaultUncachedUnscoped);
+    private ValueLinkedList<LruItem> _lruList = new(8, (int) AllocatorTypes.DefaultUncachedUnscoped);
 
-    private ValueDictionary<nuint, AllocationPool> _pool = new(8, (int) AllocatorProviderIds.DefaultUncachedUnscoped);
+    private ValueDictionary<nuint, AllocationPool> _pool = new(8, (int) AllocatorTypes.DefaultUncachedUnscoped);
     private ulong _totalAllocatedBytes;
     private ulong _totalFreedBytes;
 
@@ -424,7 +424,7 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
         private readonly int _maxTtlAdaptStepMs;
 
         // TODO Use Deque instead
-        public ValueList<PoolItem> Allocations = new(8, (int) AllocatorProviderIds.DefaultUncachedUnscoped);
+        public ValueList<PoolItem> Allocations = new(8, (int) AllocatorTypes.DefaultUncachedUnscoped);
         private SlidingWindow<int> _cacheLostObserver;
 
         public int HeadInLruList = -1;
@@ -450,7 +450,7 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
             _maxTtlAdaptStepMs = ttl * 2;
             _ttlDecreaseStep = ttl / 10;
             _cacheLostObserver = new SlidingWindow<int>(cacheLostObserveWindowSize,
-                (int) AllocatorProviderIds.DefaultUncachedUnscoped);
+                (int) AllocatorTypes.DefaultUncachedUnscoped);
         }
 
         public readonly int Count => Allocations.Count;

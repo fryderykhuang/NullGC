@@ -1,6 +1,7 @@
 using Cathei.LinqGen;
 using NullGC.Allocators;
 using NullGC.Collections;
+using NullGC.Linq.Enumerators;
 using NullGC.TestCommons;
 using Xunit.Abstractions;
 

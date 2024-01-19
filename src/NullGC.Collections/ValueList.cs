@@ -29,10 +29,10 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
 
     public ValueList()
     {
-        _items = _items.WithAllocationProviderId((int) AllocatorProviderIds.Default);
+        _items = _items.WithAllocationProviderId((int) AllocatorTypes.Default);
     }
 
-    public ValueList(int capacity, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public ValueList(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         Guard.IsGreaterThanOrEqualTo(capacity, 0, nameof(capacity));
 
@@ -41,7 +41,7 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
             : new ValueArray<T>(capacity, allocatorProviderId, true);
     }
 
-    public ValueList(IEnumerable<T> collection, int allocatorProviderId = (int) AllocatorProviderIds.Default)
+    public ValueList(IEnumerable<T> collection, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         // ReSharper disable once PossibleMultipleEnumeration
         Guard.IsNotNull(collection, nameof(collection));
