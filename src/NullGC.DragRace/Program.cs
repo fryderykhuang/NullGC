@@ -6,9 +6,11 @@ using BenchmarkDotNet.Running;
 using NullGC.DragRace;
 using NullGC.DragRace.Benchmarks;
 #if CICD
+Console.Error.WriteLine("Running on CICD profile.");
 BenchmarkRunner.Run(
     Assembly.GetExecutingAssembly().GetExportedTypes()
         .Where(t => t.CustomAttributes.Any(a => a.AttributeType == typeof(PickedForCicd))).ToArray(), new CicdConfig());
+return;
 #else
 
 var types = args.Select(Type.GetType).Where(x => x is not null).ToArray();
