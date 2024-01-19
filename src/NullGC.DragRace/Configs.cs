@@ -59,7 +59,7 @@ internal class CicdConfig : ConfigBase
 {
     public CicdConfig()
     {
-        AddJob(Job.MediumRun)//.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
+        AddJob(Job.ShortRun)//.WithArguments(new[] {new MsBuildArgument("/p:Platform=x64")}))
             .AddDiagnoser(new MemoryDiagnoser(new MemoryDiagnoserConfig(true)))
             .AddExporter(new JsonExporter()).AddExporter(new HtmlExporter())
             .AddColumnProvider(DefaultColumnProviders.Instance)

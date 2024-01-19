@@ -1,5 +1,9 @@
+[![NullGC](https://github.com/fryderykhuang/NullGC/actions/workflows/main.yml/badge.svg)](https://github.com/fryderykhuang/NullGC/actions/workflows/main.yml)
+![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Abstractions?label=NullGC.Abstractions)
+![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Allocators?label=NullGC.Allocators)
+![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Collections?label=NullGC.Collections)
+![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Linq?label=NullGC.Linq)
 # NullGC
-
 High performance unmanaged memory allocator / collection types / LINQ provider for .NET Core.
 Most suitable for game development since there will be no latency jitter caused by .NET garbage collection activities.
 
@@ -72,4 +76,4 @@ SomeCollection.LinqPtr()...   // Only built-in value typed collections are suppo
 ## Thanks
 Many thanks to Emma Maassen from <https://github.com/Enichan/Arenas> and Angouri from <https://github.com/asc-community/HonkPerf.NET> on inspiring me to this project.
 
-Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob/gha-test/THIRD-PARTY-NOTICES.md)
+Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob/main/THIRD-PARTY-NOTICES.md)

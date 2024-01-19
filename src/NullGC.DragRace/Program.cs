@@ -20,7 +20,7 @@ if (types.Length > 0)
     return;
 }
 
-BenchmarkRunner.Run<IntArrayAllocationOverTimeBenchmarks>(new CicdConfig());
+BenchmarkRunner.Run<IntListGrowingBenchmarks>(new FastConfig());
 return;
 
 IntArrayAllocOverTime();
