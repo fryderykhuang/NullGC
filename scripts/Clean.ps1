@@ -1,5 +1,5 @@
 ﻿. $PSScriptRoot\Variables.ps1
-pushd $SolutionDir
+Push-Location $SolutionDir
 
 $Env:Platform = ''
 foreach ($project in $Projects)
@@ -15,4 +15,4 @@ foreach ($project in $Projects)
     dotnet clean -c Debug .\$project\$project.csproj
 }
 
-popd
+Pop-Location

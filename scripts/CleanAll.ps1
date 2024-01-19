@@ -1,5 +1,5 @@
 ﻿. $PSScriptRoot\Variables.ps1
-pushd $SolutionDir
+Push-Location $SolutionDir
 
 $Env:Platform = ''
     dotnet clean -c Release
@@ -9,5 +9,4 @@ $Env:Platform = 'x64'
     dotnet clean -c Release
     dotnet clean -c Debug
 
-
-popd
+Pop-Location
