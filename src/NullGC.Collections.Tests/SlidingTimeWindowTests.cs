@@ -1,5 +1,6 @@
 ﻿using NullGC.Diagnostics;
 using NullGC.TestCommons;
+using Xunit.Abstractions;
 
 namespace NullGC.Collections.Tests;
 
@@ -10,7 +11,7 @@ public class SlidingTimeWindowTests : AssertMemoryAllFreedBase
     {
         var stw = new SlidingTimeWindow<int>(1000, 5, default);
 
-        while (Environment.TickCount64 % 1000 != 0) ;
+        while (Environment.TickCount64 % 1000 > 10) Thread.Yield();
         var w = stw.Update(1);
         Assert.True(w.Count == 1);
         Assert.True(w.Buckets.Count == 1);
@@ -66,7 +67,7 @@ public class SlidingTimeWindowTests : AssertMemoryAllFreedBase
         stw.Dispose();
     }
     
-    public SlidingTimeWindowTests() : base(false)
+    public SlidingTimeWindowTests(ITestOutputHelper logger) : base(logger, false)
     {
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
 using NullGC.Linq;
 using NullGC.TestCommons;
+using Xunit.Abstractions;
 
 namespace NullGC.Collections.Tests;
 
 public class ValueLinkedListTests : AssertMemoryAllFreedBase
 {
-    public ValueLinkedListTests() : base(false)
+    public ValueLinkedListTests(ITestOutputHelper logger) : base(logger, false)
     {
     }
 

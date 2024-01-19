@@ -2,6 +2,7 @@ using Cathei.LinqGen;
 using NullGC.Allocators;
 using NullGC.Collections;
 using NullGC.TestCommons;
+using Xunit.Abstractions;
 
 namespace NullGC.Linq.Tests;
 
@@ -28,7 +29,7 @@ public class LinqTests : AssertMemoryAllFreedBase
     private readonly int _bigStructMin;
     private readonly int _smallStructMin;
 
-    public LinqTests() : base(false)
+    public LinqTests(ITestOutputHelper logger) : base(logger, false)
     {
         _emptyArray = ValueArray<int>.Empty;
         _valList1 = new ValueList<int>(0) {7, 0, 4, 5, 6, 1, 2, 3, 8, 9};
@@ -148,7 +149,7 @@ public class LinqTests : AssertMemoryAllFreedBase
     public void OrderByMulti_LinqRef_MultiSorter()
     {
         Assert.Equal(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-            _valList1.LinqRef().OrderBy(OrderBy.Ascending((in int x) => x,OrderBy.Descending((in int x)=>x))));
+            _valList1.LinqRef().OrderBy(OrderBy.Ascending((in int x) => x, OrderBy.Descending((in int x) => x))));
     }
 
     // [Fact]

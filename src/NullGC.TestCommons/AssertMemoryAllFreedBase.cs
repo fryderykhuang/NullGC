@@ -1,10 +1,12 @@
 ﻿using NullGC.Allocators;
+using NullGC.Collections.Extensions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace NullGC.TestCommons;
 
 [Collection("AllocatorContext")]
-public abstract class AssertMemoryAllFreedBase : IDisposable, IClassFixture<DefaultAllocatorContextFixture>
+public abstract class AssertMemoryAllFreedBase : TestBase, IDisposable, IClassFixture<DefaultAllocatorContextFixture>
 {
     private readonly bool _scoped;
     private readonly IMemoryAllocationTrackable _memTrackable;
@@ -12,7 +14,7 @@ public abstract class AssertMemoryAllFreedBase : IDisposable, IClassFixture<Defa
 
     protected IMemoryAllocationTrackable AllocTracker => _allocTrackable;
 
-    protected AssertMemoryAllFreedBase(bool scoped, bool uncached = false)
+    protected AssertMemoryAllFreedBase(ITestOutputHelper logger, bool scoped, bool uncached = false) : base(logger)
     {
         AllocatorContext.ClearProvidersAndAllocations();
 
@@ -22,7 +24,8 @@ public abstract class AssertMemoryAllFreedBase : IDisposable, IClassFixture<Defa
         else if (!uncached)
             AllocatorContextInitializer.SetupDefaultUnscopedAllocationContext(out _allocTrackable, out _memTrackable);
         else
-            AllocatorContextInitializer.SetupDefaultUncachedUnscopedAllocationContext(out _allocTrackable, out _memTrackable);
+            AllocatorContextInitializer.SetupDefaultUncachedUnscopedAllocationContext(out _allocTrackable,
+                out _memTrackable);
     }
 
     public virtual void Dispose()

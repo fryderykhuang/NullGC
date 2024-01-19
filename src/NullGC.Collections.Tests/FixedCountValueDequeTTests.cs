@@ -1,4 +1,5 @@
 ﻿using NullGC.TestCommons;
+using Xunit.Abstractions;
 
 namespace NullGC.Collections.Tests;
 
@@ -126,7 +127,7 @@ public class FixedCountValueDequeTTests : AssertMemoryAllFreedBase
         q.Dispose();
     }
 
-    public FixedCountValueDequeTTests() : base(false)
+    public FixedCountValueDequeTTests(ITestOutputHelper logger) : base(logger, false)
     {
     }
 }

@@ -1,10 +1,11 @@
 using NullGC.TestCommons;
+using Xunit.Abstractions;
 
 namespace NullGC.Collections.Tests;
 
 public class ValueArrayTests : AssertMemoryAllFreedBase
 {
-    public ValueArrayTests() : base(false)
+    public ValueArrayTests(ITestOutputHelper logger) : base(logger, false)
     {
     }
 
