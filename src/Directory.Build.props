@@ -6,9 +6,9 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright (c) 2024 Fryderyk Huang</Copyright>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Platform)'=='x64' Or '$(PlatformTarget)'=='x64' Or $(RuntimeIdentifier.Contains('64'))">
-        <DefineConstants>$(DefineConstants);TARGET_64BIT</DefineConstants>
-    </PropertyGroup>
+<!--    <PropertyGroup Condition="'$(Platform)'=='x64' Or '$(PlatformTarget)'=='x64' Or $(RuntimeIdentifier.Contains('64'))">-->
+<!--        <DefineConstants>$(DefineConstants);TARGET_64BIT</DefineConstants>-->
+<!--    </PropertyGroup>-->
     <PropertyGroup Condition="'$(CICD)'!=''">
         <DefineConstants>$(DefineConstants);CICD</DefineConstants>
     </PropertyGroup>

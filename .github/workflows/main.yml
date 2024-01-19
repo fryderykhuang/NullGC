@@ -74,6 +74,7 @@ jobs:
           $env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
         
   deploy:
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

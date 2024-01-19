@@ -4,13 +4,13 @@ namespace NullGC.Allocators;
 
 public interface IMemoryAllocator
 {
-    public const uint DefaultAlignment =
-#if TARGET_64BIT
-            16
-#else
-            8
-#endif
-        ;
+    public static readonly uint DefaultAlignment = (uint) (Environment.Is64BitProcess ? 16 : 8);
+// #if TARGET_64BIT
+//             16
+// #else
+//             8
+// #endif
+//         ;
 
     UIntPtr Allocate(nuint size);
 
