@@ -1,0 +1,22 @@
+<Project>
+    <PropertyGroup>
+        <Authors>Fryderyk Huang</Authors>
+        <PackageProjectUrl>https://github.com/fryderykhuang/NullGC</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Copyright>Copyright (c) 2024 Fryderyk Huang</Copyright>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platform)'=='x64' Or '$(PlatformTarget)'=='x64' Or $(RuntimeIdentifier.Contains('64'))">
+        <DefineConstants>$(DefineConstants);TARGET_64BIT</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(CICD)'!=''">
+        <DefineConstants>$(DefineConstants);CICD</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>$(DefineConstants);TRACE_MEM_ALLOC;TRACE_MEM_CACHE_LOST;TRACE_MEM_RESIZE_MISS</DefineConstants>
+    </PropertyGroup>
+</Project>

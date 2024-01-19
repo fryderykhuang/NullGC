@@ -1,0 +1,97 @@
+﻿name: NullGC
+
+defaults:
+  run:
+    shell: pwsh   
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'feature/**'
+      - 'gha-test'
+env:
+  CICD: 1
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # non-shallow fetch of Git history allows correct version calculation.
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Use GitVersion
+        id: gitversion
+        run: echo "version=$(dotnet gitversion -output json -showvariable NuGetVersionV2)" >> $GITHUB_OUTPUT
+
+      - name: Restore dependencies
+        run: .\scripts\Restore.ps1
+
+      - name: Build
+        run: .\scripts\Build.ps1
+
+      - name: Test
+        run: .\scripts\Test.ps1
+
+      - name: Pack
+        run: $Env:GitVersion_NuGetVersionV2='${{ steps.gitversion.outputs.version }}'; .\scripts\Pack.ps1
+          
+      - name: Run benchmark
+        run: .\scripts\RunBenchmarks.ps1
+
+      - name: Generate benchmark result page
+        run: .\scripts\GenBenchmarkPage.ps1
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: './artifacts/**'
+      - name: Publish NuGet packages
+        run: |
+          $env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
+        
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './BenchmarkResultPage'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

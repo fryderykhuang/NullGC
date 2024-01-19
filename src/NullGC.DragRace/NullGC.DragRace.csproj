@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU;x64;x86</Platforms>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <!--        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+        <!--        <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.12"/>
+        <PackageReference Include="HonkPerf.NET.RefLinq" Version="1.0.0"/>
+        <PackageReference Include="LinqGen" Version="0.3.1"/>
+        <PackageReference Include="LinqGen.Generator" Version="0.3.1"/>
+        <PackageReference Include="NetFabric.Hyperlinq" Version="3.0.0-beta48"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NullGC.Abstractions\NullGC.Abstractions.csproj"/>
+        <ProjectReference Include="..\NullGC.Allocators\NullGC.Allocators.csproj"/>
+        <ProjectReference Include="..\NullGC.Collections\NullGC.Collections.csproj"/>
+        <ProjectReference Include="..\NullGC.Linq\NullGC.Linq.csproj"/>
+        <ProjectReference Include="..\NullGC.TestCommons\NullGC.TestCommons.csproj"/>
+    </ItemGroup>
+</Project>

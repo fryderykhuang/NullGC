@@ -1,0 +1,17 @@
+mode: ContinuousDelivery
+continuous-delivery-fallback-tag: ''
+branches:
+  main:
+    increment: Patch
+    is-release-branch: true
+  feature:
+    tag: useBranchName
+    increment: Patch
+    track-merge-target: true
+    regex: .*/
+    source-branches:
+    - main
+    - feature
+ignore:
+  sha: []
+merge-message-formats: {}

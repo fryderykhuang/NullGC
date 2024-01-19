@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Benchmark Results</title>
+</head>
+<body>
+    @foreach (var item in Model.Files)
+    {
+        <details>
+            <summary>@item.Title</summary>
+            <!--<iframe src="@item.Url" title="@item.Title"></iframe>-->
+            @item.Content
+        </details>
+    }
+</body>
+</html>

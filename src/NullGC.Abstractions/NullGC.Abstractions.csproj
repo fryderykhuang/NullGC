@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>NullGC</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU;x64;x86</Platforms>
+        <PackageTags>memory performance GC garbage</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="bin/x86/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\win-x86\lib\net8.0"/>
+        <None Include="bin/x64/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\win-x64\lib\net8.0"/>
+        <None Include="bin/x86/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\linux-x86\lib\net8.0"/>
+        <None Include="bin/x64/$(Configuration)/net8.0/$(TargetFileName)" Pack="true" PackagePath="runtimes\linux-x64\lib\net8.0"/>
+    </ItemGroup>
+</Project>
