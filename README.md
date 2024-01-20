@@ -26,7 +26,7 @@ Currently this project contains 3 components:
 Use this line to setup the AllocatorContext, which is used internally in `ValueArray<T>` and any other locations that need to allocate unmanaged memory.
 
 ```csharp
-        AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
+AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
 ```
 
 ### Memory allocation strategies
