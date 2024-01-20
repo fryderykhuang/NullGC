@@ -1,7 +1,7 @@
 . $PSScriptRoot\Variables.ps1
 Push-Location $SolutionDir
 foreach ($project in $Projects) {
-    dotnet nuget push (Join-Path $ArtifactsDir $project.$Env:GitVersion_NuGetVersionV2.nupkg | Resolve-Path) --skip-duplicate --api-key $Env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+    dotnet nuget push (Join-Path $ArtifactsDir "${project}.${Env:GitVersion_NuGetVersionV2}.nupkg" | Resolve-Path) --source 'https://api.nuget.org/v3/index.json' --api-key $Env:NUGET_API_KEY --skip-duplicate
 }
 
 Pop-Location
