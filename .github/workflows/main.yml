@@ -70,8 +70,7 @@ jobs:
           name: artifacts
           path: './artifacts/**'
       - name: Publish NuGet packages
-        run: |
-          $env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
+        run: $Env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
         
   deploy:
     needs: build
