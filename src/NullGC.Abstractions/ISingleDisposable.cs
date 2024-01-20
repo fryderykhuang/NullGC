@@ -10,8 +10,11 @@
 public interface ISingleDisposable<out T> : IDisposable where T : struct, IDisposable
 {
     /// <summary>
-    /// Get a copy of the implementer itself that will not cause double-dispose problem (e.g. by set a non-dispose flag).
+    /// Get a copy of the implementer itself that will not cause double-free problem (e.g. by set a non-dispose flag).
     /// </summary>
     /// <returns></returns>
+    /// <remarks>
+    /// Since this is not a built-in lifetime/ownership management system, the actual lifetime is not being enforced, the early dispose from the owner side or mutation from the borrower side is still unpreventable thus should be used with caution.
+    /// </remarks>
     T Borrow();
 }

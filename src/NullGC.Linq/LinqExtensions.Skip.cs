@@ -26,7 +26,7 @@ public static partial class LinqExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<T, SkipFixedRef<T, TPrevious>> Skip<T, TPrevious>(
         this LinqFixedRefEnumerable<T, TPrevious> src, int count)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqFixedRefEnumerable<T, SkipFixedRef<T, TPrevious>>(
             new SkipFixedRef<T, TPrevious>(src.GetEnumerator(), count));

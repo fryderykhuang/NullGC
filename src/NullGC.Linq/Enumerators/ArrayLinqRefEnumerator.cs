@@ -5,7 +5,7 @@ using NullGC.Collections;
 
 namespace NullGC.Linq.Enumerators;
 
-public struct ArrayLinqRefEnumerator<T> : ILinqRefEnumerator<T>, IArray<T>
+public struct ArrayLinqRefEnumerator<T> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IArray<T>
 {
     private readonly T[] _array;
     private readonly int _length;
@@ -49,22 +49,20 @@ public struct ArrayLinqRefEnumerator<T> : ILinqRefEnumerator<T>, IArray<T>
         CommunityToolkit.Diagnostics.ThrowHelper.ThrowNotSupportedException();
     }
 
-    T IEnumerator<T>.Current => Current;
+    T IEnumerator<T>.Current => _array[_index];
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
     public unsafe T* CurrentPtr
 #pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
     {
         get
         {
-            CommunityToolkit.Diagnostics.ThrowHelper
-                .ThrowNotSupportedException();
+            CommunityToolkit.Diagnostics.ThrowHelper.ThrowNotSupportedException();
             return default;
             //(T*) Unsafe.AsPointer(ref _array[_index]);
         }
     }
 
-    object? IEnumerator.Current => Current;
-
+    object? IEnumerator.Current => _array[_index];
     public int? Count => _length;
     public int? MaxCount => _length;
     public ref T Current

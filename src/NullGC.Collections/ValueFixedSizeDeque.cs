@@ -5,7 +5,7 @@ using NullGC.Allocators;
 
 namespace NullGC.Collections;
 
-public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
+public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>, IList<T> where T : unmanaged
 {
     private ValueArray<T> _items;
     private int _head = 0;
@@ -23,8 +23,22 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
         get => _items.Length == 0 || (_afterTail + 1) % _items.Length == _head;
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="capacity">Must be greater than 0</param>
+    /// <param name="allocatorProviderId"></param>
+    public ValueFixedSizeDeque(int capacity, AllocatorTypes allocatorProviderId) :
+        this(capacity, (int) allocatorProviderId)
+    {
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="capacity">Must be greater than 0</param>
+    /// <param name="allocatorProviderId"></param>
     public ValueFixedSizeDeque(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
+        Guard.IsGreaterThanOrEqualTo(capacity, 0);
         _items = new ValueArray<T>(capacity + 1, allocatorProviderId);
     }
 
@@ -64,18 +78,6 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
         }
     }
 
-    // public readonly T Head
-    // {
-    //     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    //     get
-    //     {
-    //         if (_head == _afterTail) ThrowHelper.CollectionIsEmpty();
-    //         return _items.GetUnchecked(_head);
-    //     }
-    // }
-    //
-
-
     public readonly ref T HeadRefOrNullRef
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -90,7 +92,6 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
     }
 
     /// <summary>
-    ///
     /// </summary>
     /// <param name="nth">0-based index start at last item increase backward.</param>
     /// <returns></returns>
@@ -101,7 +102,6 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
     }
 
     /// <summary>
-    ///
     /// </summary>
     /// <param name="nth">0-based index start at first item increase forward.</param>
     /// <returns></returns>
@@ -146,11 +146,13 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
     }
 
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="item"></param>
     /// <param name="evicted">if queue is full, this is the pushed out item.</param>
-    /// <returns><value>true</value> indicates the queue is full, and there's one item pushed out.</returns>
+    /// <returns>
+    ///     <value>true</value>
+    ///     indicates the queue is full, and there's one item pushed out.
+    /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool PushBack(T item, out T evicted)
     {
@@ -171,11 +173,13 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
     }
 
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="item"></param>
     /// <param name="evicted">if queue is full, this is the pushed out item.</param>
-    /// <returns><value>true</value> indicates the queue is full, and there's one item pushed out.</returns>
+    /// <returns>
+    ///     <value>true</value>
+    ///     indicates the queue is full, and there's one item pushed out.
+    /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool PushFront(T item, out T evicted)
     {
@@ -200,7 +204,7 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
     {
         unsafe
         {
-            for (int i = _head;; i++)
+            for (var i = _head;; i++)
             {
                 var ii = i % _items.Length;
                 if (ii == _afterTail) break;
@@ -256,9 +260,15 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
         {
         }
 
-        public bool MoveNext() => ++_index % _items.Length != _afterTail;
+        public bool MoveNext()
+        {
+            return ++_index % _items.Length != _afterTail;
+        }
 
-        public void Reset() => throw new NotSupportedException();
+        public void Reset()
+        {
+            throw new NotSupportedException();
+        }
 
         public readonly ref T Current
         {
@@ -277,24 +287,42 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
         readonly object IEnumerator.Current => Current;
     }
 
-    public readonly ForwardEnumerator GetEnumerator() => new(_items, _head, _afterTail);
+    public readonly ForwardEnumerator GetEnumerator()
+    {
+        return new ForwardEnumerator(_items, _head, _afterTail);
+    }
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => IsEmpty ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+    {
+        return IsEmpty ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => IsEmpty ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return IsEmpty ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Add(T item) => AddBack(item);
+    public void Add(T item)
+    {
+        AddBack(item);
+    }
 
-    public void Clear() => _afterTail = _head;
+    public void Clear()
+    {
+        _afterTail = _head;
+    }
 
-    public bool Contains(T item) => IndexOf(item) != -1;
+    public bool Contains(T item)
+    {
+        return IndexOf(item) != -1;
+    }
 
     public readonly void CopyTo(T[] array, int arrayIndex)
     {
         unsafe
         {
-            for (int i = _head; ; i++)
+            for (var i = _head;; i++)
             {
                 var ii = i % _items.Length;
                 if (ii == _afterTail)
@@ -304,7 +332,10 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
         }
     }
 
-    public bool Remove(T item) => CommunityToolkit.Diagnostics.ThrowHelper.ThrowNotSupportedException<bool>();
+    public bool Remove(T item)
+    {
+        return CommunityToolkit.Diagnostics.ThrowHelper.ThrowNotSupportedException<bool>();
+    }
 
     public readonly int Capacity
     {
@@ -320,5 +351,20 @@ public struct ValueFixedSizeDeque<T> : IDisposable, IList<T> where T : unmanaged
 
     public readonly bool IsReadOnly => false;
 
-    public void Dispose() => _items.Dispose();
+    private ValueFixedSizeDeque(ValueArray<T> items, int head, int afterTail)
+    {
+        _items = items;
+        _head = head;
+        _afterTail = afterTail;
+    }
+
+    public ValueFixedSizeDeque<T> Borrow()
+    {
+        return new ValueFixedSizeDeque<T>(_items.Borrow(), _head, _afterTail);
+    }
+
+    public void Dispose()
+    {
+        _items.Dispose();
+    }
 }

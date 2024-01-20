@@ -6,10 +6,9 @@ using RazorEngineCore;
 
 namespace BenchmarkResultPageGenerator;
 
-internal class Program
+internal partial class Program
 {
-    private static readonly Regex FileNamePattern = new(@"^(\w+\.)+Benchmarks\.(?<class>\w+)\-report",
-        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+    private static readonly Regex FileNamePattern = MyRegex();
 
     private static async Task Main(string[] args)
     {
@@ -35,7 +34,10 @@ internal class Program
         await File.WriteAllTextAsync(output, await (await new RazorEngine().CompileAsync(await sr.ReadToEndAsync()))
             .RunAsync(new
             {
-                Files = lst
+                Files = lst.OrderBy(x=>x.Title)
             }));
     }
+
+    [GeneratedRegex(@"^(\w+\.)+Benchmarks\.(?<class>\w+)\-report", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+    private static partial Regex MyRegex();
 }

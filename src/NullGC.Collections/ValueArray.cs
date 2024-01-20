@@ -22,14 +22,21 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
         }
     }
 
-    public ValueArray(int length, int allocatorProviderId = (int) AllocatorTypes.Default, bool noClear = false)
+    public ValueArray(int length, AllocatorTypes allocatorProviderId = AllocatorTypes.Default, bool noClear = false) :
+        this(length, (int) allocatorProviderId, noClear)
+    {
+    }
+
+    public ValueArray(int length, int allocatorProviderId, bool noClear = false)
     {
         unsafe
         {
             if (length > Array.MaxLength || length * (long) sizeof(T) > uint.MaxValue)
                 CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(length));
-            Debug.Assert(allocatorProviderId != (int) AllocatorTypes.Invalid);
+            Debug.Assert(length == 0 || allocatorProviderId != (int) AllocatorTypes.Invalid);
             AllocatorProviderId = allocatorProviderId;
+            if (length == 0)
+                return;
             var size = checked((uint) (sizeof(T) * length));
             if (size > 0)
             {
@@ -266,9 +273,10 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
                     (nuint) maxLength * (nuint) sizeof(T));
                 if (!reallocResult.Success) return -1;
 #if DEBUG
-                Debug.Assert(MemoryMarshal.CreateReadOnlySpan(in Unsafe.AsRef<T>((T*) reallocResult.Ptr), _length).SequenceEqual(bak));
+                Debug.Assert(MemoryMarshal.CreateReadOnlySpan(in Unsafe.AsRef<T>((T*) reallocResult.Ptr), _length)
+                    .SequenceEqual(bak));
 #endif
-                
+
                 Debug.Assert(reallocResult.Ptr % IMemoryAllocator.DefaultAlignment == 0);
                 minLength = (int) (reallocResult.ActualSize / (nuint) sizeof(T));
                 if (!noClear && minLength > _length)

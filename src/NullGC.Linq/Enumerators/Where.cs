@@ -196,9 +196,9 @@ public struct WhereRefToRefIn<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>,
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public struct WhereFixedRefToFixedRef<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>, IItemAddressFixed,
+public struct WhereFixedRefToFixedRef<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, WhereFixedRefToFixedRef<T, TPrevious, TPredicate>>
-    where TPrevious : ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
     where TPredicate : struct, IFuncInvoker<T, bool>
 {
     private TPrevious _previous = default!;
@@ -243,9 +243,9 @@ public struct WhereFixedRefToFixedRef<T, TPrevious, TPredicate> : ILinqRefEnumer
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public struct WhereFixedRefToFixedRefIn<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>, IItemAddressFixed,
+public struct WhereFixedRefToFixedRefIn<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, WhereFixedRefToFixedRefIn<T, TPrevious, TPredicate>>
-    where TPrevious : ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
     where TPredicate : struct, IFuncT1InInvoker<T, bool>
 {
     private TPrevious _previous = default!;
@@ -502,9 +502,9 @@ public struct WhereValueToValueIn<T, TPrevious, TDelegate> : ILinqValueEnumerato
 //         }
 //     }
 // }
-public struct WherePtrToPtr<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>, IItemAddressFixed,
+public struct WherePtrToPtr<T, TPrevious, TPredicate> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, WherePtrToPtr<T, TPrevious, TPredicate>>
-    where TPrevious : ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
     where TPredicate : struct
     where T : unmanaged
 {

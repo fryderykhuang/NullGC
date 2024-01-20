@@ -97,6 +97,13 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqValueEnumerable<T, ArrayLinqRefEnumerator<T>> LinqValue<T>(this T[] src)
+        where T : unmanaged
+    {
+        return new LinqValueEnumerable<T, ArrayLinqRefEnumerator<T>>(new ArrayLinqRefEnumerator<T>(src));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqValueEnumerable<T, IListLinqValueEnumerator<T>> LinqValue<T>(this IList<T> src)
         where T : unmanaged
     {
@@ -260,7 +267,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Sum<T, TEnumerator>(this LinqFixedRefEnumerable<T, TEnumerator> src) where T : INumber<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         using var enumerator = src.GetEnumerator();
         T sum = T.Zero;
@@ -288,7 +295,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Min<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src) where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         using var enumerator = src.GetEnumerator();
         T min = T.MaxValue;
@@ -333,7 +340,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Max<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src) where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         using var enumerator = src.GetEnumerator();
         T max = T.MinValue;
@@ -408,7 +415,7 @@ public static partial class LinqExtensions
         }
     }
 
-    public static void Drain<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src) where TEnumerator : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+    public static void Drain<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src) where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         using var e = src.GetEnumerator();
         while (e.MoveNext())

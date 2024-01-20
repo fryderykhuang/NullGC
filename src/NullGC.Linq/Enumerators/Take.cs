@@ -74,9 +74,9 @@ public struct TakeRef<T, TPrevious> : ILinqRefEnumerator<T>, ILinqEnumerable<T, 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public struct TakeFixedRef<T, TPrevious> : ILinqRefEnumerator<T>, IItemAddressFixed,
+public struct TakeFixedRef<T, TPrevious> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, TakeFixedRef<T, TPrevious>>
-    where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
 {
     private TPrevious _previous;
     private int _takeCount;
@@ -210,8 +210,8 @@ public struct TakeValue<T, TPrevious> : ILinqValueEnumerator<T>,
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public struct TakePtr<T, TPrevious> : ILinqRefEnumerator<T>, ILinqEnumerable<T, TakePtr<T, TPrevious>>, IItemAddressFixed
-    where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+public struct TakePtr<T, TPrevious> : ILinqRefEnumerator<T>, ILinqEnumerable<T, TakePtr<T, TPrevious>>, IAddressFixed
+    where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     where T : unmanaged
 {
     private TPrevious _previous;

@@ -26,7 +26,7 @@ public static partial class LinqExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<T, TakeFixedRef<T, TPrevious>> Take<T, TPrevious>(
         this LinqFixedRefEnumerable<T, TPrevious> src, int count)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqFixedRefEnumerable<T, TakeFixedRef<T, TPrevious>>(
             new TakeFixedRef<T, TPrevious>(src.GetEnumerator(), count));
@@ -35,7 +35,7 @@ public static partial class LinqExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqPtrEnumerable<T, TakePtr<T, TPrevious>> Take<T, TPrevious>(
         this LinqPtrEnumerable<T, TPrevious> src, int count)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
     {
         return new LinqPtrEnumerable<T, TakePtr<T, TPrevious>>(
             new TakePtr<T, TPrevious>(src.GetEnumerator(), count));

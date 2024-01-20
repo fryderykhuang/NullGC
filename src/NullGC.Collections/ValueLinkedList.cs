@@ -22,7 +22,7 @@ public static class ValueLinkedList
 public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingleDisposable<ValueLinkedList<T>>,
     ILinqEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator>, IDisposable where T : unmanaged
 {
-    public struct ForwardEnumerator : ILinqRefEnumerator<Node>, ILinqValueEnumerator<Node>, IItemAddressFixed
+    public struct ForwardEnumerator : ILinqRefEnumerator<Node>, ILinqValueEnumerator<Node>, IAddressFixed
     {
         private readonly ValueArray<Node> _items;
         private int _count;
@@ -87,7 +87,7 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
     }
 
     private const int FreeListBaseIndex = -3;
-    
+
     private ValueArray<Node> _items;
     private int _head = -1;
     private int _tail = -1;
@@ -105,7 +105,11 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
         _freeCount = freeCount;
     }
 
-    public ValueLinkedList() => _items = new ValueArray<Node>(0);
+    public ValueLinkedList() => _items = new ValueArray<Node>(0, (int) AllocatorTypes.Default);
+
+    public ValueLinkedList(AllocatorTypes allocatorProviderId) : this(0, (int) allocatorProviderId)
+    {
+    }
 
     public ValueLinkedList(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default) =>
         _items = new ValueArray<Node>(capacity, allocatorProviderId);
@@ -121,7 +125,8 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
         }
     }
 
-    IEnumerator<Node> IEnumerable<Node>.GetEnumerator() => Count == 0 ? GenericEmptyEnumerator<Node>.Instance : GetEnumerator();
+    IEnumerator<Node> IEnumerable<Node>.GetEnumerator() =>
+        Count == 0 ? GenericEmptyEnumerator<Node>.Instance : GetEnumerator();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ForwardEnumerator GetEnumerator() => new(_items, Count, _head);
@@ -341,7 +346,7 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => ref _items.GetRefUnchecked(_tail);
     }
-    
+
     public void Remove(int index)
     {
         unsafe
@@ -430,7 +435,7 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
         _items.Grow(_items.Length + ((newCapacity + 1 - _items.Length) >> 1), newCapacity, true);
     }
 
-    private const int DefaultCapacity = 4; 
+    private const int DefaultCapacity = 4;
 
     public unsafe Node* Items => _items.Items;
     int IUnsafeArray<Node>.Length => _endIndex;

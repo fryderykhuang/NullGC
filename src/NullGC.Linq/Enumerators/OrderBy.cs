@@ -235,7 +235,7 @@ public static class OrderBy
 
 public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>,
     ILinqEnumerable<T, OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
-    IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>, IItemAddressFixed
+    IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>, IAddressFixed
     where TPrevious : struct, ILinqRefEnumerator<T>
     where T : unmanaged
     where TKey : unmanaged
@@ -376,7 +376,7 @@ public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext
 }
 
 public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>, ISkipTakeAware,
-    IItemAddressFixed,
+    IAddressFixed,
     ILinqEnumerable<T, OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
     IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>
     where TPrevious : struct, ILinqValueEnumerator<T>
@@ -696,10 +696,10 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 //     public bool IsInitialized => _indexBuffer.IsInitialized;
 // }
 
-public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>, IItemAddressFixed,
+public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
     IUnsafeArray<int>, IUnsafeArray<Ptr<T>>
-    where TPrevious : ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
     where T : unmanaged
     where TKey : unmanaged
     where TComparer : IComparer<TKey>
@@ -856,10 +856,10 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
 }
 
 public struct OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>,
-    IItemAddressFixed,
+    IAddressFixed,
     ILinqEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
     IUnsafeArray<int>, IUnsafeArray<Ptr<T>>
-    where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     where T : unmanaged
     where TKey : unmanaged
     where TComparer : IComparer<TKey>

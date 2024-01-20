@@ -22,7 +22,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<T, WhereFixedRefToFixedRefIn<T, TPrevious, FuncT1InInvoker<T, bool>>> Where<T, TPrevious>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, bool> predicate)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqFixedRefEnumerable<T, WhereFixedRefToFixedRefIn<T, TPrevious, FuncT1InInvoker<T, bool>>>(
             new WhereFixedRefToFixedRefIn<T, TPrevious, FuncT1InInvoker<T, bool>>(src.GetEnumerator(),
@@ -44,7 +44,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<T, WhereFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, bool>>> Where<T, TPrevious>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         Func<T, bool> predicate)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqFixedRefEnumerable<T, WhereFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, bool>>>(
             new WhereFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, bool>>(src.GetEnumerator(),
@@ -77,7 +77,7 @@ public static partial class LinqExtensions
     public static LinqPtrEnumerable<T, WherePtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, bool>>> Where<T, TPrevious>(
         this LinqPtrEnumerable<T, TPrevious> src,
         FuncT1Ptr<T, bool> predicate)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
     {
         return new LinqPtrEnumerable<T, WherePtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, bool>>>(
             new WherePtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, bool>>(src.GetEnumerator(),
@@ -101,7 +101,7 @@ public static partial class LinqExtensions
         T, TPrevious,
         TArg>(this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, TArg, bool> predicate, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TArg : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TArg : unmanaged
     {
         return new LinqFixedRefEnumerable<T, WhereFixedRefToFixedRefIn<T, TPrevious, FuncT1InWithArgInvoker<T, TArg, bool>>>(
             new WhereFixedRefToFixedRefIn<T, TPrevious, FuncT1InWithArgInvoker<T, TArg, bool>>(src.GetEnumerator(),

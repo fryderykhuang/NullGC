@@ -27,9 +27,18 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
         _size = size;
     }
 
-    public ValueList()
+    public ValueList() : this(0, (int) AllocatorTypes.Default)
     {
-        _items = _items.WithAllocationProviderId((int) AllocatorTypes.Default);
+    }
+
+    public ValueList(AllocatorTypes allocatorProviderId = AllocatorTypes.Default)
+    {
+        _items = new ValueArray<T>(0, allocatorProviderId);
+    }
+
+    public ValueList(int capacity, AllocatorTypes allocatorProviderId) :
+        this(capacity, (int) allocatorProviderId)
+    {
     }
 
     public ValueList(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default)
@@ -39,6 +48,11 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
         _items = capacity == 0
             ? ValueArray<T>.Empty.WithAllocationProviderId(allocatorProviderId)
             : new ValueArray<T>(capacity, allocatorProviderId, true);
+    }
+
+    public ValueList(IEnumerable<T> collection, AllocatorTypes allocatorProviderId) :
+        this(collection, (int) allocatorProviderId)
+    {
     }
 
     public ValueList(IEnumerable<T> collection, int allocatorProviderId = (int) AllocatorTypes.Default)
@@ -112,14 +126,14 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
         Debug.Assert(index >= 0 && index < _size);
         return ref _items.GetRefUnchecked(index);
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly T GetUnchecked(int index)
     {
         Debug.Assert(index >= 0 && index < _size);
         return _items.GetUnchecked(index);
     }
-    
+
     readonly T IReadOnlyList<T>.this[int index] => this[index];
 
     T IList<T>.this[int index]
@@ -635,8 +649,9 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
     }
 
     public readonly ValueArray<T> GetInnerArray() => _items;
-    
-    readonly IEnumerator IEnumerable.GetEnumerator() => Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+
+    readonly IEnumerator IEnumerable.GetEnumerator() =>
+        Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
 
     public readonly unsafe T* Items => _items.Items;
     readonly int IUnsafeArray<T>.Length => _size;

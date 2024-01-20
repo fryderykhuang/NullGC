@@ -60,8 +60,12 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     readonly ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
-    public ValueDictionary(int allocatorProviderId = (int) AllocatorTypes.Default) : this(0, null,
-        allocatorProviderId)
+
+    public ValueDictionary() : this(0, null, (int) AllocatorTypes.Default)
+    {
+    }
+
+    public ValueDictionary(AllocatorTypes allocatorProviderId) : this(0, null, (int) allocatorProviderId)
     {
     }
 
@@ -70,9 +74,19 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     {
     }
 
+    public ValueDictionary(int capacity, AllocatorTypes allocatorProviderId) : this(capacity,
+        null, (int) allocatorProviderId)
+    {
+    }
+
     public ValueDictionary(IEqualityComparer<TKey>? comparer,
         int allocatorProviderId = (int) AllocatorTypes.Default) : this(0, comparer,
         allocatorProviderId)
+    {
+    }
+
+    public ValueDictionary(int capacity, IEqualityComparer<TKey>? comparer,
+        AllocatorTypes allocatorProviderId) : this(capacity, comparer, (int) allocatorProviderId)
     {
     }
 
@@ -237,7 +251,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     public ref TValue GetValueRef(TKey key)
     {
-        ref var ret =  ref FindValue(key);
+        ref var ret = ref FindValue(key);
         if (Unsafe.IsNullRef(ref ret))
             ThrowHelper.ThrowKeyNotFoundException(key);
         return ref ret;
@@ -308,7 +322,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     public bool ContainsValue(TValue value)
     {
         for (var i = 0; i < _count; i++)
-            if (_entries.GetRefUnchecked(i).Next >= -1 && EqualityComparer<TValue>.Default.Equals(_entries.GetRefUnchecked(i).Value, value))
+            if (_entries.GetRefUnchecked(i).Next >= -1 &&
+                EqualityComparer<TValue>.Default.Equals(_entries.GetRefUnchecked(i).Value, value))
                 return true;
 
         return false;
@@ -325,7 +340,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         var count = _count;
         for (var i = 0; i < count; i++)
             if (_entries.GetRefUnchecked(i).Next >= -1)
-                array[index++] = new KeyValuePair<TKey, TValue>(_entries.GetRefUnchecked(i).Key, _entries.GetRefUnchecked(i).Value);
+                array[index++] = new KeyValuePair<TKey, TValue>(_entries.GetRefUnchecked(i).Key,
+                    _entries.GetRefUnchecked(i).Value);
     }
 
     readonly IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
@@ -461,7 +477,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
                 // Test uint in if rather than loop condition to drop range check for following array access
                 if ((uint) i >= (uint) _entries.Length) break;
 
-                if (_entries.GetRefUnchecked(i).HashCode == hashCode && EqualityComparer<TKey>.Default.Equals(_entries.GetRefUnchecked(i).Key, key))
+                if (_entries.GetRefUnchecked(i).HashCode == hashCode &&
+                    EqualityComparer<TKey>.Default.Equals(_entries.GetRefUnchecked(i).Key, key))
                 {
                     if (behavior == InsertionBehavior.OverwriteExisting)
                     {
@@ -493,7 +510,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
                 // Test uint in if rather than loop condition to drop range check for following array access
                 if ((uint) i >= (uint) _entries.Length) break;
 
-                if (_entries.GetRefUnchecked(i).HashCode == hashCode && comparer.Equals(_entries.GetRefUnchecked(i).Key, key))
+                if (_entries.GetRefUnchecked(i).HashCode == hashCode &&
+                    comparer.Equals(_entries.GetRefUnchecked(i).Key, key))
                 {
                     if (behavior == InsertionBehavior.OverwriteExisting)
                     {
@@ -586,7 +604,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
                 // Test uint in if rather than loop condition to drop range check for following array access
                 if ((uint) i >= (uint) entries.Length) break;
 
-                if (entries.GetRefUnchecked(i).HashCode == hashCode && EqualityComparer<TKey>.Default.Equals(entries.GetRefUnchecked(i).Key, key))
+                if (entries.GetRefUnchecked(i).HashCode == hashCode &&
+                    EqualityComparer<TKey>.Default.Equals(entries.GetRefUnchecked(i).Key, key))
                 {
                     exists = true;
 
@@ -611,7 +630,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
                 // Test uint in if rather than loop condition to drop range check for following array access
                 if ((uint) i >= (uint) entries.Length) break;
 
-                if (entries.GetRefUnchecked(i).HashCode == hashCode && _comparer.Equals(entries.GetRefUnchecked(i).Key, key))
+                if (entries.GetRefUnchecked(i).HashCode == hashCode &&
+                    _comparer.Equals(entries.GetRefUnchecked(i).Key, key))
                 {
                     exists = true;
 
@@ -668,7 +688,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     private void Resize(int newSize)
     {
-        TraceOn.MemAlloc(nameof(ValueDictionary<TKey, TValue>), $"Before resize {nameof(_entries)}={_entries} {nameof(newSize)}={newSize}");
+        TraceOn.MemAlloc(nameof(ValueDictionary<TKey, TValue>),
+            $"Before resize {nameof(_entries)}={_entries} {nameof(newSize)}={newSize}");
         Debug.Assert(_entries.IsInitialized);
         Debug.Assert(newSize >= _entries.Length);
         var count = _count;
@@ -884,7 +905,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     private readonly ref int GetBucket(uint hashCode)
     {
 #if TARGET_64BIT
-        return ref _buckets.GetRefUnchecked((int) HashHelpers.FastMod(hashCode, (uint) _buckets.Length, _fastModMultiplier));
+        return ref _buckets.GetRefUnchecked((int) HashHelpers.FastMod(hashCode, (uint) _buckets.Length,
+            _fastModMultiplier));
 #else
         return ref _buckets.GetRefUnchecked((int) (hashCode % _buckets.Length));
 #endif
@@ -915,7 +937,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         }
 
         // ReSharper disable once MemberHidesStaticFromOuterClass
-        public struct Enumerator : ILinqRefEnumerator<TKey>, ILinqValueEnumerator<TKey>, IItemAddressFixed
+        public struct Enumerator : ILinqRefEnumerator<TKey>, ILinqValueEnumerator<TKey>, IAddressFixed
         {
             private readonly ValueDictionary<TKey, TValue> _dictionary;
             private int _index;
@@ -950,6 +972,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
             }
 
             public unsafe TKey* CurrentPtr => &_dictionary._entries.Items[_index - 1].Key;
+
             // ref TKey ILinqRefEnumerator<TKey>.Current => ref _dictionary._entries[_index - 1].Key;
             public int? Count => _dictionary.Count;
 
@@ -1018,7 +1041,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         }
 
         // ReSharper disable once MemberHidesStaticFromOuterClass
-        public struct Enumerator : ILinqRefEnumerator<TValue>, ILinqValueEnumerator<TValue>, IItemAddressFixed
+        public struct Enumerator : ILinqRefEnumerator<TValue>, ILinqValueEnumerator<TValue>, IAddressFixed
         {
             private readonly ValueDictionary<TKey, TValue> _dictionary;
             private int _index;
@@ -1053,6 +1076,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
             }
 
             public unsafe TValue* CurrentPtr => &_dictionary._entries.Items[_index - 1].Value;
+
             // ref TValue ILinqRefEnumerator<TValue>.Current => ref _dictionary._entries[_index - 1].Value;
             public int? Count => _dictionary.Count;
 
@@ -1113,7 +1137,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
 
-    public struct Enumerator : ILinqRefEnumerator<Entry>, ILinqValueEnumerator<Entry>, IItemAddressFixed
+    public struct Enumerator : ILinqRefEnumerator<Entry>, ILinqValueEnumerator<Entry>, IAddressFixed
     {
         private readonly ValueDictionary<TKey, TValue> _dictionary;
         private int _index;

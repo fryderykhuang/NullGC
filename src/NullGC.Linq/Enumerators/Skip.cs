@@ -66,9 +66,9 @@ public struct SkipRef<T, TPrevious> : ILinqRefEnumerator<T>,
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public struct SkipFixedRef<T, TPrevious> : ILinqRefEnumerator<T>, IItemAddressFixed,
+public struct SkipFixedRef<T, TPrevious> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, SkipFixedRef<T, TPrevious>>
-    where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
 {
     private TPrevious _previous;
     private int _skipCount;

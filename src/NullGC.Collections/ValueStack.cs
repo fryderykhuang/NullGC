@@ -28,13 +28,20 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
         _size = size;
     }
 
-    public ValueStack(int allocatorProviderId = (int) AllocatorTypes.Default)
+    public ValueStack() : this(0, (int) AllocatorTypes.Default)
     {
-        _array = ValueArray<T>.Empty;
+    }
+
+    public ValueStack(AllocatorTypes allocatorProviderId) : this(0, (int) allocatorProviderId)
+    {
     }
 
     // Create a stack with a specific initial capacity.  The initial capacity
     // must be a non-negative number.
+    public ValueStack(int capacity, AllocatorTypes allocatorProviderId) : this(capacity, (int) allocatorProviderId)
+    {
+    }
+
     public ValueStack(int capacity, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         Guard.IsGreaterThanOrEqualTo(capacity, 0);
@@ -43,6 +50,11 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
 
     // Fills a Stack with the contents of a particular collection.  The items are
     // pushed onto the stack in the same order they are read by the enumerator.
+    public ValueStack(IEnumerable<T> collection, AllocatorTypes allocatorProviderId) :
+        this(collection, (int) allocatorProviderId)
+    {
+    }
+
     public ValueStack(IEnumerable<T> collection, int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         if (collection == null)
@@ -86,7 +98,8 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
     public Enumerator GetEnumerator() => new(this);
 
     /// <internalonly />
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => _size == 0 ? GenericEmptyEnumerator<T>.Instance : new Enumerator(this);
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() =>
+        _size == 0 ? GenericEmptyEnumerator<T>.Instance : new Enumerator(this);
 
     IEnumerator IEnumerable.GetEnumerator() => _size == 0 ? GenericEmptyEnumerator<T>.Instance : new Enumerator(this);
 
@@ -244,7 +257,7 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
         throw new InvalidOperationException("InvalidOperation_EmptyStack");
     }
 
-    public struct Enumerator : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IItemAddressFixed
+    public struct Enumerator : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IAddressFixed
     {
         private readonly ValueStack<T> _stack;
         private int _index;

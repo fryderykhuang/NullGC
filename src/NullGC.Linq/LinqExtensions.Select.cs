@@ -33,7 +33,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<TResult, SelectFixedRefToFixedRef<T, TPrevious, FuncT1TRRefInvoker<T, TResult>, TResult>> Select<T, TPrevious, TResult>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1TRRef<T, TResult> selector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqFixedRefEnumerable<TResult, SelectFixedRefToFixedRef<T, TPrevious, FuncT1TRRefInvoker<T, TResult>, TResult>>(
             new SelectFixedRefToFixedRef<T, TPrevious, FuncT1TRRefInvoker<T, TResult>, TResult>(src.GetEnumerator(),
@@ -55,7 +55,7 @@ public static partial class LinqExtensions
     public static LinqValueEnumerable<TResult, SelectRefToValueIn<T, TPrevious, FuncT1InInvoker<T, TResult>, TResult>> Select<T, TPrevious, TResult>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, TResult> selector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqValueEnumerable<TResult, SelectRefToValueIn<T, TPrevious, FuncT1InInvoker<T, TResult>, TResult>>(
             new SelectRefToValueIn<T, TPrevious, FuncT1InInvoker<T, TResult>, TResult>(src.GetEnumerator(),
@@ -66,7 +66,7 @@ public static partial class LinqExtensions
     public static LinqValueEnumerable<TResult, SelectRefToValue<T, TPrevious, FuncInvoker<T, TResult>, TResult>> Select<T, TPrevious, TResult>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         Func<T, TResult> selector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqValueEnumerable<TResult, SelectRefToValue<T, TPrevious, FuncInvoker<T, TResult>, TResult>>(
             new SelectRefToValue<T, TPrevious, FuncInvoker<T, TResult>, TResult>(src.GetEnumerator(),
@@ -77,7 +77,7 @@ public static partial class LinqExtensions
     public static LinqValueEnumerable<TResult, SelectRefToValue<T, TPrevious, FuncInvokerWithArg<T, TArg, TResult>, TResult>> Select<T, TPrevious, TResult, TArg>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         Func<T, TArg, TResult> selector, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqValueEnumerable<TResult, SelectRefToValue<T, TPrevious, FuncInvokerWithArg<T, TArg, TResult>, TResult>>(
             new SelectRefToValue<T, TPrevious, FuncInvokerWithArg<T, TArg, TResult>, TResult>(src.GetEnumerator(),
@@ -88,7 +88,7 @@ public static partial class LinqExtensions
     public static LinqValueEnumerable<TResult, SelectPtrToValue<T, TPrevious, FuncT1PtrInvoker<T, TResult>, TResult>> Select<T, TPrevious, TResult>(
         this LinqPtrEnumerable<T, TPrevious> src,
         FuncT1Ptr<T, TResult> selector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     {
         return new LinqValueEnumerable<TResult, SelectPtrToValue<T, TPrevious, FuncT1PtrInvoker<T, TResult>, TResult>>(
             new SelectPtrToValue<T, TPrevious, FuncT1PtrInvoker<T, TResult>, TResult>(src.GetEnumerator(),
@@ -99,7 +99,7 @@ public static partial class LinqExtensions
     public static LinqPtrEnumerable<TResult, SelectPtrToPtr<T, TPrevious, FuncT1TRPtrInvoker<T, TResult>, TResult>> Select<T, TPrevious, TResult>(
         this LinqPtrEnumerable<T, TPrevious> src,
         FuncT1TRPtr<T, TResult> selector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TResult : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TResult : unmanaged
     {
         return new LinqPtrEnumerable<TResult, SelectPtrToPtr<T, TPrevious, FuncT1TRPtrInvoker<T, TResult>, TResult>>(
             new SelectPtrToPtr<T, TPrevious, FuncT1TRPtrInvoker<T, TResult>, TResult>(src.GetEnumerator(),
@@ -145,7 +145,7 @@ public static partial class LinqExtensions
         T, TPrevious, TResult,
         TArg>(this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, TArg, TResult> predicate, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TArg : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TArg : unmanaged
     {
         return new LinqValueEnumerable<TResult, SelectRefToValueIn<T, TPrevious, FuncT1InWithArgInvoker<T, TArg, TResult>, TResult>>(
             new SelectRefToValueIn<T, TPrevious, FuncT1InWithArgInvoker<T, TArg, TResult>, TResult>(src.GetEnumerator(),
@@ -157,7 +157,7 @@ public static partial class LinqExtensions
         T, TPrevious, TResult,
         TArg>(this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1TRRef<T, TArg, TResult> predicate, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TArg : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TArg : unmanaged
     {
         return new LinqFixedRefEnumerable<TResult, SelectFixedRefToFixedRef<T, TPrevious, FuncT1TRRefWithArgInvoker<T, TArg, TResult>, TResult>>(
             new SelectFixedRefToFixedRef<T, TPrevious, FuncT1TRRefWithArgInvoker<T, TArg, TResult>, TResult>(src.GetEnumerator(),

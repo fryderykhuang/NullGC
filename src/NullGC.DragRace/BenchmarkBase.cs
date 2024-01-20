@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NullGC.Allocators;
+using NullGC.Allocators.Extensions;
 
 namespace NullGC.DragRace;
 
@@ -7,7 +8,7 @@ public abstract class BenchmarkBase : IDisposable
 {
     protected BenchmarkBase()
     {
-        AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl());
+        AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
     }
     
     // [GlobalSetup]

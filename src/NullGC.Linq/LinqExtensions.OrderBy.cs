@@ -26,7 +26,7 @@ public static partial class LinqExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<T, OrderByRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, T>, T,
             Comparer<T>, DummyEnumerableSorter<T>>>
-        OrderBy<T, TPrevious>(this LinqRefEnumerable<T, TPrevious> src)
+        Order<T, TPrevious>(this LinqRefEnumerable<T, TPrevious> src)
         where TPrevious : struct, ILinqRefEnumerator<T> where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
@@ -41,7 +41,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, TKey>, TKey,
             Comparer<TKey>, DummyEnumerableSorter<T>>>
         OrderBy<T, TPrevious, TKey>(this LinqFixedRefEnumerable<T, TPrevious> src, FuncT1In<T, TKey> keySelector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, TKey>, TKey, Comparer<TKey>,
@@ -55,8 +55,8 @@ public static partial class LinqExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, T>, T,
             Comparer<T>, DummyEnumerableSorter<T>>>
-        OrderBy<T, TPrevious>(this LinqFixedRefEnumerable<T, TPrevious> src)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where T : unmanaged
+        Order<T, TPrevious>(this LinqFixedRefEnumerable<T, TPrevious> src)
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, T>, T, Comparer<T>,
@@ -84,7 +84,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, TKey>, TKey,
             Comparer<TKey>, DummyEnumerableSorter<T>>>
         OrderBy<T, TPrevious, TKey>(this LinqFixedRefEnumerable<T, TPrevious> src, Func<T, TKey> keySelector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, TKey>, TKey, Comparer<TKey>,
@@ -128,7 +128,7 @@ public static partial class LinqExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<T, OrderByValueToFixedRef<T, TPrevious, FuncT1InInvoker<T, T>, T,
             Comparer<T>, DummyEnumerableSorter<T>>>
-        OrderBy<T, TPrevious>(this LinqValueEnumerable<T, TPrevious> src)
+        Order<T, TPrevious>(this LinqValueEnumerable<T, TPrevious> src)
         where TPrevious : struct, ILinqValueEnumerator<T> where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
@@ -157,7 +157,7 @@ public static partial class LinqExtensions
     public static LinqPtrEnumerable<T, OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, TKey>, TKey, Comparer<TKey>,
             DummyEnumerableSorter<T>>>
         OrderBy<T, TPrevious, TKey>(this LinqPtrEnumerable<T, TPrevious> src, FuncT1Ptr<T, TKey> keySelector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqPtrEnumerable<T,
             OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, TKey>, TKey, Comparer<TKey>,
@@ -172,7 +172,7 @@ public static partial class LinqExtensions
     public static LinqPtrEnumerable<T, OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, T>, T, Comparer<T>,
             DummyEnumerableSorter<T>>>
         OrderBy<T, TPrevious>(this LinqPtrEnumerable<T, TPrevious> src)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
     {
         return new LinqPtrEnumerable<T,
             OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, T>, T, Comparer<T>,
@@ -236,7 +236,7 @@ public static partial class LinqExtensions
         OrderBy<T, TPrevious, TKey>(
             this LinqFixedRefEnumerable<T, TPrevious> src,
             Func<T, TKey> keySelector, Comparison<TKey> comparer)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, TKey>, TKey, StructComparer<TKey>,
@@ -253,7 +253,7 @@ public static partial class LinqExtensions
         OrderBy<T, TPrevious, TKey>(
             this LinqFixedRefEnumerable<T, TPrevious> src,
             FuncT1In<T, TKey> keySelector, Comparison<TKey> comparer)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, TKey>, TKey, StructComparer<TKey>,
@@ -326,7 +326,7 @@ public static partial class LinqExtensions
         Comparer<TKey>, DummyEnumerableSorter<T>>> OrderBy<T, TPrevious, TKey, TArg>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, TArg, TKey> keySelector, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
         where TKey : unmanaged
         where T : unmanaged
         where TArg : unmanaged
@@ -481,7 +481,7 @@ public static partial class LinqExtensions
             Comparer<TKey>, DummyEnumerableSorter<T>>>
         OrderByDescending<T, TPrevious, TKey>(this LinqFixedRefEnumerable<T, TPrevious> src,
             FuncT1In<T, TKey> keySelector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, TKey>, TKey, Comparer<TKey>,
@@ -496,7 +496,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, T>, T,
             Comparer<T>, DummyEnumerableSorter<T>>>
         OrderByDescending<T, TPrevious>(this LinqFixedRefEnumerable<T, TPrevious> src)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, T>, T, Comparer<T>,
@@ -523,7 +523,7 @@ public static partial class LinqExtensions
     public static LinqFixedRefEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, TKey>, TKey,
             Comparer<TKey>, DummyEnumerableSorter<T>>>
         OrderByDescending<T, TPrevious, TKey>(this LinqFixedRefEnumerable<T, TPrevious> src, Func<T, TKey> keySelector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, TKey>, TKey, Comparer<TKey>,
@@ -581,7 +581,7 @@ public static partial class LinqExtensions
     public static LinqPtrEnumerable<T, OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, TKey>, TKey, Comparer<TKey>,
             DummyEnumerableSorter<T>>>
         OrderByDescending<T, TPrevious, TKey>(this LinqPtrEnumerable<T, TPrevious> src, FuncT1Ptr<T, TKey> keySelector)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqPtrEnumerable<T,
             OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, TKey>, TKey, Comparer<TKey>,
@@ -596,7 +596,7 @@ public static partial class LinqExtensions
     public static LinqPtrEnumerable<T, OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, T>, T, Comparer<T>,
             DummyEnumerableSorter<T>>>
         OrderByDescending<T, TPrevious>(this LinqPtrEnumerable<T, TPrevious> src)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
     {
         return new LinqPtrEnumerable<T,
             OrderByPtrToPtr<T, TPrevious, FuncT1PtrInvoker<T, T>, T, Comparer<T>,
@@ -629,7 +629,7 @@ public static partial class LinqExtensions
         OrderByDescending<T, TPrevious, TKey>(
             this LinqFixedRefEnumerable<T, TPrevious> src,
             FuncT1In<T, TKey> keySelector, Comparison<TKey> comparer)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncT1InInvoker<T, TKey>, TKey, StructComparer<TKey>,
@@ -664,7 +664,7 @@ public static partial class LinqExtensions
         OrderByDescending<T, TPrevious, TKey>(
             this LinqFixedRefEnumerable<T, TPrevious> src,
             Func<T, TKey> keySelector, Comparison<TKey> comparer)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed where TKey : unmanaged where T : unmanaged
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed where TKey : unmanaged where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T,
             OrderByFixedRefToFixedRef<T, TPrevious, FuncInvoker<T, TKey>, TKey, StructComparer<TKey>,
@@ -738,7 +738,7 @@ public static partial class LinqExtensions
         Comparer<TKey>, DummyEnumerableSorter<T>>> OrderByDescending<T, TPrevious, TKey, TArg>(
         this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, TArg, TKey> keySelector, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
         where TKey : unmanaged
         where T : unmanaged
         where TArg : unmanaged
@@ -824,7 +824,7 @@ public static partial class LinqExtensions
         this LinqFixedRefEnumerable<T, TPrevious> src,
         FuncT1In<T, TArg, TKey> keySelector,
         ComparisonWithArg<TKey, TArg> comparer, TArg arg)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
         where TKey : unmanaged
         where T : unmanaged
         where TArg : unmanaged

@@ -21,31 +21,51 @@ Currently this project contains 3 components:
 2. Value type (struct) only collections
 3. Linq operators
 
-Two types of memory allocation strategy are supported:
+### Setup
 
-### Arena
+Use this line to setup the AllocatorContext, which is used internally in `ValueArray<T>` and any other locations that need to allocate unmanaged memory.
 
 ```csharp
-using (AllocatorContext.BeginAllocationScope())
-{
-    var list = new ValueList<T>();
-    var dict = new ValueDictionary<T>();
-    ...
-} // all Value* collections are automatically disposed as they go out of scope. 
+        AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
 ```
 
-### Explicit lifetime
+### Memory allocation strategies
+
+Two types of memory allocation strategy are supported:
+
+#### 1. Arena
 
 ```csharp
-// You can construct a value type collection anywhere(including inside of arena scope) 
-// using this overload:
-var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
+// all 'T' is struct if not specifically mentioned.
+using (AllocatorContext.BeginAllocationScope())
+{
+    var list = new ValueList<T>(); // plain old 'new'
+    var dict = new ValueDictionary<T>();
+    var obj = new Allocated<T>(); // let struct works like a class (struct is allocated on the unmanaged heap.)
+    ...
+} // all value collections are automatically disposed as they go out of scope, no need to explicitly call Dispose().
+```
+
+#### 2. Explicit lifetime
+
+You can utilize the unmanaged allocator anywhere like this (including inside of arena scope):
+
+```csharp
+// use the overload with parameter 'AllocatorTypes', then specify the unscoped, globally available allocator type.
+var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped); 
+var obj = new Allocated<T>(AllocatorTypes.DefaultUnscoped);
 ...
-// Anywhere after sometime:
+// Anywhere after usage:
 list.Dispose();
 ```
 
-To avoid double-free, when these collections are passed by value, Borrow() should be used. After calling Borrow(), all copies of the original collection can be safely disposed without double-free.
+#### Pass by ref or by value
+
+Since we are using struct everywhere, how to pass a struct which works like a reference type is a little bit tricky.
+
+Under most circumstances, use `ref` modifier will be sufficient, but there's still somewhere that cannot use the `ref` modifier such as struct field (`ref` type can only be put in a `ref struct`, which is incovienient).
+
+To avoid double-free, when those value collections are passed by value, Borrow() should be used. After calling Borrow(), all copies of the original collection can be safely disposed without double-free.
 
 ```csharp
 var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
@@ -54,9 +74,15 @@ var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
 SomeListRefConsumingMethod(in list);
 SomeListRefConsumingMethod(ref list);
 
-// value passing should call Borrow()
+// value passing should call Borrow() unless you're certain the passed one will not be disposed.
 SomeListConsumingMethod(list.Borrow())
 ```
+
+#### 3. Interop with managed object
+
+if you have to use managed object(classes) inside a struct, you can use
+`Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
+
 
 ### Custom collection types
 
@@ -82,8 +108,8 @@ The LINQ interface has 3 variations:
 
 ```csharp
 SomeCollection.LinqValue()... // Enumerate by value. All types implement IEnumerable<T> are supported
-SomeCollection.LinqRef()...   // Enumerate by ref. Besides built-in value typed collections, only Enumerators that exposes 'ref T Current' are supported (e.g. normal array types)
-SomeCollection.LinqPtr()...   // Enumerate by pointer. Only built-in value typed collections are supported. 
+SomeCollection.LinqRef()...   // Enumerate by ref. Besides value collections, only Enumerators that exposes 'ref T Current' are supported (e.g. normal array types)
+SomeCollection.LinqPtr()...   // Enumerate by pointer. Only built-in value typed collections are supported. (Because object address must be fixed to be able to use unmanaged pointer)
 ```
 
 Most extension methods that needs a delegate type parameter has an overloads with `in` or `ref` modifier to avoid copying too much data if the Linqed type is a big struct.
@@ -97,25 +123,27 @@ Most extension methods has overloads with a `TArg arg` parameter to avoid unnece
 
 ```csharp
 TArg someTArg;
-.LinqRef()...Select((in T x) => new SomeStruct(in x, someTArg))... // Everytime this line executes, a new capture object for `someTArg` must be allocated .
-.LinqRef()...Select(static (in T x, TArg a) => new SomeStruct(in x, a), someTArg)... // No capture is happening.
+...Select((in T x) => new SomeStruct(in x, someTArg))... // Everytime this line executes, a new capture object for `someTArg` must be allocated on the managed heap.
+...Select(static (in T x, TArg a) => new SomeStruct(in x, a), someTArg)... // No capture is happening. ('static' is not mandatory, just a explicit declaration)
 
 ```
 
 ## Things to do
 
-1. More examples.
+1. More documentations.
 2. Larger test coverage.
 3. More collection types.
 4. More LINQ providers and support range.
+5. Roslyn analyzer for struct lifetime/ownership enforcing. (The actual lifetime is not being enforced, such as the early dispose from the owner side or mutation from the borrower side is still unpreventable, static analysis with attribute markers should be the way to go.)
 
 ## Thanks to
 
-Emma Maassen from <https://github.com/Enichan/Arenas>
-Angouri from <https://github.com/asc-community/HonkPerf.NET>
+* Emma Maassen from <https://github.com/Enichan/Arenas>
+
+* Angouri from <https://github.com/asc-community/HonkPerf.NET>
 
 Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob/main/THIRD-PARTY-NOTICES.md)
 
 ## How to contribute
 
-These framework-like projects will not become generally useful without being battle tested in real world. If your project can protentially benefit from this, feel free to submit an Issue and talk about your use case. Any type of contributions are welcomed.
+Framework projects like this will not become generally useful without being battle tested in real world. If your project can protentially benefit from this library, feel free to submit an Issue and talk about your use case. Any type of contributions are welcomed.

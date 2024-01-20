@@ -5,7 +5,7 @@ using NullGC.Linq;
 
 namespace NullGC.Collections;
 
-public struct UnsafeArrayEnumerator<T> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IUnsafeArray<T>, IItemAddressFixed where T : unmanaged
+public struct UnsafeArrayEnumerator<T> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IUnsafeArray<T>, IAddressFixed where T : unmanaged
 {
     private readonly unsafe T* _items;
     private readonly int _length;

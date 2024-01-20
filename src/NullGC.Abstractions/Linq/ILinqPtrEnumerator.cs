@@ -1,6 +1,6 @@
 ﻿namespace NullGC.Linq;
 
-// public interface ILinqPtrEnumerator<T> : ILinqEnumerator<T>, IItemAddressFixed
+// public interface ILinqPtrEnumerator<T> : ILinqEnumerator<T>, IAddressFixed
 // {
 //     unsafe T* Current { get; }
 // }

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace NullGC.Linq;
 
 public readonly struct LinqFixedRefEnumerable<T, TEnumerator> : ILinqEnumerable<T, TEnumerator>
-    where TEnumerator : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+    where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
 {
     private readonly TEnumerator _enumerator;
 

@@ -1,20 +1,32 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using NullGC.Allocators;
 
 namespace NullGC;
 
 /// <summary>
-/// A wrapper to make unmanaged struct work like a class (a pointer) without using 'ref', by allocating struct memory on unmanaged heap.
+/// A wrapper to make unmanaged struct work like a class (a pointer) without using 'ref', by allocating struct on unmanaged heap.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public readonly struct Class<T> : IDisposable where T : unmanaged
+/// <remarks>
+/// <see cref="Borrow"/> is needed when passed by value to avoid double-free.
+/// </remarks>
+public readonly struct Allocated<T> : ISingleDisposable<Allocated<T>> where T : unmanaged
 {
     public readonly unsafe T* Value;
     public readonly int AllocatorProviderId;
 
-    public Class(int allocatorProviderId = (int) AllocatorTypes.Default)
+    private unsafe Allocated(T* value, int allocatorProviderId)
+    {
+        Value = value;
+        AllocatorProviderId = allocatorProviderId;
+    }
+
+    public Allocated(AllocatorTypes allocatorProviderId) : this((int) allocatorProviderId)
+    {
+    }
+
+    public Allocated(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         AllocatorProviderId = allocatorProviderId;
         unsafe
@@ -31,13 +43,13 @@ public readonly struct Class<T> : IDisposable where T : unmanaged
     /// Allocate memory for <typeparamref name="T"/> from default scoped allocator, dispose is not mandatory.
     /// </summary>
     /// <returns></returns>
-    public static Class<T> CreateScoped() => new((int) AllocatorTypes.Default);
+    public static Allocated<T> CreateScoped() => new((int) AllocatorTypes.Default);
 
     /// <summary>
     /// Allocate memory for <typeparamref name="T"/> from default unscoped allocator, dispose is mandatory when lifetime ends.
     /// </summary>
     /// <returns></returns>
-    public static Class<T> CreateUnscoped() => new((int) AllocatorTypes.DefaultUnscoped);
+    public static Allocated<T> CreateUnscoped() => new((int) AllocatorTypes.DefaultUnscoped);
 
     public ref T Ref
     {
@@ -51,11 +63,19 @@ public readonly struct Class<T> : IDisposable where T : unmanaged
         }
     }
 
+    public Allocated<T> Borrow()
+    {
+        unsafe
+        {
+            return new Allocated<T>(Value, AllocatorProviderId);
+        }
+    }
+
     public void Dispose()
     {
         if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
             return;
-        
+
         unsafe
         {
             AllocatorContext.GetAllocator(AllocatorProviderId).Free((UIntPtr) Value);

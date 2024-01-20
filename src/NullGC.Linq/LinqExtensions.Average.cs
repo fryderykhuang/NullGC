@@ -17,7 +17,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<double> Average<TEnumerator>(this LinqPtrEnumerable<int, TEnumerator> source)
-        where TEnumerator : struct, ILinqRefEnumerator<int>, IItemAddressFixed
+        where TEnumerator : struct, ILinqRefEnumerator<int>, IAddressFixed
     {
         return Average<int, LinqPtrEnumerable<int, TEnumerator>, TEnumerator, long, double>(source);
     }

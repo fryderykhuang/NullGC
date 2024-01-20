@@ -223,10 +223,10 @@ public struct SelectValueToValueIn<T, TPrevious, TSelector, TResult> : ILinqValu
 }
 
 public struct SelectFixedRefToFixedRef<T, TPrevious, TSelector, TResult> : ILinqRefEnumerator<TResult>,
-    IItemAddressFixed,
+    IAddressFixed,
     ILinqEnumerable<TResult, SelectFixedRefToFixedRef<T, TPrevious, TSelector, TResult>>
     where TSelector : IFuncT1TRRefInvoker<T, TResult>
-    where TPrevious : ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
 {
     private TPrevious _previous = default!;
     private readonly TSelector _selector = default!;
@@ -321,9 +321,9 @@ public struct SelectPtrToValue<T, TPrevious, TSelector, TResult> : ILinqValueEnu
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public struct SelectPtrToPtr<T, TPrevious, TSelector, TResult> : ILinqRefEnumerator<TResult>, IItemAddressFixed,
+public struct SelectPtrToPtr<T, TPrevious, TSelector, TResult> : ILinqRefEnumerator<TResult>, IAddressFixed,
     ILinqEnumerable<TResult, SelectPtrToPtr<T, TPrevious, TSelector, TResult>>
-    where TPrevious : ILinqRefEnumerator<T>, IItemAddressFixed
+    where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
     where TSelector : struct
     where TResult : unmanaged
 {

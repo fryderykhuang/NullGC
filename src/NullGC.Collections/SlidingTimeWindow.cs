@@ -4,7 +4,7 @@ using NullGC.Allocators;
 
 namespace NullGC.Collections;
 
-public struct SlidingTimeWindow<T> : IDisposable where T : unmanaged, INumber<T>
+public struct SlidingTimeWindow<T> : ISingleDisposable<SlidingTimeWindow<T>> where T : unmanaged, INumber<T>
 {
     private ValueFixedSizeDeque<Bucket> _wnd;
 
@@ -44,6 +44,16 @@ public struct SlidingTimeWindow<T> : IDisposable where T : unmanaged, INumber<T>
         public int Count => _count;
     }
 
+    private SlidingTimeWindow(ValueFixedSizeDeque<Bucket> wnd, int resolutionMs, long lastBucket, T wndSum,
+        int wndCount, Bucket noDataBucket)
+    {
+        _wnd = wnd;
+        _resolutionMs = resolutionMs;
+        _lastBucket = lastBucket;
+        _wndSum = wndSum;
+        _wndCount = wndCount;
+        _noDataBucket = noDataBucket;
+    }
 
     /// <summary>
     /// </summary>
@@ -106,6 +116,11 @@ public struct SlidingTimeWindow<T> : IDisposable where T : unmanaged, INumber<T>
         _lastBucket = nowBucket;
 
         return new CurrentWindow(ref _wnd, _wndSum, _wndCount);
+    }
+
+    public SlidingTimeWindow<T> Borrow()
+    {
+        return new SlidingTimeWindow<T>(_wnd.Borrow(), _resolutionMs, _lastBucket, _wndSum, _wndCount, _noDataBucket);
     }
 
     public void Dispose()

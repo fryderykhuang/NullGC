@@ -29,7 +29,7 @@ public static partial class LinqExtensions
             Comparer<TKey>, TNext>>
         OrderBy<T, TPrevious, TKey, TNext>(this LinqFixedRefEnumerable<T, TPrevious> src,
             ValueEnumerableSorter<T, TKey, FuncT1InInvoker<T, TKey>, Comparer<TKey>, TNext> sorter)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
         where TKey : unmanaged
         where T : unmanaged
         where TNext : struct, IValueEnumerableSorter<T>
@@ -61,7 +61,7 @@ public static partial class LinqExtensions
             Comparer<TKey>, TNext>>
         OrderBy<T, TPrevious, TKey, TNext>(this LinqFixedRefEnumerable<T, TPrevious> src,
             ValueEnumerableSorter<T, TKey, FuncInvoker<T, TKey>, Comparer<TKey>, TNext> sorter)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
         where TKey : unmanaged
         where T : unmanaged
         where TNext : struct, IValueEnumerableSorter<T>
@@ -109,7 +109,7 @@ public static partial class LinqExtensions
             TNext>>
         OrderBy<T, TPrevious, TKey, TNext>(this LinqPtrEnumerable<T, TPrevious> src,
             ValueEnumerableSorter<T, TKey, FuncT1PtrInvoker<T, TKey>, Comparer<TKey>, TNext> sorter)
-        where TPrevious : struct, ILinqRefEnumerator<T>, IItemAddressFixed
+        where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
         where TKey : unmanaged
         where T : unmanaged
         where TNext : struct, IValueEnumerableSorter<T>
