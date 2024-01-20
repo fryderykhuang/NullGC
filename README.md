@@ -23,11 +23,14 @@ Currently this project contains 3 components:
 
 ### Setup
 
-Use this line to setup the AllocatorContext, which is used internally in `ValueArray<T>` and any other locations that need to allocate unmanaged memory.
+1. Install NuGet package `NullGC.Allocators` and `NullGC.Linq`
+
+2. Setup AllocatorContext:
 
 ```csharp
 AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
 ```
+Allocator context is used internally in `ValueArray<T>` and any code that needs to allocate unmanaged memory.
 
 ### Memory allocation strategies
 
@@ -59,7 +62,7 @@ var obj = new Allocated<T>(AllocatorTypes.DefaultUnscoped);
 list.Dispose();
 ```
 
-#### Pass by ref or by value
+### Pass by ref or by value
 
 Since we are using struct everywhere, how to pass a struct which works like a reference type is a little bit tricky.
 
@@ -78,7 +81,7 @@ SomeListRefConsumingMethod(ref list);
 SomeListConsumingMethod(list.Borrow())
 ```
 
-#### Interop with managed object
+### Interop with managed object
 
 If you have to use managed object (classes) inside a struct, you can use
 `Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
