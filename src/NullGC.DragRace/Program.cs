@@ -9,7 +9,7 @@ using NullGC.DragRace.Benchmarks;
 #if CICD
 var cfg = new CicdConfig();
 Console.WriteLine($"ArtifactsPath={cfg.ArtifactsPath}");
-BenchmarkRunner.Run<IntListGrowingBenchmarks>();
+BenchmarkRunner.Run<IntListGrowingBenchmarks>(cfg);
 return;
 Console.Error.WriteLine("Running on CICD profile.");
 BenchmarkRunner.Run(
