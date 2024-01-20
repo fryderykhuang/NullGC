@@ -8,7 +8,7 @@ public abstract class BenchmarkBase : IDisposable
 {
     protected BenchmarkBase()
     {
-        AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
+        AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl());
     }
     
     // [GlobalSetup]
