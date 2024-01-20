@@ -9,7 +9,7 @@ using NullGC.DragRace.Benchmarks;
 #if CICD
 // var cfg = new CicdConfig();
 // Console.WriteLine($"ArtifactsPath={cfg.ArtifactsPath}");
-// BenchmarkRunner.Run<IntListGrowingBenchmarks>(cfg);
+// BenchmarkRunner.Run<Allocator_IntListGrowingBenchmarks>(cfg);
 // return;
 Console.Error.WriteLine("Running on CICD profile.");
 BenchmarkRunner.Run(
@@ -25,14 +25,14 @@ if (types.Length > 0)
     return;
 }
 
-BenchmarkRunner.Run<IntListGrowingBenchmarks>(new FastConfig());
+BenchmarkRunner.Run<Allocator_IntListGrowingBenchmarks>(new FastConfig());
 return;
 
 IntArrayAllocOverTime();
 
 void IntArrayAllocOverTime()
 {
-    var bench = new IntArrayAllocationOverTimeBenchmarks();
+    var bench = new Allocator_IntArrayAllocationOverTimeBenchmarks();
     bench.Setup();
 
     for (var i = 0; i < 1000; i++)
@@ -59,7 +59,7 @@ void IntArrayAllocOverTime()
 
 void IntListGrow()
 {
-    var bench = new IntListGrowingBenchmarks();
+    var bench = new Allocator_IntListGrowingBenchmarks();
     bench.Setup();
 
     for (var i = 0; i < 1; i++)
@@ -85,7 +85,7 @@ void IntListGrow()
 
 void CacheVsNativeAllocator()
 {
-    var bench = new CachedVsNativeAllocatorBenchmarks();
+    var bench = new Allocator_CachedVsNativeAllocatorBenchmarks();
     bench.Setup();
 
     for (var i = 0; i < 2; i++) bench.Cached();
@@ -102,7 +102,7 @@ void CacheVsNativeAllocator()
 
 void NewIntArrayAllocator()
 {
-    var bench = new IntArrayAllocationBenchmarks();
+    var bench = new Allocator_IntArrayAllocationBenchmarks();
     bench.Setup();
 
     bench.NewValueInt();
@@ -120,7 +120,7 @@ void NewIntArrayAllocator()
 
 void SmallStruct()
 {
-    var bench = new SmallStruct_WhereSelectOrderByTakeMinBenchmarks();
+    var bench = new Linq_SmallStruct_WhereSelectOrderByTakeMinBenchmarks();
     bench.Setup();
 
     bench.NullGCLinqRef_SmallStruct();
@@ -138,7 +138,7 @@ void SmallStruct()
 
 void BigStruct()
 {
-    var bench = new BigStruct_WhereSelectOrderByTakeMin_MultiQueries_Benchmarks();
+    var bench = new Linq_BigStruct_WhereSelectOrderByTakeMin_MultiQueries_Benchmarks();
     bench.Setup();
 
     bench.NullGCLinqRef_BigStruct();

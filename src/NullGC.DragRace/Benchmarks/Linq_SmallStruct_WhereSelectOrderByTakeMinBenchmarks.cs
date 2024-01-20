@@ -7,7 +7,7 @@ using NullGC.Linq;
 namespace NullGC.DragRace.Benchmarks;
 
 [PickedForCicd]
-public class BigStruct_WhereSelectOrderByTakeMinBenchmarks : LinqBenchmarkBase
+public class Linq_SmallStruct_WhereSelectOrderByTakeMinBenchmarks : LinqBenchmarkBase
 {
     //
     // [Benchmark]
@@ -60,49 +60,39 @@ public class BigStruct_WhereSelectOrderByTakeMinBenchmarks : LinqBenchmarkBase
 
 
     [Benchmark]
-    public void NullGCLinqValue_BigStruct()
+    public void NullGCLinqValue_SmallStruct()
     {
-        _dummyLong = _bigStructValArr.LinqValue().Where(x => x.Key > 100000)
+        _dummyLong = _smallStructValArr.LinqValue().Where(x => x.Key > 100000)
             .OrderBy(x => x.Key)
             .Take(500).Select(x => x.Key).Min();
     }
-    
+
     [Benchmark]
-    public void NullGCLinqPtr_BigStruct()
+    public void NullGCLinqRef_SmallStruct()
     {
-        unsafe
-        {
-            _dummyLong =_bigStructValArr.LinqPtr().Where(x => x->Key > 100000)
-                .OrderBy(x => x->Key)
-                .Take(500).Select(x => x->Key).Min();
-        }
-    }
-    
-    [Benchmark]
-    public void NullGCLinqRef_BigStruct()
-    {
-        _dummyLong = _bigStructValArr.LinqRef().Where((in BigStruct x) => x.Key > 100000)
-            .OrderBy((in BigStruct x) => x.Key)
-            .Take(500).Select((in BigStruct x) => x.Key).Min();
-    }
-    
-    [Benchmark]
-    public void SystemLinq_BigStruct()
-    {
-        _dummyLong = _bigStructArr.Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500).Select(x => x.Key).Min();
+        _dummyLong = _smallStructValArr.LinqRef().Where((in SmallStruct x) => x.Key > 100000)
+            .OrderBy((in SmallStruct x) => x.Key)
+            .Take(500).Select((in SmallStruct x) => x.Key).Min();
     }
 
     [Benchmark]
-    public void LinqGen_BigStruct()
+    public void SystemLinq_SmallStruct()
     {
-        _dummyLong = _bigStructArr.Gen().Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500).Select(x => x.Key)
+        _dummyLong = _smallStructArr.Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500).Select(x => x.Key).Min();
+    }
+
+    [Benchmark]
+    public void LinqGen_SmallStruct()
+    {
+        _dummyLong = _smallStructArr.Gen().Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500).Select(x => x.Key)
             .Min();
     }
-    
+
     [Benchmark]
-    public void HyperLinq_BigStruct()
+    public void HyperLinq_SmallStruct()
     {
-        _dummyLong = _bigStructArr.AsValueEnumerable().Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500).Select(x => x.Key)
+        _dummyLong = _smallStructArr.AsValueEnumerable().Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500)
+            .Select(x => x.Key)
             .Min();
     }
 }

@@ -7,9 +7,9 @@ namespace NullGC.DragRace.Benchmarks;
 
 
 [PickedForCicd]
-public class CachedVsNativeAllocatorBenchmarks : BenchmarkBase
+public class Allocator_CachedVsNativeAllocatorBenchmarks : BenchmarkBase
 {
-    public CachedVsNativeAllocatorBenchmarks()
+    public Allocator_CachedVsNativeAllocatorBenchmarks()
     {
         _lst = new UIntPtr[_maxConsecutiveAllocs];
     }

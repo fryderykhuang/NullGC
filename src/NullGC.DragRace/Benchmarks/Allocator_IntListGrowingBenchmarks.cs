@@ -8,9 +8,9 @@ namespace NullGC.DragRace.Benchmarks;
 
 
 [PickedForCicd]
-public class IntListGrowingBenchmarks : BenchmarkBase
+public class Allocator_IntListGrowingBenchmarks : BenchmarkBase
 {
-    public IntListGrowingBenchmarks()
+    public Allocator_IntListGrowingBenchmarks()
     {
     }
     

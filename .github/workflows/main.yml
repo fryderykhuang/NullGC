@@ -13,6 +13,9 @@ on:
       - 'feature/**'
       - 'hotfix/**'
       - 'gha-test'
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
 env:
   CICD: 1
 

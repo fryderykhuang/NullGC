@@ -7,7 +7,7 @@ using NullGC.Linq;
 namespace NullGC.DragRace.Benchmarks;
 
 [PickedForCicd]
-public class BigStruct_WhereSelectOrderByTakeMin_MultiQueries_Benchmarks : LinqBenchmarkBase
+public class Linq_BigStruct_WhereSelectOrderByTakeMin_MultiQueries_Benchmarks : LinqBenchmarkBase
 {
     //
     // [Benchmark]

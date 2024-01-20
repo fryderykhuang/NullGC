@@ -6,7 +6,7 @@ using NullGC.Collections;
 namespace NullGC.DragRace.Benchmarks;
 
 [PickedForCicd]
-public class IntArrayAllocationOverTimeBenchmarks : BenchmarkBase
+public class Allocator_IntArrayAllocationOverTimeBenchmarks : BenchmarkBase
 {
     private int[] _arr;
     private ValueArray<int> _valIntArr;

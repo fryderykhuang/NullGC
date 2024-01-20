@@ -5,7 +5,7 @@ using NullGC.Linq;
 namespace NullGC.DragRace.Benchmarks;
 
 [PickedForCicd]
-public class IntArrWhereOrderBySelfTakeSelectSum : LinqBenchmarkBase
+public class Linq_IntArrWhereOrderBySelfTakeSelectSum : LinqBenchmarkBase
 {
     [Benchmark]
     public void NullGCLinqRef_IntArr()

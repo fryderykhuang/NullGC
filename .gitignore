@@ -396,5 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.idea/
+
 
 src/Playground

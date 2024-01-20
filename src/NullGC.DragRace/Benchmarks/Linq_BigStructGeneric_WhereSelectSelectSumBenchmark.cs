@@ -5,7 +5,7 @@ using NullGC.Linq;
 
 namespace NullGC.DragRace.Benchmarks;
 
-public class BigStructGeneric_WhereSelectSelectSumBenchmark : LinqBenchmarkBase
+public class Linq_BigStructGeneric_WhereSelectSelectSumBenchmark : LinqBenchmarkBase
 {
     [Benchmark]
     public void SystemLinq()
