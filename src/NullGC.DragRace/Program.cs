@@ -7,10 +7,10 @@ using NullGC.DragRace;
 using NullGC.DragRace.Benchmarks;
 // TODO
 #if CICD
-var cfg = new CicdConfig();
-Console.WriteLine($"ArtifactsPath={cfg.ArtifactsPath}");
-BenchmarkRunner.Run<IntListGrowingBenchmarks>(cfg);
-return;
+// var cfg = new CicdConfig();
+// Console.WriteLine($"ArtifactsPath={cfg.ArtifactsPath}");
+// BenchmarkRunner.Run<IntListGrowingBenchmarks>(cfg);
+// return;
 Console.Error.WriteLine("Running on CICD profile.");
 BenchmarkRunner.Run(
     Assembly.GetExecutingAssembly().GetExportedTypes()

@@ -10,7 +10,6 @@ Most suitable for game development since there will be no latency jitter caused 
 ## Motivation
 This project was born mostly out of my curiosity on how far can it go to entirely eliminate garbage collection. Although .NET background GC is already good at hiding GC stops, still there are some. Also for throughput focused scenarios, there may be huge throughput difference when GC is completely out of the equation.
 
-
 ## Usage
 Currently this project contains 3 components: 
 1. Unmanaged memory allocator
@@ -57,7 +56,9 @@ SomeListConsumingMethod(list.Borrow())
 * SlidingTimeWindow&lt;T&gt;
 
 ### Linq
-**The fastest LINQ provider as of today** (2024.1). <Benchmark here> (Compared with LinqGen/RefLinq/HyperLinq)
+**The fastest LINQ provider as of today** (2024.1).
+
+[Benchmark Results Here](https://fryderykhuang.github.io/NullGC/) (Auto updated by GitHub Actions, compared with LinqGen/RefLinq/HyperLinq)
 
 Proper usage is with the built-in value typed collections, but good old IEnumerable&lt;T&gt; is also supported. You can still get some benefit on LINQ operators that need to buffer data such as OrderBy.
 The LINQ interface has 3 variations:
@@ -68,12 +69,14 @@ SomeCollection.LinqPtr()...   // Only built-in value typed collections are suppo
 ```
 
 ## Things to do
+
 1. More examples.
 2. Larger test coverage.
 3. More collection types.
 4. More LINQ providers and support range.
 
 ## Thanks
+
 Many thanks to Emma Maassen from <https://github.com/Enichan/Arenas> and Angouri from <https://github.com/asc-community/HonkPerf.NET> on inspiring me to this project.
 
 Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob/main/THIRD-PARTY-NOTICES.md)
