@@ -45,7 +45,7 @@ var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
 list.Dispose();
 ```
 
-To avoid double-free situations, when these collections are passed by value, Borrow() should be used. After this, all copies of the original collections can be safely disposed without double-free.
+To avoid double-free, when these collections are passed by value, Borrow() should be used. After calling Borrow(), all copies of the original collection can be safely disposed without double-free.
 
 ```csharp
 var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
@@ -53,11 +53,10 @@ var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
 // ref passing is not affected.
 SomeListRefConsumingMethod(in list);
 SomeListRefConsumingMethod(ref list);
+
 // value passing should call Borrow()
 SomeListConsumingMethod(list.Borrow())
 ```
-
-### How to com
 
 ### Custom collection types
 
@@ -69,6 +68,8 @@ SomeListConsumingMethod(list.Borrow())
 * ValueFixedSizeDeque&lt;T&gt; (Circular buffer)
 * SlidingWindow&lt;T&gt;
 * SlidingTimeWindow&lt;T&gt;
+
+All collection types can be enumerated by ref (`foreach(ref var item in collection)`)
 
 ### Linq
 
