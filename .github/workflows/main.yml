@@ -8,7 +8,10 @@ on:
   push:
     branches:
       - 'main'
+      - 'develop'
+      - 'release/**'
       - 'feature/**'
+      - 'hotfix/**'
       - 'gha-test'
 env:
   CICD: 1
@@ -92,7 +95,7 @@ jobs:
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './BenchmarkResultPage'
+          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
