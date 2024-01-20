@@ -78,9 +78,9 @@ SomeListRefConsumingMethod(ref list);
 SomeListConsumingMethod(list.Borrow())
 ```
 
-#### 3. Interop with managed object
+#### Interop with managed object
 
-if you have to use managed object(classes) inside a struct, you can use
+If you have to use managed object (classes) inside a struct, you can use
 `Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
 
 
