@@ -43,10 +43,10 @@ Two types of memory allocation strategy are supported:
 using (AllocatorContext.BeginAllocationScope())
 {
     var list = new ValueList<T>(); // plain old 'new'
-    var dict = new ValueDictionary<T>();
-    var obj = new Allocated<T>(); // let struct works like a class (struct is allocated on the unmanaged heap.)
+    var dict = new ValueDictionary<TKey, TValue>();
+    var obj = new Allocated<T>(); // let struct T work like a class (T is allocated on the unmanaged heap.)
     ...
-} // all value collections are automatically disposed as they go out of scope, no need to explicitly call Dispose().
+} // all value objects are automatically disposed as they go out of scope, no need to explicitly call Dispose().
 ```
 
 #### 2. Explicit lifetime
@@ -64,7 +64,7 @@ list.Dispose();
 
 ### Pass by ref or by value
 
-Since we are using struct everywhere, how to pass a struct which works like a reference type is a little bit tricky.
+Since we are using struct everywhere, how to pass a struct like a reference type is a little bit tricky.
 
 Under most circumstances, use `ref` modifier will be sufficient, but there's still somewhere that cannot use the `ref` modifier such as struct field (`ref` type can only be put in a `ref struct`, which is incovienient).
 
