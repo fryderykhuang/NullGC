@@ -11,7 +11,7 @@ Most suitable for game development since there will be no latency jitter caused 
 
 ## Motivation
 
-This project was born mostly out of my curiosity on how far can it go to entirely eliminate garbage collection. Although .NET background GC is already good at hiding GC stops, still there are some. Also for throughput focused scenarios, there may be huge throughput difference when GC is completely out of the equation.
+This project was born mostly out of my curiosity on how far can it go to entirely eliminate garbage collection, also as a side project emerged from an ongoing game engine development. Although .NET background GC is already good at hiding GC stops, still there are some. Also for throughput focused scenarios, there may be huge performance potential when GC is completely out of the equation according to my previous experience on realtime data processing.
 
 ## Usage
 
