@@ -11,7 +11,7 @@ Most suitable for game development since there will be no latency jitter caused 
 
 ## Motivation
 
-This project was born mostly out of my curiosity on how far can it go to entirely eliminate garbage collection. Although .NET background GC is already good at hiding GC stops, still there are some. Also for throughput focused scenarios, there may be huge throughput difference when GC is completely out of the equation.
+This project was born mostly out of my curiosity on how far can it go to entirely eliminate garbage collection, also as a side project emerged from an ongoing game engine development. Although .NET background GC is already good at hiding GC stops, still there are some. Also for throughput focused scenarios, there may be huge performance potential when GC is completely out of the equation according to my previous experience on realtime data processing.
 
 ## Usage
 
@@ -23,11 +23,14 @@ Currently this project contains 3 components:
 
 ### Setup
 
-Use this line to setup the AllocatorContext, which is used internally in `ValueArray<T>` and any other locations that need to allocate unmanaged memory.
+1. Install NuGet package `NullGC.Allocators` and `NullGC.Linq`
+
+2. Setup AllocatorContext:
 
 ```csharp
 AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
 ```
+Allocator context is used internally in `ValueArray<T>` and any code that needs to allocate unmanaged memory.
 
 ### Memory allocation strategies
 
@@ -40,10 +43,10 @@ Two types of memory allocation strategy are supported:
 using (AllocatorContext.BeginAllocationScope())
 {
     var list = new ValueList<T>(); // plain old 'new'
-    var dict = new ValueDictionary<T>();
-    var obj = new Allocated<T>(); // let struct works like a class (struct is allocated on the unmanaged heap.)
+    var dict = new ValueDictionary<TKey, TValue>();
+    var obj = new Allocated<T>(); // let struct T work like a class (T is allocated on the unmanaged heap.)
     ...
-} // all value collections are automatically disposed as they go out of scope, no need to explicitly call Dispose().
+} // all value objects are automatically disposed as they go out of scope, no need to explicitly call Dispose().
 ```
 
 #### 2. Explicit lifetime
@@ -59,9 +62,9 @@ var obj = new Allocated<T>(AllocatorTypes.DefaultUnscoped);
 list.Dispose();
 ```
 
-#### Pass by ref or by value
+### Pass by ref or by value
 
-Since we are using struct everywhere, how to pass a struct which works like a reference type is a little bit tricky.
+Since we are using struct everywhere, how to pass a struct like a reference type is a little bit tricky.
 
 Under most circumstances, use `ref` modifier will be sufficient, but there's still somewhere that cannot use the `ref` modifier such as struct field (`ref` type can only be put in a `ref struct`, which is incovienient).
 
@@ -78,7 +81,7 @@ SomeListRefConsumingMethod(ref list);
 SomeListConsumingMethod(list.Borrow())
 ```
 
-#### Interop with managed object
+### Interop with managed object
 
 If you have to use managed object (classes) inside a struct, you can use
 `Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
