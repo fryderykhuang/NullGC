@@ -5,14 +5,14 @@ using NullGC.Linq;
 
 namespace NullGC.Collections;
 
-public struct UnsafeArrayEnumerator<T> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IUnsafeArray<T>, IAddressFixed where T : unmanaged
+public struct UnmanagedArrayEnumerator<T> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IUnmanagedArray<T>, IAddressFixed where T : unmanaged
 {
     private readonly unsafe T* _items;
     private readonly int _length;
     private int _index;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe UnsafeArrayEnumerator(T* items, int length)
+    public unsafe UnmanagedArrayEnumerator(T* items, int length)
     {
         _items = items;
         _length = length;
@@ -78,7 +78,7 @@ public struct UnsafeArrayEnumerator<T> : ILinqRefEnumerator<T>, ILinqValueEnumer
     public unsafe T* Items => _items;
     public int Length => _length;
 
-    public bool IsInitialized
+    public bool IsAllocated
     {
         get
         {

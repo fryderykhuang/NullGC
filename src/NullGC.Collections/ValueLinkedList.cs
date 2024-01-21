@@ -19,7 +19,7 @@ public static class ValueLinkedList
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [DebuggerDisplay("Count = {Count}")]
-public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingleDisposable<ValueLinkedList<T>>,
+public struct ValueLinkedList<T> : IUnmanagedArray<ValueLinkedList<T>.Node>, ISingleDisposable<ValueLinkedList<T>>,
     ILinqEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator>, IDisposable where T : unmanaged
 {
     public struct ForwardEnumerator : ILinqRefEnumerator<Node>, ILinqValueEnumerator<Node>, IAddressFixed
@@ -438,8 +438,8 @@ public struct ValueLinkedList<T> : IUnsafeArray<ValueLinkedList<T>.Node>, ISingl
     private const int DefaultCapacity = 4;
 
     public unsafe Node* Items => _items.Items;
-    int IUnsafeArray<Node>.Length => _endIndex;
-    public bool IsInitialized => _items.IsInitialized;
+    int IUnmanagedArray<Node>.Length => _endIndex;
+    public bool IsAllocated => _items.IsAllocated;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ValueLinkedList<T> Borrow()

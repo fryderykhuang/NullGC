@@ -13,7 +13,7 @@ public class ValueListTests : AssertMemoryAllFreedBase
     public void DefaultListIsEmptyList()
     {
         ValueList<int> defaultList = default;
-        Assert.False(defaultList.IsInitialized);
+        Assert.False(defaultList.IsAllocated);
         Assert.True(EqualityComparer<ValueList<int>>.Default.Equals(ValueList<int>.Empty, defaultList));
         Assert.Empty(defaultList);
         foreach (ref var _ in defaultList) Assert.Fail("Should be empty.");

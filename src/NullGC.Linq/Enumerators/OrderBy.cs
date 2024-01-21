@@ -129,7 +129,7 @@ public static class OrderBy
 // public struct OrderBy<T, TPrevious, TKeySel, TKey, TComparer> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>,
 //     ILinqPtrEnumerator<T>,
 //     ILinqEnumerable<T, OrderBy<T, TPrevious, TKeySel, TKey, TComparer>>,
-//     IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>
+//     IUnmanagedArray<int>, IUnmanagedArray<Wrapper<T>>
 //     where TPrevious : struct, ILinqEnumerator<T>
 //     where T : unmanaged
 //     where TKey : unmanaged
@@ -160,7 +160,7 @@ public static class OrderBy
 //     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 //     public bool MoveNext()
 //     {
-//         if (!_indexBuffer.IsInitialized) BuildBuffer();
+//         if (!_indexBuffer.IsAllocated) BuildBuffer();
 //
 //         if (_index++ < _indexBuffer.Length)
 //             return true;
@@ -221,21 +221,21 @@ public static class OrderBy
 //         _previous.Dispose();
 //     }
 //
-//     unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+//     unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 //
-//     unsafe Wrapper<T>* IUnsafeArray<Wrapper<T>>.Items
+//     unsafe Wrapper<T>* IUnmanagedArray<Wrapper<T>>.Items
 //     {
 //         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//         get => (Wrapper<T>*) ((IUnsafeArray<T>) _valueBuffer).Items;
+//         get => (Wrapper<T>*) ((IUnmanagedArray<T>) _valueBuffer).Items;
 //     }
 //
 //     public int Length => _indexBuffer.Length;
-//     public bool IsInitialized => _indexBuffer.IsInitialized;
+//     public bool IsAllocated => _indexBuffer.IsAllocated;
 // }
 
 public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>,
     ILinqEnumerable<T, OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
-    IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>, IAddressFixed
+    IUnmanagedArray<int>, IUnmanagedArray<Wrapper<T>>, IAddressFixed
     where TPrevious : struct, ILinqRefEnumerator<T>
     where T : unmanaged
     where TKey : unmanaged
@@ -279,7 +279,7 @@ public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool MoveNext()
     {
-        if (!_indexBuffer.IsInitialized) BuildBuffer();
+        if (!_indexBuffer.IsAllocated) BuildBuffer();
 
         return _index++ <= _maxIndex;
     }
@@ -347,16 +347,16 @@ public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext
         _previous.Dispose();
     }
 
-    unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+    unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 
-    unsafe Wrapper<T>* IUnsafeArray<Wrapper<T>>.Items
+    unsafe Wrapper<T>* IUnmanagedArray<Wrapper<T>>.Items
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (Wrapper<T>*) ((IUnsafeArray<T>) _valueBuffer).Items;
+        get => (Wrapper<T>*) ((IUnmanagedArray<T>) _valueBuffer).Items;
     }
 
     public int Length => _indexBuffer.Length;
-    public bool IsInitialized => _indexBuffer.IsInitialized;
+    public bool IsAllocated => _indexBuffer.IsAllocated;
     
     public bool SetSkipCount(int count)
     {
@@ -378,7 +378,7 @@ public struct OrderByRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext
 public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>, ISkipTakeAware,
     IAddressFixed,
     ILinqEnumerable<T, OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
-    IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>
+    IUnmanagedArray<int>, IUnmanagedArray<Wrapper<T>>
     where TPrevious : struct, ILinqValueEnumerator<T>
     where T : unmanaged
     where TKey : unmanaged
@@ -422,7 +422,7 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool MoveNext()
     {
-        if (!_indexBuffer.IsInitialized) BuildBuffer();
+        if (!_indexBuffer.IsAllocated) BuildBuffer();
 
         return _index++ <= _maxIndex;
     }
@@ -484,16 +484,16 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
         _previous.Dispose();
     }
 
-    unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+    unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 
-    unsafe Wrapper<T>* IUnsafeArray<Wrapper<T>>.Items
+    unsafe Wrapper<T>* IUnmanagedArray<Wrapper<T>>.Items
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (Wrapper<T>*) ((IUnsafeArray<T>) _valueBuffer).Items;
+        get => (Wrapper<T>*) ((IUnmanagedArray<T>) _valueBuffer).Items;
     }
 
     public int Length => _indexBuffer.Length;
-    public bool IsInitialized => _indexBuffer.IsInitialized;
+    public bool IsAllocated => _indexBuffer.IsAllocated;
 
     public bool SetSkipCount(int count)
     {
@@ -514,7 +514,7 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 
 // public struct OrderByValueToValue<T, TPrevious, TKeySel, TKey, TComparer> : ILinqValueEnumerator<T>,
 //     ILinqEnumerable<T, OrderByValueToValue<T, TPrevious, TKeySel, TKey, TComparer>>,
-//     IUnsafeArray<int>, IUnsafeArray<Wrapper<T>>
+//     IUnmanagedArray<int>, IUnmanagedArray<Wrapper<T>>
 //     where TPrevious : struct, ILinqValueEnumerator<T>
 //     where T : unmanaged
 //     where TKey : unmanaged
@@ -536,7 +536,7 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 //     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 //     public bool MoveNext()
 //     {
-//         if (!_indexBuffer.IsInitialized) BuildBuffer();
+//         if (!_indexBuffer.IsAllocated) BuildBuffer();
 //
 //         if (_index++ < _indexBuffer.Length)
 //             return true;
@@ -576,22 +576,22 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 //         _previous.Dispose();
 //     }
 //
-//     unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+//     unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 //
-//     unsafe Wrapper<T>* IUnsafeArray<Wrapper<T>>.Items
+//     unsafe Wrapper<T>* IUnmanagedArray<Wrapper<T>>.Items
 //     {
 //         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//         get => (Wrapper<T>*) ((IUnsafeArray<T>) _valueBuffer).Items;
+//         get => (Wrapper<T>*) ((IUnmanagedArray<T>) _valueBuffer).Items;
 //     }
 //
 //     public int Length => _indexBuffer.Length;
-//     public bool IsInitialized => _indexBuffer.IsInitialized;
+//     public bool IsAllocated => _indexBuffer.IsAllocated;
 // }
 
 // public struct OrderByPtr<T, TPrevious, TKeySel, TKey, TComparer> : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>,
 //     ILinqPtrEnumerator<T>,
 //     ILinqEnumerable<T, OrderByPtr<T, TPrevious, TKeySel, TKey, TComparer>>,
-//     IUnsafeArray<int>, IUnsafeArray<Ptr<T>>
+//     IUnmanagedArray<int>, IUnmanagedArray<Ptr<T>>
 //     where TPrevious : struct, ILinqEnumerator<T>
 //     where T : unmanaged
 //     where TKey : unmanaged
@@ -623,7 +623,7 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 //     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 //     public bool MoveNext()
 //     {
-//         if (!_indexBuffer.IsInitialized) BuildBuffer();
+//         if (!_indexBuffer.IsAllocated) BuildBuffer();
 //
 //         return _index++ < _indexBuffer.Length;
 //     }
@@ -684,21 +684,21 @@ public struct OrderByValueToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNe
 //         _previous.Dispose();
 //     }
 //
-//     unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+//     unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 //
 //     public unsafe Ptr<T>* Items
 //     {
 //         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//         get => ((IUnsafeArray<Ptr<T>>) _valueBuffer).Items;
+//         get => ((IUnmanagedArray<Ptr<T>>) _valueBuffer).Items;
 //     }
 //
 //     public int Length => _indexBuffer.Length;
-//     public bool IsInitialized => _indexBuffer.IsInitialized;
+//     public bool IsAllocated => _indexBuffer.IsAllocated;
 // }
 
 public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>, IAddressFixed,
     ILinqEnumerable<T, OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
-    IUnsafeArray<int>, IUnsafeArray<Ptr<T>>
+    IUnmanagedArray<int>, IUnmanagedArray<Ptr<T>>
     where TPrevious : ILinqRefEnumerator<T>, IAddressFixed
     where T : unmanaged
     where TKey : unmanaged
@@ -741,7 +741,7 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool MoveNext()
     {
-        if (!_indexBuffer.IsInitialized) BuildBuffer();
+        if (!_indexBuffer.IsAllocated) BuildBuffer();
 
         return _index++ <= _maxIndex;
     }
@@ -827,7 +827,7 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
         _previous.Dispose();
     }
 
-    unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+    unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 
     public unsafe Ptr<T>* Items
     {
@@ -836,7 +836,7 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
     }
 
     public int Length => _indexBuffer.Length;
-    public bool IsInitialized => _indexBuffer.IsInitialized;
+    public bool IsAllocated => _indexBuffer.IsAllocated;
     
     public bool SetSkipCount(int count)
     {
@@ -858,7 +858,7 @@ public struct OrderByPtrToPtr<T, TPrevious, TKeySel, TKey, TComparer, TNext> : I
 public struct OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext> : ILinqRefEnumerator<T>,
     IAddressFixed,
     ILinqEnumerable<T, OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, TNext>>,
-    IUnsafeArray<int>, IUnsafeArray<Ptr<T>>
+    IUnmanagedArray<int>, IUnmanagedArray<Ptr<T>>
     where TPrevious : struct, ILinqRefEnumerator<T>, IAddressFixed
     where T : unmanaged
     where TKey : unmanaged
@@ -902,7 +902,7 @@ public struct OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool MoveNext()
     {
-        if (!_indexBuffer.IsInitialized) BuildBuffer();
+        if (!_indexBuffer.IsAllocated) BuildBuffer();
 
         return _index++ <= _maxIndex;
     }
@@ -967,16 +967,16 @@ public struct OrderByFixedRefToFixedRef<T, TPrevious, TKeySel, TKey, TComparer, 
         _previous.Dispose();
     }
 
-    unsafe int* IUnsafeArray<int>.Items => ((IUnsafeArray<int>) _indexBuffer).Items;
+    unsafe int* IUnmanagedArray<int>.Items => ((IUnmanagedArray<int>) _indexBuffer).Items;
 
     public unsafe Ptr<T>* Items
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ((IUnsafeArray<Ptr<T>>) _valueBuffer).Items;
+        get => ((IUnmanagedArray<Ptr<T>>) _valueBuffer).Items;
     }
 
     public int Length => _indexBuffer.Length;
-    public bool IsInitialized => _indexBuffer.IsInitialized;
+    public bool IsAllocated => _indexBuffer.IsAllocated;
     public bool SetSkipCount(int count)
     {
         if (_maxIndex == int.MinValue) _maxIndex = int.MaxValue;

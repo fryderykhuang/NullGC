@@ -10,8 +10,8 @@ using UIntPtr = System.UIntPtr;
 
 namespace NullGC.Collections;
 
-[DebuggerDisplay("Count = {Length}, IsInitialized = {IsInitialized}")]
-public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IList<T>,
+[DebuggerDisplay("Count = {Length}, IsAllocated = {IsAllocated}")]
+public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IList<T>,
     ISingleDisposable<ValueArray<T>> where T : unmanaged
 {
     public readonly ValueArray<T> WithAllocationProviderId(int id)
@@ -31,18 +31,16 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
     {
         unsafe
         {
-            if (length > Array.MaxLength || length * (long) sizeof(T) > uint.MaxValue)
-                CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(length));
             Debug.Assert(length == 0 || allocatorProviderId != (int) AllocatorTypes.Invalid);
             AllocatorProviderId = allocatorProviderId;
             if (length == 0)
                 return;
-            var size = checked((uint) (sizeof(T) * length));
+            var size = (nuint) sizeof(T) * (nuint) length;
             if (size > 0)
             {
                 var ptr = AllocatorContext.GetAllocator(allocatorProviderId).Allocate(size);
                 Debug.Assert(ptr % (nuint) UIntPtr.Size == 0);
-                if (!noClear) Unsafe.InitBlock(ptr.ToPointer(), 0, size);
+                if (!noClear) UnsafeHelper.InitBlock(ptr.ToPointer(), 0, size);
                 _items = (T*) ptr.ToPointer();
             }
 
@@ -58,8 +56,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
         if ((UIntPtr) buf % (nuint) UIntPtr.Size != 0)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentException(nameof(buf),
                 "Address must align to pointer size.");
-        if (length > Array.MaxLength || length * (long) sizeof(T) > uint.MaxValue)
-            CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(length));
+        
         _items = buf;
         _length = length;
         AllocatorProviderId = (int) AllocatorTypes.Invalid;
@@ -69,7 +66,6 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
     {
         Debug.Assert(!(length <= 0 && buf != (void*) 0));
         Debug.Assert((UIntPtr) buf % (nuint) UIntPtr.Size == 0);
-        Debug.Assert(length <= Array.MaxLength && length * (long) sizeof(T) <= uint.MaxValue);
         _items = buf;
         _length = length;
         AllocatorProviderId = allocatorProviderId;
@@ -200,11 +196,11 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
         _length == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly UnsafeArrayEnumerator<T> GetEnumerator()
+    public readonly UnmanagedArrayEnumerator<T> GetEnumerator()
     {
         unsafe
         {
-            return new UnsafeArrayEnumerator<T>(_items, _length);
+            return new UnmanagedArrayEnumerator<T>(_items, _length);
         }
     }
 
@@ -220,7 +216,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
     {
         unsafe
         {
-            Unsafe.InitBlockUnaligned(_items, 0, (uint) (_length * sizeof(T)));
+            UnsafeHelper.InitBlockUnaligned(_items, 0, (nuint) _length * (nuint) sizeof(T));
         }
     }
 
@@ -236,10 +232,10 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
 
     readonly int? IMaybeCountable.MaxCount => _length;
 
-    readonly unsafe T* IUnsafeArray<T>.Items => _items;
-    readonly int IUnsafeArray<T>.Length => _length;
+    readonly unsafe T* IUnmanagedArray<T>.Items => _items;
+    readonly int IUnmanagedArray<T>.Length => _length;
 
-    public readonly bool IsInitialized
+    public readonly bool IsAllocated
     {
         get
         {
@@ -280,8 +276,8 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
                 Debug.Assert(reallocResult.Ptr % IMemoryAllocator.DefaultAlignment == 0);
                 minLength = (int) (reallocResult.ActualSize / (nuint) sizeof(T));
                 if (!noClear && minLength > _length)
-                    Unsafe.InitBlockUnaligned(((T*) reallocResult.Ptr) + _length, 0,
-                        checked((uint) ((minLength - _length) * sizeof(T))));
+                    UnsafeHelper.InitBlockUnaligned(((T*) reallocResult.Ptr) + _length, 0,
+                        (nuint)(minLength - _length) * (nuint)sizeof(T));
                 _items = (T*) reallocResult.Ptr;
             }
             else
@@ -306,19 +302,20 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
         var allocator = AllocatorContext.GetAllocator(AllocatorProviderId);
         unsafe
         {
-            var size = checked((uint) ((nuint) newLength * (nuint) sizeof(T)));
+            var size = (nuint) newLength * (nuint) sizeof(T);
             var newPtr = allocator.Allocate(size).ToPointer();
             var items = _items;
             if (items != (T*) 0)
             {
                 Debug.Assert((UIntPtr) items % (nuint) UIntPtr.Size == 0);
                 Debug.Assert((UIntPtr) newPtr % (nuint) UIntPtr.Size == 0);
-                Unsafe.CopyBlock(newPtr, items, (uint) (Math.Min(_length, newLength) * sizeof(T)));
+                UnsafeHelper.CopyBlock(newPtr, items, (nuint) Math.Min(_length, newLength) * (nuint) sizeof(T));
                 allocator.Free((UIntPtr) items);
             }
 
             if (!noClear && newLength > _length)
-                Unsafe.InitBlockUnaligned(((T*) newPtr) + _length, 0, (uint) ((newLength - _length) * sizeof(T)));
+                UnsafeHelper.InitBlockUnaligned(((T*) newPtr) + _length, 0,
+                    (nuint) (newLength - _length) * (nuint) sizeof(T));
             _items = (T*) newPtr;
             _length = newLength;
         }
@@ -333,14 +330,8 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
 
         unsafe
         {
-            var minSize = checked((uint) ((nuint) minLength * (nuint) sizeof(T)));
-#if DEBUG
-            var psz = (uint) Math.Min((nuint) maxLength * (nuint) sizeof(T), uint.MaxValue);
-            Debug.Assert(minLength != maxLength || psz == maxLength * sizeof(T));
-            var maxSize = psz;
-#else
-            var maxSize = (uint) Math.Min((nuint) maxLength * (nuint) sizeof(T), uint.MaxValue);
-#endif
+            var minSize = (nuint) minLength * (nuint) sizeof(T);
+            var maxSize = (nuint) maxLength * (nuint) sizeof(T);
             var allocator = AllocatorContext.GetAllocator(AllocatorProviderId);
             var items = _items;
             var reallocResult = allocator.TryRealloc((UIntPtr) items, minSize, maxSize);
@@ -363,7 +354,7 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
                 {
                     Debug.Assert((UIntPtr) items % (nuint) UIntPtr.Size == 0);
                     Debug.Assert(newPtr % (nuint) UIntPtr.Size == 0);
-                    Unsafe.CopyBlock(newPtr.ToPointer(), items, (uint) _length * (uint) sizeof(T));
+                    UnsafeHelper.CopyBlock(newPtr.ToPointer(), items, (nuint) _length * (nuint) sizeof(T));
                     allocator.Free((UIntPtr) items);
                 }
 
@@ -378,7 +369,8 @@ public struct ValueArray<T> : IUnsafeArray<T>, ILinqEnumerable<T, UnsafeArrayEnu
             }
 
             if (!noClear && minLength > _length)
-                Unsafe.InitBlockUnaligned(((T*) _items) + _length, 0, (uint) ((minLength - _length) * sizeof(T)));
+                UnsafeHelper.InitBlockUnaligned(((T*) _items) + _length, 0,
+                    (nuint) (minLength - _length) * (nuint) sizeof(T));
         }
 
         _length = minLength;
@@ -412,7 +404,8 @@ public static class ValueArray
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy<T>(ValueArray<T> src, int srcIndex, T[] dest, int destIndex, int count) where T : unmanaged
+    public static void Copy<T>(this ValueArray<T> src, int srcIndex, T[] dest, int destIndex, int count)
+        where T : unmanaged
     {
         src.AsReadOnlySpan(srcIndex, count).CopyTo(dest.AsSpan(destIndex));
     }
@@ -435,7 +428,7 @@ public static class ValueArray
     {
         unsafe
         {
-            Unsafe.InitBlock(arr.Items, 0, checked((uint) (arr.Length * sizeof(T))));
+            UnsafeHelper.InitBlock(arr.Items, 0, (nuint)arr.Length * (nuint)sizeof(T));
         }
     }
 
@@ -444,7 +437,7 @@ public static class ValueArray
     {
         unsafe
         {
-            Unsafe.InitBlockUnaligned(arr.Items + startIndex, 0, checked((uint) (count * sizeof(T))));
+            UnsafeHelper.InitBlockUnaligned(arr.Items + startIndex, 0, (nuint) count * (nuint) sizeof(T));
         }
     }
 

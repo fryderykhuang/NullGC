@@ -9,13 +9,13 @@ public static class SpanHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> GetSpanOrDefault<T, TCollection>(TCollection src, out bool success) where TCollection : struct
     {
-        if (typeof(TCollection).IsAssignableTo(typeof(IUnsafeArray<T>)))
+        if (typeof(TCollection).IsAssignableTo(typeof(IUnmanagedArray<T>)))
         {
             unsafe
             {
                 success = true;
-                return MemoryMarshal.CreateSpan(ref Unsafe.AsRef<T>(((IUnsafeArray<T>) src).Items),
-                    ((IUnsafeArray<T>) src).Length);
+                return MemoryMarshal.CreateSpan(ref Unsafe.AsRef<T>(((IUnmanagedArray<T>) src).Items),
+                    ((IUnmanagedArray<T>) src).Length);
             }
         }
         else if (typeof(TCollection).IsAssignableTo(typeof(IArray<T>)))
@@ -35,7 +35,7 @@ public static class SpanHelper
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Span<T> AsSpan<T, TCollection>(TCollection src) where TCollection : IUnsafeArray<T>
+    public static Span<T> AsSpan<T, TCollection>(TCollection src) where TCollection : IUnmanagedArray<T>
     {
         unsafe
         {

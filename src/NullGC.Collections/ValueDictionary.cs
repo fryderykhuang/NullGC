@@ -16,7 +16,7 @@ using NullGC.Linq;
 namespace NullGC.Collections;
 
 // modified from the code of .NET Core Dictionary<,>.
-[DebuggerDisplay("Count = {Count}, IsInitialized = {IsInitialized}")]
+[DebuggerDisplay("Count = {Count}, IsAllocated = {IsInitialized}")]
 public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     ISingleDisposable<ValueDictionary<TKey, TValue>>,
     ILinqEnumerable<ValueDictionary<TKey, TValue>.Entry, ValueDictionary<TKey, TValue>.Enumerator>,
@@ -52,7 +52,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         _comparer = comparer;
     }
 
-    public readonly bool IsInitialized => _buckets.IsInitialized && _entries.IsInitialized;
+    public readonly bool IsInitialized => _buckets.IsAllocated && _entries.IsAllocated;
     public readonly KeyCollection Keys => new(this);
     public readonly ValueCollection Values => new(this);
 
@@ -283,8 +283,8 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     {
         if (_count > 0)
         {
-            Debug.Assert(_buckets.IsInitialized);
-            Debug.Assert(_entries.IsInitialized);
+            Debug.Assert(_buckets.IsAllocated);
+            Debug.Assert(_entries.IsAllocated);
 
             ValueArray.Clear(_buckets);
             ValueArray.Clear(_entries, 0, _count);
@@ -364,7 +364,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     private readonly ref TValue FindValue(TKey key)
     {
         ref var entry = ref Unsafe.NullRef<Entry>();
-        if (_buckets.IsInitialized)
+        if (_buckets.IsAllocated)
         {
             if (_comparer == null)
             {
@@ -460,7 +460,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         // NOTE: this method is mirrored in CollectionsMarshal.GetValueRefOrAddDefault below.
         // If you make any changes here, make sure to keep that version in sync as well.
 
-        if (!_buckets.IsInitialized) Initialize(0);
+        if (!_buckets.IsAllocated) Initialize(0);
 
         var comparer = _comparer;
         var hashCode = (uint) (comparer?.GetHashCode(key) ?? key.GetHashCode());
@@ -586,7 +586,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         // NOTE: this method is mirrored by RefDictionary<TKey, TValue>.TryInsert above.
         // If you make any changes here, make sure to keep that version in sync as well.
 
-        if (!_buckets.IsInitialized) Initialize(0);
+        if (!_buckets.IsAllocated) Initialize(0);
 
         ref var entries = ref _entries;
 
@@ -690,7 +690,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     {
         TraceOn.MemAlloc(nameof(ValueDictionary<TKey, TValue>),
             $"Before resize {nameof(_entries)}={_entries} {nameof(newSize)}={newSize}");
-        Debug.Assert(_entries.IsInitialized);
+        Debug.Assert(_entries.IsAllocated);
         Debug.Assert(newSize >= _entries.Length);
         var count = _count;
         newSize = _entries.Grow(newSize, newSize, false);
@@ -715,9 +715,9 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         // statement to copy the value for entry being removed into the output parameter.
         // Code has been intentionally duplicated for performance reasons.
 
-        if (_buckets.IsInitialized)
+        if (_buckets.IsAllocated)
         {
-            Debug.Assert(_entries.IsInitialized);
+            Debug.Assert(_entries.IsAllocated);
             uint collisionCount = 0;
 
             var comparer = _comparer;
@@ -767,9 +767,9 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         // statement to copy the value for entry being removed into the output parameter.
         // Code has been intentionally duplicated for performance reasons.
 
-        if (_buckets.IsInitialized)
+        if (_buckets.IsAllocated)
         {
-            Debug.Assert(_entries.IsInitialized);
+            Debug.Assert(_entries.IsAllocated);
             uint collisionCount = 0;
 
             var comparer = _comparer;
@@ -847,7 +847,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         var currentCapacity = _entries.Length;
         if (currentCapacity >= capacity) return currentCapacity;
 
-        if (!_buckets.IsInitialized) return Initialize(capacity);
+        if (!_buckets.IsAllocated) return Initialize(capacity);
 
         var newSize = HashHelpers.GetPrime(capacity);
         Resize(newSize);
@@ -871,7 +871,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         var oldCount = _count;
         Initialize(newSize, true);
 
-        Debug.Assert(oldEntries.IsInitialized);
+        Debug.Assert(oldEntries.IsAllocated);
 
         CopyEntries(oldEntries, oldCount);
         oldEntries.Dispose();
@@ -880,7 +880,7 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     private void CopyEntries(ValueArray<Entry> entries, int count)
     {
-        Debug.Assert(_entries.IsInitialized);
+        Debug.Assert(_entries.IsAllocated);
 
         var newCount = 0;
         for (var i = 0; i < count; i++)

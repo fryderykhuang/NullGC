@@ -19,9 +19,9 @@ public class Allocator_IntArrayAllocationOverTimeBenchmarks : BenchmarkBase
     [GlobalSetup]
     public void Setup()
     {
-        AllocatorContext.Impl.ConfigureDefaultUnscoped(cacheTtlMs: 100, cacheLostObserveWindowSize: 1,
+        AllocatorContext.Impl.ConfigureDefaultUnscoped(defaultMemCacheTtlMs: 100, cacheLostObserveWindowSize: 1,
             cleanupTh: 8 * 1024 * 1024 / 100);
-        // AllocatorContext.Impl.ConfigureDefaultUncachedUnscoped();
+        // AllocatorContext._impl.ConfigureDefaultUncachedUnscoped();
         _rand = new Random(0);
     }
 

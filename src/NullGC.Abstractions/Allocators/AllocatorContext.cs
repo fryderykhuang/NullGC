@@ -6,23 +6,24 @@ namespace NullGC.Allocators;
 
 public static class AllocatorContext
 {
-    public static IAllocatorContextImpl Impl = null!;
+    private static IAllocatorContextImpl _impl = null!;
+    public static IAllocatorContextImpl Impl => _impl;
 
     public static void SetImplementation(IAllocatorContextImpl impl)
     {
-        Impl.TryDispose();
-        Impl = impl;
+        _impl.TryDispose();
+        _impl = impl;
     }
 
     internal static bool ResetImplementation(IAllocatorContextImpl? impl)
     {
-        if (Impl != null)
+        if (_impl != null)
         {
-            Impl.TryDispose();
-            Impl = impl!;
+            _impl.TryDispose();
+            _impl = impl!;
             return true;
         }
-        Impl = impl!;
+        _impl = impl!;
         return false;
     }
 
@@ -35,7 +36,7 @@ public static class AllocatorContext
     public static void FreeAllocations(int allocatorProviderId)
     {
         GuardImpl();
-        Impl.FreeAllocations(allocatorProviderId);
+        _impl.FreeAllocations(allocatorProviderId);
     }
 
     /// <summary>
@@ -47,19 +48,19 @@ public static class AllocatorContext
     public static void SetAllocatorProvider(IAllocatorProvider provider, int allocatorProviderId, bool scoped)
     {
         GuardImpl();
-        Impl.SetAllocatorProvider(provider, allocatorProviderId, scoped);
+        _impl.SetAllocatorProvider(provider, allocatorProviderId, scoped);
     }
 
     public static void FinalizeConfiguration()
     {
         GuardImpl();
-        Impl.FinalizeConfiguration();
+        _impl.FinalizeConfiguration();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void GuardImpl()
     {
-        if (Impl is null)
+        if (_impl is null)
             ThrowHelper.ThrowInvalidOperationException(
                 $"Implementation is not set, call {nameof(SetImplementation)} first.");
     }
@@ -67,13 +68,13 @@ public static class AllocatorContext
     public static void ClearProvidersAndAllocations()
     {
         GuardImpl();
-        Impl.ClearProvidersAndAllocations();
+        _impl.ClearProvidersAndAllocations();
     }
 
     public static IMemoryAllocator GetAllocator(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         GuardImpl();
-        return Impl.GetAllocator(allocatorProviderId);
+        return _impl.GetAllocator(allocatorProviderId);
     }
 
     /// <summary>
@@ -84,6 +85,6 @@ public static class AllocatorContext
     public static IDisposable BeginAllocationScope(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
         GuardImpl();
-        return Impl.BeginAllocationScope(allocatorProviderId);
+        return _impl.BeginAllocationScope(allocatorProviderId);
     }
 }

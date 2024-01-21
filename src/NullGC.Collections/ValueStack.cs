@@ -13,9 +13,9 @@ using NullGC.Linq;
 namespace NullGC.Collections;
 
 // modified from the code of .NET Core Stack<>.
-[DebuggerDisplay("Count = {Count}, IsInitialized = {IsInitialized}")]
+[DebuggerDisplay("Count = {Count}, IsAllocated = {IsAllocated}")]
 public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISingleDisposable<ValueStack<T>>,
-    ICollection, IReadOnlyCollection<T>, IUnsafeArray<T> where T : unmanaged
+    ICollection, IReadOnlyCollection<T>, IUnmanagedArray<T> where T : unmanaged
 {
     private ValueArray<T> _array; // Storage for stack elements. Do not rename (binary serialization)
     private int _size; // Number of items in the stack. Do not rename (binary serialization)
@@ -348,7 +348,7 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
     int? IMaybeCountable.Count => Count;
     public unsafe T* Items => _array.Items;
     public int Length => _size;
-    public bool IsInitialized => _array.IsInitialized;
+    public bool IsAllocated => _array.IsAllocated;
 
     public ValueStack<T> Borrow() => new(_array.Borrow(), _size);
 

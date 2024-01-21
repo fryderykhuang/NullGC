@@ -12,8 +12,8 @@ using NullGC.Linq;
 namespace NullGC.Collections;
 
 // modified from the code of .NET Core List<>.
-[DebuggerDisplay("Count = {Count}, IsInitialized = {IsInitialized}")]
-public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsafeArray<T>, IList<T>, IReadOnlyList<T>,
+[DebuggerDisplay("Count = {Count}, IsAllocated = {IsAllocated}")]
+public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IUnmanagedArray<T>, IList<T>, IReadOnlyList<T>,
     ISingleDisposable<ValueList<T>> where T : unmanaged
 {
     private const int DefaultCapacity = 4;
@@ -403,11 +403,11 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
 
-    public readonly UnsafeArrayEnumerator<T> GetEnumerator()
+    public readonly UnmanagedArrayEnumerator<T> GetEnumerator()
     {
         unsafe
         {
-            return new UnsafeArrayEnumerator<T>(this._items.Items, this._size);
+            return new UnmanagedArrayEnumerator<T>(this._items.Items, this._size);
         }
     }
 
@@ -468,7 +468,7 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
                         ValueArray.Copy(_items, insertIndex, _items, insertIndex + count, _size - insertIndex);
 
                     // Inserting part of self to self.
-                    if (c is IUnsafeArray<T> uarr && uarr.Items == _items.Items)
+                    if (c is IUnmanagedArray<T> uarr && uarr.Items == _items.Items)
                     {
                         // Copy first part of _items to insert location
                         ValueArray.Copy(_items, 0, _items, insertIndex, insertIndex);
@@ -654,8 +654,8 @@ public struct ValueList<T> : ILinqEnumerable<T, UnsafeArrayEnumerator<T>>, IUnsa
         Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
 
     public readonly unsafe T* Items => _items.Items;
-    readonly int IUnsafeArray<T>.Length => _size;
-    public readonly bool IsInitialized => _items.IsInitialized;
+    readonly int IUnmanagedArray<T>.Length => _size;
+    public readonly bool IsAllocated => _items.IsAllocated;
 
     public static readonly ValueList<T> Empty = default;
     readonly int? IMaybeCountable.Count => Count;

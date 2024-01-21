@@ -3,27 +3,27 @@
 public static class DefaultAllocatorContextImplExtensions
 {
     public static IAllocatorContextImpl ConfigureDefault(this IAllocatorContextImpl ac,
-        int defaultArenaAllocationCacheRetentionTimeMs = 10000)
+        int defaultMemCacheTtlMs = 10000)
     {
-        return ConfigureDefault(ac, out _, out _, defaultArenaAllocationCacheRetentionTimeMs);
+        return ConfigureDefault(ac, out _, out _, defaultMemCacheTtlMs);
     }
 
     public static IAllocatorContextImpl ConfigureDefaultUnscoped(this IAllocatorContextImpl ac,
-        int cacheTtlMs = 10000, int cacheLostObserveWindowSize = 100, UIntPtr cleanupTh = 8 * 1024 * 1024)
+        int defaultMemCacheTtlMs = 10000, int cacheLostObserveWindowSize = 100, UIntPtr cleanupTh = 8 * 1024 * 1024)
     {
-        return ConfigureDefaultUnscoped(ac, out _, out _, cleanupTh: cleanupTh, cacheTtl: cacheTtlMs,
+        return ConfigureDefaultUnscoped(ac, out _, out _, cleanupTh: cleanupTh, cacheTtl: defaultMemCacheTtlMs,
             cacheLostObserveWindowSize: cacheLostObserveWindowSize);
     }
 
     public static IAllocatorContextImpl ConfigureDefault(this IAllocatorContextImpl ac,
         out IMemoryAllocationTrackable frontStats, out IMemoryAllocationTrackable? cacheAllocStats,
-        int defaultTtlMs = 10000, int cacheLostObserveWindowSize = 100, nuint cleanupTh = 8 * 1024 * 1024)
+        int defaultMemCacheTtlMs = 10000, int cacheLostObserveWindowSize = 100, nuint cleanupTh = 8 * 1024 * 1024)
     {
         var memPoolerUnscoped = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(),
-            defaultTtlMs);
+            defaultMemCacheTtlMs);
         ac.SetAllocatorProvider(memPoolerUnscoped, (int) AllocatorTypes.DefaultUnscoped, false);
         var cache = new DefaultAllocationPooler(new DefaultAlignedNativeMemoryAllocator(),
-            defaultTtlMs, cleanupTh, cacheLostObserveWindowSize: cacheLostObserveWindowSize);
+            defaultMemCacheTtlMs, cleanupTh, cacheLostObserveWindowSize: cacheLostObserveWindowSize);
         cacheAllocStats = cache;
         var allocatorPooler = new AllocatorPool<ArenaAllocator>(p => new ArenaAllocator(p, p, cache));
         frontStats = allocatorPooler;

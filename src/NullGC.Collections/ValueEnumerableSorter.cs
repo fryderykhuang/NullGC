@@ -251,7 +251,7 @@ public struct ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> :
 
     public int CompareAnyKeys(int index1, int index2)
     {
-        Debug.Assert(_keys.IsInitialized);
+        Debug.Assert(_keys.IsAllocated);
 
         var c = _comparer.Compare(_keys.GetUnchecked(index1), _keys.GetUnchecked(index2));
         if (c == 0)

@@ -1,3 +1,5 @@
+using NullGC.Allocators;
+using NullGC.Allocators.Extensions;
 using NullGC.TestCommons;
 using Xunit.Abstractions;
 
@@ -13,7 +15,7 @@ public class ValueArrayTests : AssertMemoryAllFreedBase
     public void DefaultArrayFacts()
     {
         ValueArray<int> defaultArr = default;
-        Assert.False(defaultArr.IsInitialized);
+        Assert.False(defaultArr.IsAllocated);
         Assert.True(EqualityComparer<ValueArray<int>>.Default.Equals(ValueArray<int>.Empty, defaultArr));
         Assert.Empty(defaultArr);
         foreach (ref var item in defaultArr) Assert.Fail("Should be empty.");
@@ -38,6 +40,12 @@ public class ValueArrayTests : AssertMemoryAllFreedBase
         arr = new ValueArray<int>(50000000);
         arr.Dispose();
     }
+
+    // TODO hard to mock
+    // [Fact]
+    // public void ValueArrayMaxLengthFacts()
+    // {
+    // }
 
     [Fact]
     public void ValueSetShouldBePreserved()

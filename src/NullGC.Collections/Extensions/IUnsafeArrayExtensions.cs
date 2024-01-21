@@ -83,7 +83,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> AsSpan<T, TCollection>(this TCollection src)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         unsafe
         {
@@ -93,7 +93,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> AsReadOnlySpan<T, TCollection>(this TCollection src)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         unsafe
         {
@@ -103,7 +103,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> AsReadOnlySpan<T, TCollection>(this TCollection src, int index)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsLessThan(index, src.Length, nameof(index));
         unsafe
@@ -114,7 +114,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> AsReadOnlySpan<T, TCollection>(this TCollection src, int index, int count)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsLessThanOrEqualTo(count - index, src.Length, nameof(count));
         unsafe
@@ -125,7 +125,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> AsSpan<T, TCollection>(this TCollection src, int index)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsLessThan(index, src.Length, nameof(index));
         unsafe
@@ -136,7 +136,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> AsSpan<T, TCollection>(this TCollection src, int index, int count)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsLessThanOrEqualTo(count - index, src.Length, nameof(count));
         unsafe
@@ -195,7 +195,7 @@ public static class IUnsafeArrayExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyTo<T, TCollection1, TCollection2>(this TCollection1 src, TCollection2 dest, int srcIndex,
         int destIndex, int srcCountToCopy)
-        where TCollection1 : IUnsafeArray<T> where TCollection2 : IUnsafeArray<T> where T : unmanaged
+        where TCollection1 : IUnmanagedArray<T> where TCollection2 : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsLessThanOrEqualTo(srcCountToCopy, dest.Length - destIndex);
         unsafe
@@ -208,7 +208,7 @@ public static class IUnsafeArrayExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyTo<T, TCollection1>(this TCollection1 src, IList<T> dest, int srcIndex,
         int destIndex, int srcCountToCopy)
-        where TCollection1 : IUnsafeArray<T> where T : unmanaged
+        where TCollection1 : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsLessThanOrEqualTo(srcCountToCopy, dest.Count - destIndex);
 
@@ -223,7 +223,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyTo<T, TCollection1, TCollection2>(this TCollection1 src, TCollection2 dest)
-        where TCollection1 : IUnsafeArray<T> where TCollection2 : IUnsafeArray<T> where T : unmanaged
+        where TCollection1 : IUnmanagedArray<T> where TCollection2 : IUnmanagedArray<T> where T : unmanaged
     {
         Guard.IsGreaterThanOrEqualTo(dest.Length, src.Length, nameof(dest));
         unsafe
@@ -234,7 +234,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Clear<T, TCollection>(this TCollection src)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         unsafe
         {
@@ -269,7 +269,7 @@ public static class IUnsafeArrayExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Clear<T, TCollection>(this TCollection src, int index, int count)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         unsafe
         {
@@ -281,7 +281,7 @@ public static class IUnsafeArrayExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueList<T> ToValueList<T, TCollection>(this TCollection src,
         int allocatorProviderId = (int) AllocatorTypes.Default)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         var ret = new ValueList<T>(src.Length, allocatorProviderId);
         src.CopyTo<T, TCollection, ValueList<T>>(ret);
@@ -305,7 +305,7 @@ public static class IUnsafeArrayExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueArray<T> ToValueArray<T, TCollection>(this TCollection src,
         int allocatorProviderId = (int) AllocatorTypes.Default)
-        where TCollection : IUnsafeArray<T> where T : unmanaged
+        where TCollection : IUnmanagedArray<T> where T : unmanaged
     {
         var ret = new ValueArray<T>(src.Length, allocatorProviderId);
         src.CopyTo<T, TCollection, ValueArray<T>>(ret);

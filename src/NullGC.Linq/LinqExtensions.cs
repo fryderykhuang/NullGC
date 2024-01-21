@@ -46,31 +46,31 @@ public static partial class LinqExtensions
     #region Value collection types as RefEnumerable
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, UnsafeArrayEnumerator<T>> LinqRef<T>(this ValueList<T> src)
+    public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>(this ValueList<T> src)
         where T : unmanaged
     {
-        return new LinqFixedRefEnumerable<T, UnsafeArrayEnumerator<T>>(src.GetEnumerator());
+        return new LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, UnsafeArrayEnumerator<T>> LinqValue<T>(this ValueList<T> src)
+    public static LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>> LinqValue<T>(this ValueList<T> src)
         where T : unmanaged
     {
-        return new LinqValueEnumerable<T, UnsafeArrayEnumerator<T>>(src.GetEnumerator());
+        return new LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqPtrEnumerable<T, UnsafeArrayEnumerator<T>> LinqPtr<T>(this ValueList<T> src)
+    public static LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>> LinqPtr<T>(this ValueList<T> src)
         where T : unmanaged
     {
-        return new LinqPtrEnumerable<T, UnsafeArrayEnumerator<T>>(src.GetEnumerator());
+        return new LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, UnsafeArrayEnumerator<T>> LinqRef<T>(this ValueArray<T> src)
+    public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>(this ValueArray<T> src)
         where T : unmanaged
     {
-        return new LinqFixedRefEnumerable<T, UnsafeArrayEnumerator<T>>(src.GetEnumerator());
+        return new LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,10 +83,10 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqPtrEnumerable<T, UnsafeArrayEnumerator<T>> LinqPtr<T>(this ValueArray<T> src)
+    public static LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>> LinqPtr<T>(this ValueArray<T> src)
         where T : unmanaged
     {
-        return new LinqPtrEnumerable<T, UnsafeArrayEnumerator<T>>(src.GetEnumerator());
+        return new LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,10 +144,10 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, UnsafeArrayEnumerator<T>> LinqValue<T>(this ValueArray<T> src)
+    public static LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>> LinqValue<T>(this ValueArray<T> src)
         where T : unmanaged
     {
-        return new LinqValueEnumerable<T, UnsafeArrayEnumerator<T>>(src.GetEnumerator());
+        return new LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
