@@ -1,5 +1,4 @@
 using Cathei.LinqGen;
-using NullGC.Allocators;
 using NullGC.Collections;
 using NullGC.Linq.Enumerators;
 using NullGC.TestCommons;
@@ -9,26 +8,17 @@ namespace NullGC.Linq.Tests;
 
 public class LinqTests : AssertMemoryAllFreedBase
 {
-    public override void Dispose()
-    {
-        _bigStructValArr.Dispose();
-        _valList1.Dispose();
-        _valIntArr.Dispose();
-        _smallStructValArr.Dispose();
-        base.Dispose();
-    }
-
     private const int _count = 2000;
-    private readonly ValueArray<int> _emptyArray;
-    private ValueList<int> _valList1;
-    private int[] _intArr;
-    private ValueArray<int> _valIntArr;
-    private BigStruct<int, float>[] _bigStructArr;
-    private SmallStruct<int, float>[] _smallStructArr;
-    private ValueArray<BigStruct<int, float>> _bigStructValArr;
-    private ValueArray<SmallStruct<int, float>> _smallStructValArr;
     private readonly int _bigStructMin;
+    private readonly ValueArray<int> _emptyArray;
     private readonly int _smallStructMin;
+    private BigStruct<int, float>[] _bigStructArr;
+    private ValueArray<BigStruct<int, float>> _bigStructValArr;
+    private int[] _intArr;
+    private SmallStruct<int, float>[] _smallStructArr;
+    private ValueArray<SmallStruct<int, float>> _smallStructValArr;
+    private ValueArray<int> _valIntArr;
+    private ValueList<int> _valList1;
 
     public LinqTests(ITestOutputHelper logger) : base(logger, false)
     {
@@ -56,6 +46,15 @@ public class LinqTests : AssertMemoryAllFreedBase
 
         _bigStructMin = BigStructArrSystemLinqWhereOrderByTakeAverage();
         _smallStructMin = SmallStructArrSystemLinqWhereOrderByTakeAverage();
+    }
+
+    public override void Dispose()
+    {
+        _bigStructValArr.Dispose();
+        _valList1.Dispose();
+        _valIntArr.Dispose();
+        _smallStructValArr.Dispose();
+        base.Dispose();
     }
 
     [Fact]
@@ -267,5 +266,35 @@ public class LinqTests : AssertMemoryAllFreedBase
     {
         Assert.Equal(_bigStructMin,
             _bigStructArr.Gen().Where(x => x.Key > 100000).OrderBy(x => x.Key).Take(500).Select(x => x.Key).Min());
+    }
+
+    [Fact]
+    public void FirstLastNoPredicateFacts()
+    {
+        Assert.Equal(7, _valList1.LinqRef().First());
+        Assert.Equal(7, _valList1.LinqRef().FirstOrNullRef());
+        Assert.Equal(7, _valList1.LinqRef().FirstOrDefault());
+        Assert.Equal(7, _valList1.LinqValue().First());
+        Assert.Equal(7, _valList1.LinqValue().FirstOrDefault());
+        Assert.Equal(7, _valList1.LinqValue().First());
+        Assert.Equal(9, _valList1.LinqRef().Last());
+        Assert.Equal(9, _valList1.LinqRef().LastOrDefault());
+        Assert.Equal(9, _valList1.LinqValue().Last());
+        Assert.Equal(9, _valList1.LinqValue().LastOrDefault());
+    }
+
+    [Fact]
+    public void FirstLastWithPredicateFacts()
+    {
+        Assert.Equal(8, _valList1.LinqRef().First((in int x) => x > 7));
+        Assert.Equal(8, _valList1.LinqRef().FirstOrNullRef((in int x) => x > 7));
+        Assert.Equal(8, _valList1.LinqRef().FirstOrDefault((in int x) => x > 7));
+        Assert.Equal(8, _valList1.LinqValue().First(x => x > 7));
+        Assert.Equal(8, _valList1.LinqValue().FirstOrDefault(x => x > 7));
+        Assert.Equal(8, _valList1.LinqValue().First(x => x > 7));
+        Assert.Equal(3, _valList1.LinqRef().Last((in int x) => x < 4));
+        Assert.Equal(3, _valList1.LinqRef().LastOrDefault((in int x) => x < 4));
+        Assert.Equal(3, _valList1.LinqValue().Last(x => x < 4));
+        Assert.Equal(3, _valList1.LinqValue().LastOrDefault(x => x < 4));
     }
 }

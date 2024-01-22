@@ -1,22 +1,23 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-// #define CICD
+﻿//#define CICD
+#if CICD
 using System.Reflection;
+#endif
 using BenchmarkDotNet.Running;
+using NullGC.Collections;
 using NullGC.DragRace;
 using NullGC.DragRace.Benchmarks;
-// TODO
+using NullGC.Linq;
+
 #if CICD
-// var cfg = new CicdConfig();
-// Console.WriteLine($"ArtifactsPath={cfg.ArtifactsPath}");
-// BenchmarkRunner.Run<Allocator_IntListGrowingBenchmarks>(cfg);
-// return;
 Console.Error.WriteLine("Running on CICD profile.");
 BenchmarkRunner.Run(
     Assembly.GetExecutingAssembly().GetExportedTypes()
         .Where(t => t.CustomAttributes.Any(a => a.AttributeType == typeof(PickedForCicd))).ToArray(), new CicdConfig());
 return;
 #else
+
+var lst = new ValueList<int>();
+var i = lst.LinqRef().Where(x => x > 1).First();
 
 var types = args.Select(Type.GetType).Where(x => x is not null).ToArray();
 if (types.Length > 0)

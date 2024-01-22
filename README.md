@@ -6,8 +6,9 @@
 
 # NullGC
 
-High performance unmanaged memory allocator / collection types / LINQ provider for .NET Core. ([Benchmark Results](https://fryderykhuang.github.io/NullGC/))
+High performance unmanaged memory allocator / collection types / LINQ provider for .NET Core.
 Most suitable for game development since there will be no latency jitter caused by .NET garbage collection activities.
+[Benchmark Results](https://fryderykhuang.github.io/NullGC/) (Auto updated by GitHub Actions)
 
 ## Motivation
 
@@ -131,17 +132,19 @@ If you have to use managed object (i.e. class) inside a struct, you can use
 
 ### Linq
 
-**The fastest LINQ provider as of today** (2024.1).
+**The fastest LINQ provider as of today** (2024.1). [Benchmark Results](https://fryderykhuang.github.io/NullGC/) (compared with Built-in/LinqGen/RefLinq/HyperLinq)
 
-[Benchmark Results](https://fryderykhuang.github.io/NullGC/) (Auto updated by GitHub Actions, compared with LinqGen/RefLinq/HyperLinq)
+The extreme performance boils down to:
+1. minimize struct copy by aggressive inlining and use ref modifier.
+2. No boxing (except for some case of interface casting that cannot be optimized away).
+3. Exploit the traits of previous stage as much as possible. (e.g. if the previous of OrderBy is `IAddressFixed`, we can store the pointer instead of the whole struct)
 
 Proper usage is with the built-in value typed collections, but good old IEnumerable&lt;T&gt; is also supported. You can still get some benefit on LINQ operators that need to buffer data such as OrderBy.
-The LINQ interface has 3 variations:
+The LINQ interface has 2 variations:
 
 ```csharp
 SomeCollection.LinqValue()... // Enumerate by value. All types implement IEnumerable<T> are supported
-SomeCollection.LinqRef()...   // Enumerate by ref. Besides value collections, only Enumerators that exposes 'ref T Current' are supported (e.g. normal array types)
-SomeCollection.LinqPtr()...   // Enumerate by pointer. Only built-in value typed collections are supported. (Because object address must be fixed to be able to use unmanaged pointer)
+SomeCollection.LinqRef()...   // Enumerate by ref. Besides value collections, only collection with Enumerator implemented `ILinqRefEnumerator<T>` are supported (e.g. normal array types)
 ```
 
 Most extension methods that needs a delegate type parameter has an overloads with `in` or `ref` modifier to avoid copying too much data if the Linqed type is a big struct.
