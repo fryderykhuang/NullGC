@@ -32,6 +32,22 @@ AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDe
 ```
 Allocator context is used internally in `ValueArray<T>` and any code that needs to allocate unmanaged memory.
 
+### Custom collection types
+
+The following types all use unmanaged memory as their internal state store.
+
+* ValueArray&lt;T&gt;
+* ValueList&lt;T&gt;
+* ValueStack&lt;T&gt;
+* ValueQueue&lt;T&gt;
+* ValueDictionary&lt;TKey, TValue&gt;
+* ValueLinkedList&lt;T&gt;
+* ValueFixedSizeDeque&lt;T&gt; (Circular buffer)
+* SlidingWindow&lt;T&gt;
+* SlidingTimeWindow&lt;T&gt;
+
+*All collection types can be enumerated by ref (`foreach(ref var item in collection)`)
+
 ### Memory allocation strategies
 
 Two types of memory allocation strategy are supported:
@@ -42,11 +58,15 @@ Two types of memory allocation strategy are supported:
 // all 'T' is struct if not specifically mentioned.
 using (AllocatorContext.BeginAllocationScope())
 {
-    var list = new ValueList<T>(); // plain old 'new'
+    // plain old 'new'
+    var list = new ValueList<T>();
     var dict = new ValueDictionary<TKey, TValue>();
-    var obj = new Allocated<T>(); // let struct T work like a class (T is allocated on the unmanaged heap.)
+    
+    // let struct T work like a class (T is allocated on the unmanaged heap.)
+    var obj = new Allocated<T>();
     ...
-} // all value objects are automatically disposed as they go out of scope, no need to explicitly call Dispose().
+} // all value objects are automatically disposed as they go out of scope,
+  // no need to explicitly call Dispose().
 ```
 
 #### 2. Explicit lifetime
@@ -54,51 +74,60 @@ using (AllocatorContext.BeginAllocationScope())
 You can utilize the unmanaged allocator anywhere like this (including inside of arena scope):
 
 ```csharp
-// use the overload with parameter 'AllocatorTypes', then specify the unscoped, globally available allocator type.
+// use the overload with parameter 'AllocatorTypes', specify the unscoped, globally available allocator type.
 var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped); 
 var obj = new Allocated<T>(AllocatorTypes.DefaultUnscoped);
 ...
 // Anywhere after usage:
 list.Dispose();
+obj.Dispose();
+// As long as 'list' is the original one not a copy, it can be disposed saftely multiple times.
+list.Dispose(); // ok.
 ```
 
-### Pass by ref or by value
+### Double-free problem when using explicit lifetime
 
-Since we are using struct everywhere, how to pass a struct like a reference type is a little bit tricky.
-
-Under most circumstances, use `ref` modifier will be sufficient, but there's still somewhere that cannot use the `ref` modifier such as struct field (`ref` type can only be put in a `ref struct`, which is incovienient).
-
-To avoid double-free, when those value collections are passed by value, Borrow() should be used. After calling Borrow(), all copies of the original collection can be safely disposed without double-free.
+First of all, collections with unscoped allocator type needs to call `Dispose()` to free the unmanaged memory allocated inside. Typical `Dispose()` implementation will be: If the unmanaged pointer is NULL, ignore; If not NULL, pass the pointer to the native free() function and reset the pointer to NULL. This seems to prevent the double-free, but is it? 
 
 ```csharp
-var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
-...
-// ref passing is not affected.
-SomeListRefConsumingMethod(in list);
-SomeListRefConsumingMethod(ref list);
+struct BadGuy : IDisposable {
+    private ValueList<T> _lst;
+    public BadGuy(ValueList<T> lst){
+        _lst = lst; // '_lst' is a copy of 'list' below.
+    }
+    
+    public void Dispose() {
+        _lst.Dispose();
+        // '_lst' is now in disposed state, but not the 'list' below,
+    }
+}
 
-// value passing should call Borrow() unless you're certain the passed one will not be disposed.
-SomeListConsumingMethod(list.Borrow())
+var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
+using (var badGuy = new BadGuy(list)) {
+...   
+} // 'badGuy' is dead, however..
+... 
+list.Dispose(); // Since 'list' is NOT in the disposed state, this will cause the double-free.
+```
+
+So to prevent double-free, when these value collections are passed by value, `Borrow()` (from interface `ISingleDisposable<TSelf>`) should be used.
+
+```csharp
+void SomeMethod(ValueList<T> lst){ // 'lst' is a copy of 'list' below.
+    lst.Dispose(); // Does nothing.
+}
+
+var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
+SomeMethod(list.Borrow()); // The borrowed one's Dispose() is a no-op.
+list.Dispose(); // Ok.
 ```
 
 ### Interop with managed object
 
-If you have to use managed object (classes) inside a struct, you can use
+If you have to use managed object (i.e. class) inside a struct, you can use
 `Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
 
-
-### Custom collection types
-
-* ValueArray&lt;T&gt;
-* ValueList&lt;T&gt;
-* ValueDictionary&lt;TKey, TValue&gt;
-* ValueStack&lt;T&gt;
-* ValueLinkedList&lt;T&gt;
-* ValueFixedSizeDeque&lt;T&gt; (Circular buffer)
-* SlidingWindow&lt;T&gt;
-* SlidingTimeWindow&lt;T&gt;
-
-All collection types can be enumerated by ref (`foreach(ref var item in collection)`)
+*Since .NET 5 there's a specific heap type for pinned object called [POH](https://devblogs.microsoft.com/dotnet/internals-of-the-poh/), the performance impact will be quite low. 
 
 ### Linq
 
