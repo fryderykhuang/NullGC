@@ -163,13 +163,16 @@ TArg someTArg;
 
 ```
 
+***For now only a portion of LINQ operators are implemented, since all custom LINQ operator structs also implement `IEnumerable<T>`, if an operator/input type combination is not implemented, the system LINQ extension method will be called instead, which will cause the boxing of all the structs the LINQ chain is composed of. Until the corresponding Rosylyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.**
+
 ## Things to do
 
 1. More documentations.
 2. Larger test coverage.
 3. More collection types.
-4. More LINQ providers and support range.
+4. More LINQ operators, support more input types.
 5. Roslyn analyzer for struct lifetime/ownership enforcing. (The actual lifetime is not being enforced, such as the early dispose from the owner side or mutation from the borrower side is still unpreventable, static analysis with attribute markers should be the way to go.)
+6. Roslyn analyzer for unintended boxing when using NullGC.Linq
 
 ## Thanks to
 
