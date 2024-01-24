@@ -297,4 +297,14 @@ public class LinqTests : AssertMemoryAllFreedBase
         Assert.Equal(3, _valList1.LinqValue().Last(x => x < 4));
         Assert.Equal(3, _valList1.LinqValue().LastOrDefault(x => x < 4));
     }
+
+    [Fact]
+    public void ValueFixedSizeDequeEnumeratorFacts()
+    {
+        using var q = new ValueFixedSizeDeque<int>(7) {1, 2, 3, 4, 5, 6, 7};
+        Assert.Equal(new[] { 3,4,5 }, q.LinqValue().Skip(2).Take(3));
+        Assert.Equal(new[] { 3 }, q.LinqValue().Take(3).Skip(2));
+        Assert.Empty( q.LinqValue().Skip(2).Take(0));
+        Assert.Empty(q.LinqValue().Take(0).Skip(2));
+    }
 }

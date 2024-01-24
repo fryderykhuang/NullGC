@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Diagnostics;
 using NullGC.Allocators;
+using NullGC.Linq;
 
 namespace NullGC.Collections;
 
@@ -243,10 +244,11 @@ public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>
         }
     }
 
-    public struct ForwardEnumerator : IEnumerator<T>
+    public struct ForwardEnumerator : ILinqRefEnumerator<T>, ILinqValueEnumerator<T>, IAddressFixed
     {
         private readonly ValueArray<T> _items;
-        private readonly int _afterTail;
+        private int _afterTail;
+        private int _count;
         private int _index;
 
         public ForwardEnumerator(ValueArray<T> items, int head, int afterTail)
@@ -254,6 +256,7 @@ public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>
             _items = items;
             _afterTail = afterTail;
             _index = head - 1;
+            _count = (afterTail - head + items.Length) % items.Length;
         }
 
         public void Dispose()
@@ -262,7 +265,9 @@ public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>
 
         public bool MoveNext()
         {
-            return ++_index % _items.Length != _afterTail;
+            var result = (_index + 1) % _items.Length != _afterTail;
+            if (result) _index++;
+            return result;
         }
 
         public void Reset()
@@ -282,9 +287,30 @@ public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>
             }
         }
 
-        readonly T IEnumerator<T>.Current => Current;
+        public unsafe T* CurrentPtr => &_items.Items[_index % _items.Length];
 
-        readonly object IEnumerator.Current => Current;
+        readonly T IEnumerator<T>.Current => _items.GetUnchecked(_index % _items.Length);
+
+        readonly object IEnumerator.Current => _items.GetUnchecked(_index % _items.Length);
+        int? IMaybeCountable.Count => _count;
+        int? IMaybeCountable.MaxCount => _count;
+        public bool SetSkipCount(int count)
+        {
+            while (count-- > 0 && MoveNext())
+            {
+                _count--;
+            }
+
+            return true;
+        }
+
+        public bool SetTakeCount(int count)
+        {
+            Guard.IsGreaterThanOrEqualTo(count, 0);
+            if (count >= _count) return true;
+            _afterTail = (_afterTail + _items.Length - (_count - count)) % _items.Length;
+            return true;
+        }
     }
 
     public readonly ForwardEnumerator GetEnumerator()

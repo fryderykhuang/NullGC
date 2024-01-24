@@ -9,6 +9,13 @@ public static partial class LinqExtensions
     #region Average
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<double> Average<TEnumerator>(this LinqFixedRefEnumerable<int, TEnumerator> source)
+        where TEnumerator : struct, ILinqRefEnumerator<int>, IAddressFixed
+    {
+        return Average<int, LinqFixedRefEnumerable<int, TEnumerator>, TEnumerator, long, double>(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<double> Average<TEnumerator>(this LinqRefEnumerable<int, TEnumerator> source)
         where TEnumerator : struct, ILinqRefEnumerator<int>
     {
@@ -30,6 +37,13 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<double> Average<TEnumerator>(this LinqFixedRefEnumerable<long, TEnumerator> source)
+        where TEnumerator : struct, ILinqRefEnumerator<long>, IAddressFixed
+    {
+        return Average<long, LinqFixedRefEnumerable<long, TEnumerator>, TEnumerator, long, double>(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<double> Average<TEnumerator>(this LinqRefEnumerable<long, TEnumerator> source)
         where TEnumerator : struct, ILinqRefEnumerator<long>
     {
@@ -41,6 +55,13 @@ public static partial class LinqExtensions
         where TEnumerator : struct, ILinqValueEnumerator<long>
     {
         return Average<long, LinqValueEnumerable<long, TEnumerator>, TEnumerator, long, double>(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<double> Average<TEnumerator>(this LinqFixedRefEnumerable<uint, TEnumerator> source)
+        where TEnumerator : struct, ILinqRefEnumerator<uint>, IAddressFixed
+    {
+        return Average<uint, LinqFixedRefEnumerable<uint, TEnumerator>, TEnumerator, ulong, double>(source);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -58,6 +79,13 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<double> Average<TEnumerator>(this LinqFixedRefEnumerable<ulong, TEnumerator> source)
+        where TEnumerator : struct, ILinqRefEnumerator<ulong>, IAddressFixed
+    {
+        return Average<ulong, LinqFixedRefEnumerable<ulong, TEnumerator>, TEnumerator, ulong, double>(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<double> Average<TEnumerator>(this LinqRefEnumerable<ulong, TEnumerator> source)
         where TEnumerator : struct, ILinqRefEnumerator<ulong>
     {
@@ -72,6 +100,13 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<double> Average<TEnumerator>(this LinqFixedRefEnumerable<double, TEnumerator> source)
+        where TEnumerator : struct, ILinqRefEnumerator<double>, IAddressFixed
+    {
+        return Average<double, LinqFixedRefEnumerable<double, TEnumerator>, TEnumerator, double, double>(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<double> Average<TEnumerator>(this LinqRefEnumerable<double, TEnumerator> source)
         where TEnumerator : struct, ILinqRefEnumerator<double>
     {
@@ -83,6 +118,13 @@ public static partial class LinqExtensions
         where TEnumerator : struct, ILinqValueEnumerator<double>
     {
         return Average<double, LinqValueEnumerable<double, TEnumerator>, TEnumerator, double, double>(source);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<float> Average<TEnumerator>(this LinqFixedRefEnumerable<float, TEnumerator> source)
+        where TEnumerator : struct, ILinqRefEnumerator<float>, IAddressFixed
+    {
+        return Average<float, LinqFixedRefEnumerable<float, TEnumerator>, TEnumerator, float, float>(source);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

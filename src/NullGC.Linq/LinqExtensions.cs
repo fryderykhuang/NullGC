@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using NullGC.Collections;
 using NullGC.Linq.Enumerators;
 
@@ -9,6 +8,16 @@ public static partial class LinqExtensions
 {
     // Every extension methods with argument RefEnumerable<> are marked as AggressiveInlining because copying is unnecessary
     // and possibly expensive (long operator chain). While ref can be used, the extra indirection is also unnecessary. 
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ValueList<T> ToList<T, TEnumerator>(this LinqFixedRefEnumerable<T, TEnumerator> src)
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged
+    {
+        using var enumerator = src.GetEnumerator();
+        var ret = new ValueList<T>(enumerator.MaxCount ?? 0);
+        while (enumerator.MoveNext()) ret.Add(enumerator.Current);
+        return ret;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueList<T> ToList<T, TEnumerator>(this LinqRefEnumerable<T, TEnumerator> src)
@@ -27,6 +36,17 @@ public static partial class LinqExtensions
         using var enumerator = src.GetEnumerator();
         var ret = new ValueList<T>(enumerator.MaxCount ?? 0);
         while (enumerator.MoveNext()) ret.Add(enumerator.Current);
+        return ret;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ValueDictionary<TKey, T> ToDictionary<TKey, T, TEnumerator>(
+        this LinqFixedRefEnumerable<T, TEnumerator> src, FuncT1In<T, TKey> keySelector)
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged where TKey : unmanaged
+    {
+        using var enumerator = src.GetEnumerator();
+        var ret = new ValueDictionary<TKey, T>(enumerator.MaxCount ?? 0);
+        while (enumerator.MoveNext()) ret.Add(keySelector(in enumerator.Current), enumerator.Current);
         return ret;
     }
 
@@ -53,6 +73,7 @@ public static partial class LinqExtensions
             var current = enumerator.Current;
             ret.Add(keySelector(current), current);
         }
+
         return ret;
     }
 
@@ -68,6 +89,18 @@ public static partial class LinqExtensions
             var current = enumerator.Current;
             ret.Add(keySelector(current, arg), current);
         }
+
+        return ret;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ValueDictionary<TKey, T> ToDictionary<TKey, T, TEnumerator, TArg>(
+        this LinqFixedRefEnumerable<T, TEnumerator> src, FuncT1In<T, TArg, TKey> keySelector, TArg arg)
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed where T : unmanaged where TKey : unmanaged
+    {
+        using var enumerator = src.GetEnumerator();
+        var ret = new ValueDictionary<TKey, T>(enumerator.MaxCount ?? 0);
+        while (enumerator.MoveNext()) ret.Add(keySelector(in enumerator.Current, arg), enumerator.Current);
         return ret;
     }
 
@@ -84,8 +117,12 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueDictionary<TKey, TValue> ToDictionary<TKey, T, TValue, TEnumerator, TArg>(
-        this LinqValueEnumerable<T, TEnumerator> src, Func<T, TArg, TKey> keySelector, Func<T, TArg, TValue> valueSelector, TArg arg)
-        where TEnumerator : struct, ILinqValueEnumerator<T> where T : unmanaged where TKey : unmanaged where TValue : unmanaged
+        this LinqValueEnumerable<T, TEnumerator> src, Func<T, TArg, TKey> keySelector,
+        Func<T, TArg, TValue> valueSelector, TArg arg)
+        where TEnumerator : struct, ILinqValueEnumerator<T>
+        where T : unmanaged
+        where TKey : unmanaged
+        where TValue : unmanaged
     {
         using var enumerator = src.GetEnumerator();
         var ret = new ValueDictionary<TKey, TValue>(enumerator.MaxCount ?? 0);
@@ -100,8 +137,12 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ValueDictionary<TKey, TValue> ToDictionary<TKey, T, TValue, TEnumerator, TArg>(
-        this LinqRefEnumerable<T, TEnumerator> src, FuncT1In<T, TArg, TKey> keySelector, FuncT1In<T, TArg, TValue> valueSelector, TArg arg)
-        where TEnumerator : struct, ILinqRefEnumerator<T> where T : unmanaged where TKey : unmanaged where TValue : unmanaged
+        this LinqFixedRefEnumerable<T, TEnumerator> src, FuncT1In<T, TArg, TKey> keySelector,
+        FuncT1In<T, TArg, TValue> valueSelector, TArg arg)
+        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
+        where T : unmanaged
+        where TKey : unmanaged
+        where TValue : unmanaged
     {
         using var enumerator = src.GetEnumerator();
         var ret = new ValueDictionary<TKey, TValue>(enumerator.MaxCount ?? 0);
@@ -110,14 +151,72 @@ public static partial class LinqExtensions
         return ret;
     }
 
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ValueDictionary<TKey, TValue> ToDictionary<TKey, T, TValue, TEnumerator, TArg>(
+        this LinqRefEnumerable<T, TEnumerator> src, FuncT1In<T, TArg, TKey> keySelector,
+        FuncT1In<T, TArg, TValue> valueSelector, TArg arg)
+        where TEnumerator : struct, ILinqRefEnumerator<T>
+        where T : unmanaged
+        where TKey : unmanaged
+        where TValue : unmanaged
+    {
+        using var enumerator = src.GetEnumerator();
+        var ret = new ValueDictionary<TKey, TValue>(enumerator.MaxCount ?? 0);
+        while (enumerator.MoveNext())
+            ret.Add(keySelector(in enumerator.Current, arg), valueSelector(in enumerator.Current, arg));
+        return ret;
+    }
+
+
     #region Value collection types as RefEnumerable
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqFixedRefEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator> LinqRef<T>(this ValueFixedSizeDeque<T> src)
+        where T : unmanaged
+    {
+        return new LinqFixedRefEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator>(src.GetEnumerator());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqFixedRefEnumerable<T, ValueQueue<T>.Enumerator> LinqRef<T>(this ValueQueue<T> src)
+        where T : unmanaged
+    {
+        return new LinqFixedRefEnumerable<T, ValueQueue<T>.Enumerator>(src.GetEnumerator());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqFixedRefEnumerable<T, ValueStack<T>.Enumerator> LinqRef<T>(this ValueStack<T> src)
+        where T : unmanaged
+    {
+        return new LinqFixedRefEnumerable<T, ValueStack<T>.Enumerator>(src.GetEnumerator());
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>(this ValueList<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqValueEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator> LinqValue<T>(this ValueFixedSizeDeque<T> src)
+        where T : unmanaged
+    {
+        return new LinqValueEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator>(src.GetEnumerator());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqValueEnumerable<T, ValueQueue<T>.Enumerator> LinqValue<T>(this ValueQueue<T> src)
+        where T : unmanaged
+    {
+        return new LinqValueEnumerable<T, ValueQueue<T>.Enumerator>(src.GetEnumerator());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqValueEnumerable<T, ValueStack<T>.Enumerator> LinqValue<T>(this ValueStack<T> src)
+        where T : unmanaged
+    {
+        return new LinqValueEnumerable<T, ValueStack<T>.Enumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -228,6 +327,16 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static LinqFixedRefEnumerable<ValueDictionary<TKey, TValue>.Entry, ValueDictionary<TKey, TValue>.Enumerator>
+        LinqRef<TKey, TValue>(this ValueDictionary<TKey, TValue> src)
+        where TValue : unmanaged where TKey : unmanaged
+    {
+        return new
+            LinqFixedRefEnumerable<ValueDictionary<TKey, TValue>.Entry, ValueDictionary<TKey, TValue>.Enumerator>(
+                src.GetEnumerator());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<TKey, ValueDictionary<TKey, TValue>.KeyCollection.Enumerator>
         LinqRef<TKey, TValue>(this ValueDictionary<TKey, TValue>.KeyCollection src)
         where TValue : unmanaged where TKey : unmanaged
@@ -243,221 +352,6 @@ public static partial class LinqExtensions
     {
         return new LinqFixedRefEnumerable<TValue, ValueDictionary<TKey, TValue>.ValueCollection.Enumerator>(
             src.GetEnumerator());
-    }
-
-    #endregion
-
-    #region Count
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Count<T, TEnumerator>(this LinqRefEnumerable<T, TEnumerator> src)
-        where TEnumerator : struct, ILinqRefEnumerator<T>
-    {
-        // ReSharper disable once NotDisposedResource
-        var enumerator = src.GetEnumerator();
-        if (enumerator.Count.HasValue)
-            return enumerator.Count.Value;
-
-        var c = 0;
-        while (enumerator.MoveNext()) c++;
-
-        enumerator.Dispose();
-        return c;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Count<T, TEnumerator>(this LinqValueEnumerable<T, TEnumerator> src)
-        where TEnumerator : struct, ILinqValueEnumerator<T>
-    {
-        // ReSharper disable once NotDisposedResource
-        var enumerator = src.GetEnumerator();
-        if (enumerator.Count.HasValue)
-            return enumerator.Count.Value;
-
-        var c = 0;
-        while (enumerator.MoveNext()) c++;
-
-        enumerator.Dispose();
-        return c;
-    }
-
-    #endregion
-
-
-    #region Sum
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TNum Sum<T, TEnumerator, TNum>(this LinqRefEnumerable<T, TEnumerator> src, FuncT1In<T, TNum> selector)
-        where TNum : INumber<TNum>
-        where TEnumerator : struct, ILinqRefEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var sum = TNum.Zero;
-        while (enumerator.MoveNext()) sum += selector(in enumerator.Current);
-
-        return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TNum Sum<T, TEnumerator, TNum>(this LinqValueEnumerable<T, TEnumerator> src, Func<T, TNum> selector)
-        where TNum : INumber<TNum>
-        where TEnumerator : struct, ILinqValueEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var sum = TNum.Zero;
-        while (enumerator.MoveNext()) sum += selector(enumerator.Current);
-
-        return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Sum<T, TEnumerator>(this LinqRefEnumerable<T, TEnumerator> src) where T : INumber<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var sum = T.Zero;
-        while (enumerator.MoveNext()) sum += enumerator.Current;
-
-        return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Sum<T, TEnumerator>(this LinqFixedRefEnumerable<T, TEnumerator> src) where T : INumber<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
-    {
-        using var enumerator = src.GetEnumerator();
-        var sum = T.Zero;
-        while (enumerator.MoveNext()) sum += enumerator.Current;
-
-        return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Sum<T, TEnumerator>(this LinqValueEnumerable<T, TEnumerator> src) where T : INumber<T>
-        where TEnumerator : struct, ILinqValueEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var sum = T.Zero;
-        while (enumerator.MoveNext()) sum += enumerator.Current;
-
-        return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Min<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src)
-        where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
-    {
-        using var enumerator = src.GetEnumerator();
-        var min = T.MaxValue;
-        while (enumerator.MoveNext())
-            unsafe
-            {
-                min = T.Min(min, *enumerator.CurrentPtr);
-            }
-
-        return min;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Min<T, TEnumerator>(this LinqRefEnumerable<T, TEnumerator> src)
-        where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var min = T.MaxValue;
-        while (enumerator.MoveNext()) min = T.Min(min, enumerator.Current);
-
-        return min;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Min<T, TEnumerator>(this LinqValueEnumerable<T, TEnumerator> src)
-        where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqValueEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var min = T.MaxValue;
-        while (enumerator.MoveNext()) min = T.Min(min, enumerator.Current);
-
-        return min;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Max<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src)
-        where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
-    {
-        using var enumerator = src.GetEnumerator();
-        var max = T.MinValue;
-        while (enumerator.MoveNext())
-            unsafe
-            {
-                max = T.Max(max, *enumerator.CurrentPtr);
-            }
-
-        return max;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Max<T, TEnumerator>(this LinqRefEnumerable<T, TEnumerator> src)
-        where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqRefEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var max = T.MinValue;
-        while (enumerator.MoveNext()) max = T.Max(max, enumerator.Current);
-
-        return max;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Max<T, TEnumerator>(this LinqValueEnumerable<T, TEnumerator> src)
-        where T : INumber<T>, IMinMaxValue<T>
-        where TEnumerator : struct, ILinqValueEnumerator<T>
-    {
-        using var enumerator = src.GetEnumerator();
-        var max = T.MinValue;
-        while (enumerator.MoveNext()) max = T.Max(max, enumerator.Current);
-
-        return max;
-    }
-
-
-    internal static class DummyLoad<T>
-    {
-        public static T? Dummy;
-    }
-
-    public static void Drain<T>(this IEnumerable<T> src)
-    {
-        using var e = src.GetEnumerator();
-        while (e.MoveNext()) DummyLoad<T>.Dummy = e.Current;
-    }
-
-    public static void Drain<T, TEnumerator>(this LinqRefEnumerable<T, TEnumerator> src)
-        where TEnumerator : struct, ILinqRefEnumerator<T>
-    {
-        using var e = src.GetEnumerator();
-        while (e.MoveNext()) DummyLoad<T>.Dummy = e.Current;
-    }
-
-    public static void Drain<T, TEnumerator>(this LinqValueEnumerable<T, TEnumerator> src)
-        where TEnumerator : struct, ILinqValueEnumerator<T>
-    {
-        using var e = src.GetEnumerator();
-        while (e.MoveNext()) DummyLoad<T>.Dummy = e.Current;
-    }
-
-    public static void Drain<T, TEnumerator>(this LinqPtrEnumerable<T, TEnumerator> src)
-        where TEnumerator : struct, ILinqRefEnumerator<T>, IAddressFixed
-    {
-        using var e = src.GetEnumerator();
-        while (e.MoveNext())
-            unsafe
-            {
-                DummyLoad<T>.Dummy = *e.CurrentPtr;
-            }
     }
 
     #endregion
