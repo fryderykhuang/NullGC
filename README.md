@@ -3,7 +3,8 @@
 ![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Allocators?label=NullGC.Allocators)
 ![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Collections?label=NullGC.Collections)
 ![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Linq?label=NullGC.Linq)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://matrix.to/#/#nullgc:gitter.im)
+[![](https://dcbadge.vercel.app/api/server/u559bFAf?style=flat&compact=true)](https://discord.gg/u559bFAf)
+
 # NullGC
 
 High performance unmanaged memory allocator / collection types / LINQ provider for .NET Core.
