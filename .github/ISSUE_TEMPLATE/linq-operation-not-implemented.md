@@ -5,12 +5,12 @@ title: Linq operator 'XXX' not implemented
 labels: codefix gen
 assignees: fryderykhuang
 body:
-- id: input
-  type: input
+- type: input
+  id: input
   attributes:
     label: Input type signature
-- id: method
-  type: input
+- type: input
+  id: method
   attributes:
     label: Proposed extension method signature
 ---
