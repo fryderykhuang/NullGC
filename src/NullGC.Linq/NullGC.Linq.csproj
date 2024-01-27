@@ -8,6 +8,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU;x64;x86</Platforms>
         <PackageTags>LINQ collection memory performance GC garbage</PackageTags>
+        <Description>LINQ extensions for NullGC high performance utility library</Description>
     </PropertyGroup>
 
     <ItemGroup>

@@ -7,6 +7,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU;x86;x64</Platforms>
         <PackageTags>collection memory performance GC garbage</PackageTags>
+        <Description>Custom collection types for NullGC high performance utility library</Description>
     </PropertyGroup>
 
     <ItemGroup>

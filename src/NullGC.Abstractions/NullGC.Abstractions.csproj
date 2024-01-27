@@ -8,6 +8,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU;x64;x86</Platforms>
         <PackageTags>memory performance GC garbage</PackageTags>
+        <Description>Abstractions and common helpers for NullGC high performance utility library</Description>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageId>NullGC.Analyzer</PackageId>
+		<Description>Code analyzer for NullGC high performance utility library</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>NullGC, analyzers</PackageTags>
+		<DevelopmentDependency>true</DevelopmentDependency>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+
+		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\NullGC.Analyzer.CodeFixes\NullGC.Analyzer.CodeFixes.csproj" />
+		<ProjectReference Include="..\NullGC.Analyzer\NullGC.Analyzer.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<Target Name="_AddAnalyzersToOutput">
+		<ItemGroup>
+			<TfmSpecificPackageFile Include="$(OutputPath)\NullGC.Analyzer.dll" PackagePath="analyzers/dotnet/cs" />
+			<TfmSpecificPackageFile Include="$(OutputPath)\NullGC.Analyzer.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+		</ItemGroup>
+	</Target>
+
+</Project>

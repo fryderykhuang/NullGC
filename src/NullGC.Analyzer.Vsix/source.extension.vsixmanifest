@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+	<Metadata>
+		<Identity Id="NullGC.Analyzer.018a0acc-8f1e-41c4-b859-807e8501aaed" Version="1.0" Language="en-US" Publisher="Fryderyk Huang"/>
+		<DisplayName>NullGC.Analyzer</DisplayName>
+		<Description xml:space="preserve">Code analyzer for NullGC high performance utility library</Description>
+	</Metadata>
+	<Installation>
+		<InstallationTarget Version="[17.0,)" Id="Microsoft.VisualStudio.Community">
+			<ProductArchitecture>x86</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Version="[17.0,)" Id="Microsoft.VisualStudio.Enterprise">
+			<ProductArchitecture>x86</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Version="[17.0,)" Id="Microsoft.VisualStudio.Community">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Version="[17.0,)" Id="Microsoft.VisualStudio.Enterprise">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+	</Installation>
+	<Dependencies>
+		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+	</Dependencies>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="NullGC.Analyzer" Path="|NullGC.Analyzer|"/>
+		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="NullGC.Analyzer" Path="|NullGC.Analyzer|"/>
+		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="NullGC.Analyzer.CodeFixes" Path="|NullGC.Analyzer.CodeFixes|"/>
+		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="NullGC.Analyzer.CodeFixes" Path="|NullGC.Analyzer.CodeFixes|"/>
+	</Assets>
+	<Prerequisites>
+		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
+		<Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,)" DisplayName="Roslyn Language Services" />
+	</Prerequisites>
+</PackageManifest>
