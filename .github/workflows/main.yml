@@ -8,12 +8,13 @@ on:
   push:
     branches:
       - 'main'
-      - 'develop'
+#      - 'develop'
       - 'release/**'
       - 'feature/**'
       - 'hotfix/**'
       - 'gha-test'
     paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
       - '*.md'
       - 'docs/**'
 env:
