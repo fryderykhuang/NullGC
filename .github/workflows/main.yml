@@ -74,7 +74,7 @@ jobs:
           name: vsix
           path: './artifacts/**/NullGC.Analyzer.Vsix.vsix'
       - name: Publish NuGet packages
-        if: ${{ !contains(github.event.comment.body, '[skip publish nuget]') }}
+        if: ${{ !contains(github.event.head_commit.body, '[skip publish nuget]') }}
         run: $Env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
 
   publish-vsix:
@@ -90,14 +90,14 @@ jobs:
             src:
               - 'src/NullGC.Analyzer*/**'
       - name: Download artifacts
-        if: steps.changes.outputs.src == 'true'
+        if: ${{ contains(github.event.head_commit.body, '[force publish vsix]') || steps.changes.outputs.src == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: vsix
       - name: Dir
         run: ls
       - name: Publish vsix to marketplace
-        if: steps.changes.outputs.src == 'true'
+        if: ${{ contains(github.event.head_commit.body, '[force publish vsix]') || steps.changes.outputs.src == 'true' }}
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
             extension-file: ./NullGC.Analyzer.Vsix.vsix
