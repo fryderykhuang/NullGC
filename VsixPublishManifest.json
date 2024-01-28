@@ -4,7 +4,7 @@
         "performance"
     ],
     "identity": {
-        "internalName": "NullGC.Analyzer"
+        "internalName": "NullGCAnalyzer"
     },
     "overview": "README.md",
     "priceCategory": "free",
