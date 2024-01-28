@@ -19,7 +19,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.11.69" PrivateAssets="all" />
+		<None Remove="..\..\README.md" />
+		<None Remove="..\icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\..\README.md">
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+		<Content Include="..\icon.ico">
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.8.2365" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.VSSDK.VsixSignTool" Version="16.2.29116.78" />
 	</ItemGroup>
 

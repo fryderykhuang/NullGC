@@ -4,7 +4,17 @@ Push-Location $SolutionDir
 foreach ($project in $Projects)
 {
     dotnet clean -c Release .\$project\$project.csproj
+    if (!$?) { throw }
     dotnet clean -c Debug .\$project\$project.csproj
+    if (!$?) { throw }
+}
+
+foreach ($project in $MsbuildProjects)
+{
+    msbuild .\$project\$project.csproj -t:Clean -verbosity:minimal -property:Configuration=Debug
+    if (!$?) { throw }
+    msbuild .\$project\$project.csproj -t:Clean -verbosity:minimal -property:Configuration=Release
+    if (!$?) { throw }
 }
 
 # $Env:Platform = 'x64'

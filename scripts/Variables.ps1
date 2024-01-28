@@ -1,8 +1,9 @@
 ﻿$SolutionDir = Join-Path $PSScriptRoot '..\src'
 $ArtifactsDir = Join-Path $PSScriptRoot '..\artifacts'
-$Projects = @("NullGC.Abstractions", "NullGC.Allocators", "NullGC.Collections", "NullGC.Linq", "NullGC.Analyzer", "NullGC.Analyzer.CodeFixes", "NullGC.Analyzer.Package");
+$Projects = @("NullGC.Abstractions", "NullGC.Allocators", "NullGC.Collections", "NullGC.Linq", "NullGC.Analyzer", "NullGC.Analyzer.CodeFixes", "NullGC.Analyzer.Package")
+$MsbuildProjects = @("NullGC.Analyzer.Vsix")
 $NuGetProjects = @("NullGC.Abstractions", "NullGC.Allocators", "NullGC.Collections", "NullGC.Linq", "NullGC.Analyzer.Package")
-$Tests = @("NullGC.Allocators.Tests", "NullGC.Collections.Tests", "NullGC.Linq.Tests", "NullGC.Analyzer.Tests");
+$Tests = @("NullGC.Allocators.Tests", "NullGC.Collections.Tests", "NullGC.Linq.Tests", "NullGC.Analyzer.Tests")
 $BenchmarkArtifactsDir = Join-Path $PSScriptRoot '..\artifacts\BenchmarkArtifacts'
 $BenchmarkResultPageDir = Join-Path $PSScriptRoot '..\artifacts\BenchmarkResultPage'
 if (!(Test-Path -PathType Container $ArtifactsDir)) { New-Item -ItemType Directory -Path $ArtifactsDir }

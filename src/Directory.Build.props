@@ -3,6 +3,7 @@
         <Authors>Fryderyk Huang</Authors>
         <PackageProjectUrl>https://github.com/fryderykhuang/NullGC</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <Copyright>Copyright (c) 2024 Fryderyk Huang</Copyright>
@@ -14,7 +15,8 @@
         <DefineConstants>$(DefineConstants);CICD</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath=""/>
+        <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath=""/>
     </ItemGroup>
     
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

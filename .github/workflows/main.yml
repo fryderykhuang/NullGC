@@ -46,6 +46,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Setup msbuild
+        uses: microsoft/setup-msbuild@v1.1
+
       - name: Restore tools
         run: dotnet tool restore
 
@@ -71,15 +74,23 @@ jobs:
       - name: Generate benchmark result page
         run: .\scripts\GenBenchmarkPage.ps1
 
-      - name: Upload artifact
+      - name: Upload benchmark result
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-result-page
           path: './artifacts/BenchmarkResultPage/**'
+      - name: Collect vsix
+        run: Get-ChildItem -Path .\src\NullGC.Analyzer.Vsix\bin\Release\ -Filter *.vsix -Recurse | Copy-Item -Destination .\artifacts\
+      - name: Upload vsix
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: './artifacts/**/NullGC.Analyzer.Vsix.vsix'
       - name: Publish NuGet packages
+        if: ${{ !contains(github.event.comment.body, '[skip publish nuget]') }}
         run: $Env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
         
-  deploy:
+  publish-benchmark-result:
     needs: build
     environment:
       name: github-pages
@@ -103,3 +114,30 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  publish-vsix:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'src/NullGC.Analyzer*/**'
+      - name: Download artifacts
+        if: steps.changes.outputs.src == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+      - name: Dir
+        run: ls
+      - name: Publish vsix to marketplace
+        if: steps.changes.outputs.src == 'true'
+        uses: cezarypiatek/VsixPublisherAction@1.1
+        with:
+            extension-file: ./NullGC.Analyzer.Vsix.vsix
+            publish-manifest-file: ./VsixPublishManifest.json
+            personal-access-code: ${{ secrets.MARKETPLACE_APIKEY }}

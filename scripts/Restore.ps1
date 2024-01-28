@@ -6,4 +6,12 @@ foreach ($project in $Projects)
     if (!$?) { throw }
 }
 
+foreach ($project in $MsbuildProjects)
+{
+    msbuild .\$project\$project.csproj -t:Restore -verbosity:minimal -property:Configuration=Debug
+    if (!$?) { throw }
+    msbuild .\$project\$project.csproj -t:Restore -verbosity:minimal -property:Configuration=Release
+    if (!$?) { throw }
+}
+
 Pop-Location

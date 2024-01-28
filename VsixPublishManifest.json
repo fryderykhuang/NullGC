@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [
+        "performance"
+    ],
+    "identity": {
+        "internalName": "NullGC.Analyzer"
+    },
+    "overview": "README.md",
+    "priceCategory": "free",
+    "publisher": "FryderykHuang",
+    "private": false,
+    "qna": true,
+    "repo": "https://github.com/fryderykhuang/NullGC"
+}
