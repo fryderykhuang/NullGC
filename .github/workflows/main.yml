@@ -1,4 +1,4 @@
-﻿name: NullGC
+﻿name: Main
 
 defaults:
   run:
@@ -31,9 +31,7 @@ concurrency:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -68,17 +66,6 @@ jobs:
       - name: Pack
         run: $Env:GitVersion_NuGetVersionV2='${{ steps.gitversion.outputs.version }}'; .\scripts\Pack.ps1
           
-      - name: Run benchmark
-        run: .\scripts\RunBenchmarks.ps1
-
-      - name: Generate benchmark result page
-        run: .\scripts\GenBenchmarkPage.ps1
-
-      - name: Upload benchmark result
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-result-page
-          path: './artifacts/BenchmarkResultPage/**'
       - name: Collect vsix
         run: Get-ChildItem -Path .\src\NullGC.Analyzer.Vsix\bin\Release\ -Filter *.vsix -Recurse | Copy-Item -Destination .\artifacts\
       - name: Upload vsix
@@ -89,31 +76,6 @@ jobs:
       - name: Publish NuGet packages
         if: ${{ !contains(github.event.comment.body, '[skip publish nuget]') }}
         run: $Env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
-        
-  publish-benchmark-result:
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark-result-page
-      - name: Display structure of downloaded files
-        run: ls -R
-      - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
 
   publish-vsix:
     needs: build
