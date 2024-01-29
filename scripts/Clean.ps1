@@ -11,9 +11,9 @@ foreach ($project in $Projects)
 
 foreach ($project in $MsbuildProjects)
 {
-    msbuild .\$project\$project.csproj -t:Clean -verbosity:minimal -property:Configuration=Debug
+    msbuild .\$project\$project.csproj -t:Clean -verbosity:minimal -p:Configuration=Debug
     if (!$?) { throw }
-    msbuild .\$project\$project.csproj -t:Clean -verbosity:minimal -property:Configuration=Release
+    msbuild .\$project\$project.csproj -t:Clean -verbosity:minimal -p:Configuration=Release
     if (!$?) { throw }
 }
 
