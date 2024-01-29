@@ -26,8 +26,8 @@ Currently this project contains 3 components:
 ### Setup
 
 1. Install NuGet package `NullGC.Allocators` and `NullGC.Linq`
-
-2. Setup AllocatorContext:
+2. If your IDE is VS2022 or above, Install `NullGC.Analyzer` VS extension, otherwise, install NuGet package `NullGC.Analyzer` (For LINQ operation boxing detection and value type lifetime enforcement)
+3. Setup AllocatorContext:
 
 ```csharp
 AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
@@ -137,7 +137,8 @@ If you have to use managed object (i.e. class) inside a struct, you can use
 **The fastest LINQ provider as of today** (2024.1). [Benchmark Results](https://fryderykhuang.github.io/NullGC/) (compared with Built-in/LinqGen/RefLinq/HyperLinq)
 
 The extreme performance boils down to:
-1. minimize struct copy by aggressive inlining and use ref modifier.
+
+1. Minimize struct copy by aggressive inlining and use ref modifier.
 2. No boxing (except for some case of interface casting that cannot be optimized away).
 3. Exploit the traits of previous stage as much as possible. (e.g. if the previous of OrderBy is `IAddressFixed`, we can store the pointer instead of the whole struct)
 
@@ -187,4 +188,4 @@ Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob
 
 ## How to contribute
 
-Framework projects like this will not become generally useful without being battle tested in real world. If your project can protentially benefit from this library, feel free to submit an Issue and talk about your use case. Any type of contributions are welcomed.
+Project like this one will not become generally useful without being battle tested in real world. If your project can protentially benefit from this library, feel free to submit an Issue and talk about your use case. Any type of contributions are welcomed.
