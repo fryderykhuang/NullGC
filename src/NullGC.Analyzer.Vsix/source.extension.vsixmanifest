@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="NullGC.Analyzer.018a0acc-8f1e-41c4-b859-807e8501aaed" Version="1.0" Language="en-US" Publisher="Fryderyk Huang"/>
+		<Identity Id="NullGC.Analyzer.7cfb097e-ba96-48ef-a036-13a39301d869" Version="0.63" Language="en-US" Publisher="Fryderyk Huang"/>
 		<DisplayName>NullGC.Analyzer</DisplayName>
 		<Description xml:space="preserve">Analyzer and code fixer for NullGC high performance utility library</Description>
 		<MoreInfo>https://github.com/fryderykhuang/NullGC</MoreInfo>
