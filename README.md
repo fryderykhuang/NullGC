@@ -17,7 +17,7 @@ This project was born mostly out of my curiosity on how far can it go to entirel
 
 ## Usage
 
-Currently this project contains 3 components:
+Currently this project contains 3 main components:
 
 1. Unmanaged memory allocator
 2. Value type (struct) only collections
@@ -26,7 +26,7 @@ Currently this project contains 3 components:
 ### Setup
 
 1. Install NuGet package `NullGC.Allocators` and `NullGC.Linq`
-2. If your IDE is VS2022 or above, Install `NullGC.Analyzer` VS extension, otherwise, install NuGet package `NullGC.Analyzer` (For LINQ operation boxing detection and value type lifetime enforcement)
+2. If your IDE is VS2022 or above, Install `NullGC.Analyzer` VS extension, otherwise, install the same name NuGet package. (For LINQ operation boxing detection and value type lifetime enforcement)
 3. Setup AllocatorContext:
 
 ```csharp
@@ -140,7 +140,7 @@ The extreme performance boils down to:
 
 1. Minimize struct copy by aggressive inlining and use ref modifier.
 2. No boxing (except for some case of interface casting that cannot be optimized away).
-3. Exploit the traits of previous stage as much as possible. (e.g. if the previous of OrderBy is `IAddressFixed`, we can store the pointer instead of the whole struct)
+3. Exploit the traits of previous stage as much as possible. (e.g. if the previous of OrderBy is `IAddressFixed`(contains only unmanaged structs rooted on fixed address object or stack, or gc-pinned managed objects), we can store the pointer instead of the whole struct)
 
 Proper usage is with the built-in value typed collections, but good old IEnumerable&lt;T&gt; is also supported. You can still get some benefit on LINQ operators that need to buffer data such as OrderBy.
 The LINQ interface has 2 variations:
@@ -166,7 +166,7 @@ TArg someTArg;
 
 ```
 
-***For now only a portion of LINQ operators are implemented, since all custom LINQ operator structs also implement `IEnumerable<T>`, if an operator/input type combination is not implemented, the system LINQ extension method will be called instead, which will cause the boxing of all the structs the LINQ chain is composed of. ~Until the corresponding Rosylyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.~ Use `NullGC.Analyzer` to produce warnings on these scenarios.**
+*For now only a portion of LINQ operators are implemented, since all custom LINQ operator structs also implement `IEnumerable<T>`, if an operator/input type combination is not implemented, the system LINQ extension method will be called instead, which will cause the boxing of all the structs the LINQ chain is composed of. ~Until the corresponding Rosylyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.~ **Use `NullGC.Analyzer` to produce warnings on these scenarios.**
 
 ## Things to do
 
@@ -176,7 +176,8 @@ TArg someTArg;
 4. More LINQ operators, support more input types.
 5. Roslyn analyzer for struct lifetime/ownership enforcing. (The actual lifetime is not being enforced, such as the early dispose from the owner side or mutation from the borrower side is still unpreventable, static analysis with attribute markers should be the way to go.) ****Borrow() analyzer has been implemented, more sophisticated lifetime analyzing will be in the future.***
 6. ~Roslyn analyzer for unintended boxing when using NullGC.Linq~
-7. Vsix extension for analyzers
+7. ~Vsix extension for analyzers~
+8. Rider extension for analyzers
 
 ## Thanks to
 
