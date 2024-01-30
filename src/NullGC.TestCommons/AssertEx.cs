@@ -10,10 +10,10 @@ public static class AssertEx
         Guard.IsNotNull(exceptionType);
 
         if (exception == null)
-            throw new ThrowsException(exceptionType);
+            throw ThrowsException.ForNoException(exceptionType);
 
         if (exceptionType != exception.GetType())
-            throw new ThrowsException(exceptionType, exception);
+            throw ThrowsException.ForIncorrectExceptionType(exceptionType, exception);
 
         return exception;
     }

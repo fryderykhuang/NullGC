@@ -14,7 +14,7 @@ public abstract class TestBase : IDisposable
         else throw new InvalidOperationException();
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         if (_logger.TryGetITest(out var test)) _logger.WriteLine($"Finished test '{test.DisplayName}'");
         else throw new InvalidOperationException();

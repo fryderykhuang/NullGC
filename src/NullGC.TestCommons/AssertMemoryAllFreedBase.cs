@@ -9,10 +9,10 @@ namespace NullGC.TestCommons;
 public abstract class AssertMemoryAllFreedBase : TestBase, IDisposable, IClassFixture<DefaultAllocatorContextFixture>
 {
     private readonly bool _scoped;
-    private readonly IMemoryAllocationTrackable _memTrackable;
-    private readonly IMemoryAllocationTrackable _allocTrackable;
+    private readonly IMemoryAllocationTrackable? _memTrackable;
+    private readonly IMemoryAllocationTrackable? _allocTrackable;
 
-    protected IMemoryAllocationTrackable AllocTracker => _allocTrackable;
+    protected IMemoryAllocationTrackable? AllocTracker => _allocTrackable;
 
     protected AssertMemoryAllFreedBase(ITestOutputHelper logger, bool scoped, bool uncached = false) : base(logger)
     {
@@ -28,14 +28,14 @@ public abstract class AssertMemoryAllFreedBase : TestBase, IDisposable, IClassFi
                 out _memTrackable);
     }
 
-    public virtual void Dispose()
+    public override void Dispose()
     {
         if (_allocTrackable is IAllocatorCacheable c1) c1.ClearCachedMemory();
         if (_allocTrackable is not null)
             Assert.True(_allocTrackable.ClientIsAllFreed);
         if (_allocTrackable is IAllocatorCacheable c2) c2.ClearCachedMemory();
-        if (_scoped)
-            Assert.True(_memTrackable.IsAllFreed);
+        if (_scoped) 
+            if (_memTrackable is not null) Assert.True(_memTrackable.IsAllFreed);
         AllocatorContext.ClearProvidersAndAllocations();
     }
 }

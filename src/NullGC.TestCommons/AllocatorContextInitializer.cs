@@ -23,8 +23,8 @@ public static class AllocatorContextInitializer
         allocTracker = nativeTracker = nt;
     }
     
-    public static void SetupDefaultUncachedUnscopedAllocationContext(out IMemoryAllocationTrackable allocTracker,
-        out IMemoryAllocationTrackable nativeTracker)
+    public static void SetupDefaultUncachedUnscopedAllocationContext(out IMemoryAllocationTrackable? allocTracker,
+        out IMemoryAllocationTrackable? nativeTracker)
     {
         var nt = new DefaultAlignedNativeMemoryAllocator();
         AllocatorContext.SetAllocatorProvider(nt, (int) AllocatorTypes.Default, false);

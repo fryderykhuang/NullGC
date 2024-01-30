@@ -16,7 +16,7 @@ public readonly struct LinqFixedRefEnumerable<T, TEnumerator> : ILinqEnumerable<
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
-        throw new NotImplementedException();
+        return _enumerator;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -29,10 +29,11 @@ public readonly struct LinqFixedRefEnumerable<T, TEnumerator> : ILinqEnumerable<
     // {
     //     return new EnumerableWrapper<T, TEnumerator>(_enumerator);
     // }
-    
+
     public int? Count => _enumerator.Count;
 
     public int? MaxCount => _enumerator.Count;
+
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
