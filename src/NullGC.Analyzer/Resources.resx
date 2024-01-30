@@ -130,19 +130,19 @@
     <value />
   </data>
   <data name="NGC11_MessageFormat" xml:space="preserve">
-    <value>Linq struct '{0}' will be boxed to '{1}' at runtime</value>
+    <value>LINQ struct '{0}' will be boxed to '{1}' at runtime</value>
   </data>
   <data name="NGC11_Title" xml:space="preserve">
-    <value>Linq enumerable struct will be boxed</value>
+    <value>LINQ chain will be boxed</value>
   </data>
   <data name="NGC12_Description" xml:space="preserve">
     <value />
   </data>
   <data name="NGC12_MessageFormat" xml:space="preserve">
-    <value>The specific overload of Linq operator '{0}' is not implemented yet, boxing will happen after fallback to system Linq</value>
+    <value>The specific overload of Linq operator '{0}' is not implemented yet, the LINQ chain will be boxed at runtime to be able to use as an IEnumerable</value>
   </data>
   <data name="NGC12_Title" xml:space="preserve">
-    <value>Linq enumerable struct will be boxed</value>
+    <value>This LINQ operator overload is not implemented</value>
   </data>
   <data name="NGC20_Description" xml:space="preserve">
     <value />

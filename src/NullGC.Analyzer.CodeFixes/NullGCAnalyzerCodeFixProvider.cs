@@ -27,7 +27,7 @@ public class NullGCAnalyzerCodeFixProvider : CodeFixProvider
         return WellKnownFixAllProviders.BatchFixer;
     }
 
-    public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         foreach (var diag in context.Diagnostics)
             if (diag.Id == NullGCAnalyzer.BoxingOnNotImplementedLinqOperationDiagnosticId)
@@ -38,7 +38,6 @@ public class NullGCAnalyzerCodeFixProvider : CodeFixProvider
                         c => ReportAsync(context, diag, c),
                         nameof(CodeFixResources.NGC12_Title)),
                     diag);
-                return;
             }
             else if (diag.Id == NullGCAnalyzer.ShouldBorrowDiagnosticId)
             {
@@ -50,9 +49,10 @@ public class NullGCAnalyzerCodeFixProvider : CodeFixProvider
                     diag);
             }
 
+        return Task.CompletedTask;
     }
 
-    private Task<Solution> ReportAsync(CodeFixContext context, Diagnostic diag, CancellationToken c)
+    private async Task<Solution> ReportAsync(CodeFixContext context, Diagnostic diag, CancellationToken c)
     {
         var title = $"[LINQ] Linq operator '{diag.Properties["OperatorName"]}' is not implemented.";
         var body = @$"InputSignature:
@@ -66,50 +66,43 @@ MethodSignature:
 Comment:
 ";
 
-        Process.Start(@$"https://github.com/fryderykhuang/NullGC/issues/new?template=linq-operation-not-implemented.md&title={WebUtility.UrlEncode(title)}&body={WebUtility.UrlEncode(body)}");
-        return Task.FromResult(context.Document.Project.Solution);
+        var url =
+            @$"https://github.com/fryderykhuang/NullGC/issues/new?template=linq-operation-not-implemented.md&title={WebUtility.UrlEncode(title)}&body={WebUtility.UrlEncode(body)}";
+        // Duplicate execution in VS, error in Rider
+        // try
+        // {
+        //     Process.Start(url);
+        // }
+        // catch
+        {
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var node = root?.FindNode(diag.Location.SourceSpan);
+            if (node is not null)
+            {
+                return context.Document.WithSyntaxRoot(root.ReplaceNode(node,
+                        node.WithLeadingTrivia(node.GetLeadingTrivia()
+                            .Add(SyntaxFactory.Comment(@$"/*
+Click to submit a feature request:
+{url}
+*/"))))).Project
+                    .Solution;
+            }
+        }
+
+        return context.Document.Project.Solution;
     }
 
     private async Task<Solution> AddCallToBorrowAsync(CodeFixContext context, Diagnostic diag, CancellationToken cancellationToken)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        var node = root.FindNode(diag.Location.SourceSpan);
-
-        if (node is ArgumentSyntax argSyntax)
+        if (root?.FindNode(diag.Location.SourceSpan) is ArgumentSyntax argSyntax)
         {
-            var updatedArgSyntax = SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, argSyntax.Expression, SyntaxFactory.IdentifierName("Borrow"))));
+            var updatedArgSyntax = SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, argSyntax.Expression,
+                    SyntaxFactory.IdentifierName("Borrow"))));
             return context.Document.WithSyntaxRoot(root.ReplaceNode(argSyntax, updatedArgSyntax)).Project.Solution;
         }
 
         return context.Document.Project.Solution;
-
-        //var sm = await context.Document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-        //if (sm != null)
-        //{
-        //    var syminfo = sm.GetSymbolInfo(node, cancellationToken);
-        //    if (syminfo.Symbol is IParameterSymbol prmSym)
-        //    {
-        //        prmSym.
-        //    }
-
-        //}
-
-        //// Compute new uppercase name.
-        //var identifierToken = typeDecl.Identifier;
-        //var newName = identifierToken.Text.ToUpperInvariant();
-
-        //// Get the symbol representing the type to be renamed.
-        //var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-        //var typeSymbol = semanticModel.GetDeclaredSymbol(typeDecl, cancellationToken);
-
-        //// Produce a new solution that has all references to that type renamed, including the declaration.
-        //var originalSolution = document.Project.Solution;
-        //var optionSet = originalSolution.Workspace.Options;
-        //var newSolution = await Renamer
-        //    .RenameSymbolAsync(document.Project.Solution, typeSymbol, newName, optionSet, cancellationToken)
-        //    .ConfigureAwait(false);
-
-        //// Return the new solution with the now-uppercase type name.
-        //return newSolution;
     }
 }
