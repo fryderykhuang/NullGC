@@ -27,6 +27,9 @@ Currently this project contains 3 main components:
 
 1. Install NuGet package `NullGC.Allocators` and `NullGC.Linq`
 2. If your IDE is VS2022 or above, Install `NullGC.Analyzer` VS extension, otherwise, install the same name NuGet package. (For LINQ operation boxing detection and value type lifetime enforcement, the warning codes produced are prefixed with `NGC`)
+
+****Full struct ownership enforcement via analyzer is on the way***
+
 3. Setup AllocatorContext:
 
 ```csharp
