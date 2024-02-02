@@ -3,7 +3,7 @@
 ![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Allocators?label=NullGC.Allocators)
 ![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Collections?label=NullGC.Collections)
 ![NuGet Version](https://img.shields.io/nuget/vpre/NullGC.Linq?label=NullGC.Linq)
-[![](https://dcbadge.vercel.app/api/server/u559bFAf?style=flat&compact=true)](https://discord.gg/u559bFAf)
+[![](https://dcbadge.vercel.app/api/server/SQg4eUW63S?style=flat&compact=true)](https://discord.gg/SQg4eUW63S)
 
 # NullGC
 
