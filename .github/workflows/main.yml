@@ -5,6 +5,7 @@ defaults:
     shell: pwsh   
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'main'
@@ -90,14 +91,14 @@ jobs:
             src:
               - 'src/NullGC.Analyzer*/**'
       - name: Download artifacts
-        if: ${{ contains(github.event.head_commit.message, '[force publish vsix]') || steps.changes.outputs.src == 'true' }}
+        if: ${{ github.event == 'workflow_dispatch' || contains(github.event.head_commit.message, '[force publish vsix]') || steps.changes.outputs.src == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: vsix
       - name: Dir
         run: ls
       - name: Publish vsix to marketplace
-        if: ${{ contains(github.event.head_commit.message, '[force publish vsix]') || steps.changes.outputs.src == 'true' }}
+        if: ${{ github.event == 'workflow_dispatch' || contains(github.event.head_commit.message, '[force publish vsix]') || steps.changes.outputs.src == 'true' }}
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
             extension-file: ./NullGC.Analyzer.Vsix.vsix
