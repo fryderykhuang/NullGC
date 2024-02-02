@@ -33,8 +33,10 @@ Currently this project contains 3 main components:
 3. Setup AllocatorContext:
 
 ```csharp
-AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl().ConfigureDefault());
+AllocatorContext.SetImplementation(new DefaultAllocatorContextImpl()); // new DefaultAllocatorContextImpl().ConfigureDefault() will not work, big mistake in previous documentation.
+AllocatorContext.Impl.ConfigureDefault();
 ```
+
 Allocator context is used internally in `ValueArray<T>` and any code that needs to allocate unmanaged memory.
 
 ### Custom collection types
