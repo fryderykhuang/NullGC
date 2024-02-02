@@ -67,7 +67,7 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
         _cacheLostObserveWindowSize = cacheLostObserveWindowSize;
         unsafe
         {
-            _overhead = MemoryMath.Ceiling((uint) sizeof(Header), IMemoryAllocator.DefaultAlignment);
+            _overhead = MemoryMath.Ceiling((uint) sizeof(Header), MemoryConstants.DefaultAlignment);
         }
     }
 
@@ -86,8 +86,10 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
 
     public ulong SelfTotalAllocated => _totalAllocatedBytes;
     public ulong SelfTotalFreed => _totalFreedBytes;
+    public bool IsAllFreed => SelfTotalAllocated == SelfTotalFreed;
     public ulong ClientTotalAllocated => _clientAllocated;
     public ulong ClientTotalFreed => _clientFreed;
+    public bool ClientIsAllFreed => ClientTotalAllocated == ClientTotalFreed;
 
     public UIntPtr Allocate(nuint size)
     {
@@ -128,7 +130,7 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
                 ret = ptr + _overhead;
             }
 
-            Debug.Assert(ret % IMemoryAllocator.DefaultAlignment == 0);
+            Debug.Assert(ret % MemoryConstants.DefaultAlignment == 0);
             return ret;
         }
     }
@@ -174,7 +176,7 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
             ref var alloc = ref Header.FromPointer(ptr - _overhead);
             TraceOn.MemAlloc(nameof(DefaultAllocationPooler),
                 $"Before free {ptr:X} size={alloc.RequestedSize} allocSiz={alloc.AllocSize}");
-            Debug.Assert(alloc.FreeablePointer % IMemoryAllocator.DefaultAlignment == 0);
+            Debug.Assert(alloc.FreeablePointer % MemoryConstants.DefaultAlignment == 0);
             _clientFreed += alloc.RequestedSize;
             var allocSize = alloc.AllocSize;
             if (allocSize <= _poolItemSizeLimit)
@@ -263,13 +265,13 @@ public class DefaultAllocationPooler : IMemoryAllocator, IMemoryAllocationTracka
     {
         Debug.Assert(size > 0);
         return MemoryMath.Ceiling(size + _overhead,
-            IMemoryAllocator.DefaultAlignment * ((uint) BitOperations.Log2(size) + 1));
+            MemoryConstants.DefaultAlignment * ((uint) BitOperations.Log2(size) + 1));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private nuint GetExactFitSize(nuint size)
     {
-        return MemoryMath.Ceiling(size + _overhead, IMemoryAllocator.DefaultAlignment);
+        return MemoryMath.Ceiling(size + _overhead, MemoryConstants.DefaultAlignment);
     }
 
     /// <summary>

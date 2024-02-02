@@ -1,73 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-    <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props"/>
+	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props"/>
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <RootNamespace>NullGC.Analyzer.Vsix</RootNamespace>
-        <AssemblyName>NullGC.Analyzer.Vsix</AssemblyName>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<RootNamespace>NullGC.Analyzer.Vsix</RootNamespace>
+		<AssemblyName>NullGC.Analyzer.Vsix</AssemblyName>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <GeneratePkgDefFile>false</GeneratePkgDefFile>
-        <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
-        <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
-        <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
-        <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
-        <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
-        <VSSDKTargetPlatformRegRootSuffix>Roslyn</VSSDKTargetPlatformRegRootSuffix>
-    </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+		<CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+		<IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
+		<IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+		<IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+		<CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <None Remove="..\..\README.md"/>
-        <None Remove="..\icon.ico"/>
-    </ItemGroup>
+	<PropertyGroup>
+		<GeneratePkgDefFile>false</GeneratePkgDefFile>
+		<VSSDKTargetPlatformRegRootSuffix>Roslyn</VSSDKTargetPlatformRegRootSuffix>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <Content Include="..\..\README.md">
-            <IncludeInVSIX>true</IncludeInVSIX>
-        </Content>
-        <Content Include="..\icon.ico">
-            <IncludeInVSIX>true</IncludeInVSIX>
-        </Content>
-    </ItemGroup>
+	<ItemGroup>
+		<None Remove="..\..\README.md"/>
+		<None Remove="..\icon.ico"/>
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.8.2365" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.VSSDK.VsixSignTool" Version="16.2.29116.78"/>
-    </ItemGroup>
+	<ItemGroup>
+		<Content Include="..\..\README.md">
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+		<Content Include="..\icon.ico">
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+	</ItemGroup>
 
-    <PropertyGroup>
-        <StartAction>Program</StartAction>
-        <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
-        <StartArguments>/rootsuffix $(VSSDKTargetPlatformRegRootSuffix)</StartArguments>
-    </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.8.2365" PrivateAssets="all"/>
+		<PackageReference Include="Microsoft.VSSDK.VsixSignTool" Version="16.2.29116.78"/>
+	</ItemGroup>
 
-    <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets"/>
+	<PropertyGroup>
+		<StartAction>Program</StartAction>
+		<StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
+		<StartArguments>/rootsuffix $(VSSDKTargetPlatformRegRootSuffix)</StartArguments>
+	</PropertyGroup>
 
-    <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')"/>
+	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets"/>
 
-    <ItemGroup>
-        <ProjectReference Include="..\NullGC.Analyzer\NullGC.Analyzer.csproj"/>
-        <ProjectReference Include="..\NullGC.Analyzer.CodeFixes\NullGC.Analyzer.CodeFixes.csproj" />
-    </ItemGroup>
+	<Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')"/>
 
-    <ItemGroup>
-        <!-- https://github.com/dotnet/sdk/issues/433 -->
-        <ProjectReference Update="@(ProjectReference)" AdditionalProperties="TargetFramework=netstandard2.0"/>
+	<ItemGroup>
+		<ProjectReference Include="..\NullGC.Analyzer\NullGC.Analyzer.csproj"/>
+		<ProjectReference Include="..\NullGC.Analyzer.CodeFixes\NullGC.Analyzer.CodeFixes.csproj" />
+	</ItemGroup>
 
-        <!-- https://github.com/Microsoft/extendvs/issues/57 -->
-        <ProjectReference Update="@(ProjectReference)" Name="%(Filename)"/>
-    </ItemGroup>
-    
-    <!--https://stackoverflow.com/a/24328739-->
-    <Target Name="UpdateVersionInVsixManifest" BeforeTargets="PrepareForBuild" Condition="$(Version) != ''">
-        <Message Text="Updating VSIX Version"/>
-        <XmlPoke
+	<ItemGroup>
+		<!-- https://github.com/dotnet/sdk/issues/433 -->
+		<ProjectReference Update="@(ProjectReference)" AdditionalProperties="TargetFramework=netstandard2.0"/>
+
+		<!-- https://github.com/Microsoft/extendvs/issues/57 -->
+		<ProjectReference Update="@(ProjectReference)" Name="%(Filename)"/>
+	</ItemGroup>
+
+	<!--https://stackoverflow.com/a/24328739-->
+	<Target Name="UpdateVersionInVsixManifest" BeforeTargets="PrepareForBuild" Condition="$(Version) != ''">
+		<Message Text="Updating VSIX Version"/>
+		<XmlPoke
                 XmlInputPath="source.extension.vsixmanifest"
                 Query="/n:PackageManifest/n:Metadata/n:Identity/@Version"
                 Value="$(Version)"
                 Namespaces="&lt;Namespace Prefix='n' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' Name='DoNotKnowWhatThisIsFor-ButItIsRequired' /&gt;">
-        </XmlPoke>
-    </Target>
+		</XmlPoke>
+	</Target>
 </Project>

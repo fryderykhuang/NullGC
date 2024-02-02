@@ -35,7 +35,7 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
     {
         unsafe
         {
-            Overhead = MemoryMath.Ceiling((uint) sizeof(Header), IMemoryAllocator.DefaultAlignment);
+            Overhead = MemoryMath.Ceiling((uint) sizeof(Header), MemoryConstants.DefaultAlignment);
         }
     }
     
@@ -59,8 +59,10 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
 
     public ulong SelfTotalAllocated => _totalAllocated;
     public ulong SelfTotalFreed => _totalFreed;
+    public bool IsAllFreed => SelfTotalAllocated == SelfTotalFreed;
     public ulong ClientTotalAllocated => _clientAllocated;
     public ulong ClientTotalFreed => _clientFreed;
+    public bool ClientIsAllFreed => ClientTotalAllocated == ClientTotalFreed;
 
     public UIntPtr Allocate(nuint size)
     {
@@ -68,7 +70,7 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
         ref var freeList = ref _freeList.GetValueRefOrNullRef(size, out var exists);
         if (!exists || (ptr = freeList.Pop()) == UIntPtr.Zero)
         {
-            ptr = AllocateMemory(MemoryMath.Ceiling(size + Overhead, IMemoryAllocator.DefaultAlignment));
+            ptr = AllocateMemory(MemoryMath.Ceiling(size + Overhead, MemoryConstants.DefaultAlignment));
 
             var head = new Header(_id, size, UIntPtr.Zero);
             head.WriteToPtr(ptr);
@@ -77,7 +79,7 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
 
         _tracker?.ClientAllocate(size);
         _clientAllocated += size;
-        Debug.Assert(ptr % IMemoryAllocator.DefaultAlignment == 0);
+        Debug.Assert(ptr % MemoryConstants.DefaultAlignment == 0);
         return ptr;
     }
 
@@ -88,12 +90,12 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
         ref var header = ref Header.FromPtr(ptr - Overhead);
         Guard.IsEqualTo(header.ArenaId, _id);
         ref var page = ref _pages[^1];
-        var nextAddr = MemoryMath.Ceiling(ptr + header.RequestedSize, IMemoryAllocator.DefaultAlignment);
+        var nextAddr = MemoryMath.Ceiling(ptr + header.RequestedSize, MemoryConstants.DefaultAlignment);
         if (!page.IsTop(nextAddr)) return ReallocResult.NotSuccess;
         var oldAlloc = (uint) (nextAddr - (ptr - Overhead));
         page.Free(oldAlloc);
-        var newAlloc = MemoryMath.Ceiling(minSize + Overhead, IMemoryAllocator.DefaultAlignment);
-        var newAllocLimit = MemoryMath.Ceiling(maxSize + Overhead, IMemoryAllocator.DefaultAlignment);
+        var newAlloc = MemoryMath.Ceiling(minSize + Overhead, MemoryConstants.DefaultAlignment);
+        var newAllocLimit = MemoryMath.Ceiling(maxSize + Overhead, MemoryConstants.DefaultAlignment);
         (UIntPtr newPtr, nuint actualSize) = page.AllocateAtLeast(newAlloc, newAllocLimit);
         if (ptr != UIntPtr.Zero)
         {
@@ -124,7 +126,7 @@ public sealed class ArenaAllocator : IMemoryAllocator, IDisposable, IMemoryAlloc
         ref var header = ref Header.FromPtr(ptr - Overhead);
         Guard.IsEqualTo(header.ArenaId, _id);
         ref var page = ref _pages[^1];
-        var nextAddr = MemoryMath.Ceiling(ptr + header.RequestedSize, IMemoryAllocator.DefaultAlignment);
+        var nextAddr = MemoryMath.Ceiling(ptr + header.RequestedSize, MemoryConstants.DefaultAlignment);
         if (page.IsTop(nextAddr))
         {
             page.Free((uint) (nextAddr - (ptr - Overhead)));

@@ -26,10 +26,8 @@ Currently this project contains 3 main components:
 ### Setup
 
 1. Install NuGet package `NullGC.Allocators`, `NullGC.Collections` and optionally `NullGC.Linq`
-2. If your IDE is VS2022 or above, Install `NullGC.Analyzer` VS extension, otherwise, install the same name NuGet package. (For LINQ operation boxing detection and value type lifetime enforcement, the warning codes produced are prefixed with `NGC`)
-
-****Full struct ownership enforcement via analyzer is on the way***
-
+2. Install the `NulGC.Analyzer` NuGet package. (For LINQ operation boxing detection and value type lifetime enforcement, the warning codes produced are prefixed with `NGC`)
+****Full struct ownership enforcement via analyzer is on the way*** (Update on 2/7/2024: Partially implemented)
 3. Setup AllocatorContext:
 
 ```csharp
@@ -117,7 +115,7 @@ using (var badGuy = new BadGuy(list)) {
 list.Dispose(); // Since 'list' is NOT in the disposed state, this will cause the double-free.
 ```
 
-So to prevent double-free, when these value collections are passed by value, `Borrow()` (from interface `ISingleDisposable<TSelf>`) should be used.
+So to prevent double-free, when these value collections are passed by value, `Borrow()` (from interface `IExplicitOwnership<TSelf>`) should be used.
 
 ```csharp
 void SomeMethod(ValueList<T> lst){ // 'lst' is a copy of 'list' below.
@@ -128,14 +126,32 @@ var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
 SomeMethod(list.Borrow()); // The borrowed one's Dispose() is a no-op.
 list.Dispose(); // Ok.
 ```
-***Installing `NullGC.Analyzer` is recommended to make sure best practice is followed.***
+
+### Explicit ownership management
+
+As mentioned in the above code, `IExplicitOwnership<TSelf>` is introduced to tackle the issue regarding vague struct ownership (*The 'ownership' here only focuses on who should be dispose the disposable struct, may extend to true ownership semantic in the future) when the struct is being copied such as passed by value.
+
+```csharp
+public interface IExplicitOwnership<out T> : IDisposable where T : struct, IDisposable
+{
+    [return: Borrowed]
+    T Borrow();
+
+    [return: Owned]
+    T Take();
+}
+```
+
+When a struct needs to be disposable, this interface should be implemented. It contains two methods `Borrow()` and `Take()`. `Borrow` should return a copy of the struct itself with `Dispose()` changed to a no-op. `Take` should also return a copy of self but with the `Dispose()` method of the original struct be changed to a no-op. Semantically, the responsibility of calling the `Dispose()` for the 'borrowed' struct is on the original struct, for the 'taken' struct, it is on the returned struct from calling the `Take()`.
+
+**Installing `NullGC.Analyzer` is required to make sure the user code be analyzed according to the ownership semantic discussed above and specific warnings be given out to the developer at IntelliSense and compile time.**
 
 ### Interop with managed object
 
 If you have to use managed object (i.e. class) inside a struct, you can use
 `Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
 
-*Since .NET 5 there's a specific heap type for pinned object called [POH](https://devblogs.microsoft.com/dotnet/internals-of-the-poh/), the performance impact will be quite low. 
+*Since .NET 5 there's a specific heap type for pinned object called [POH](https://devblogs.microsoft.com/dotnet/internals-of-the-poh/), the performance impact will be quite low.
 
 ### Linq
 
@@ -171,7 +187,9 @@ TArg someTArg;
 
 ```
 
-*For now only a portion of LINQ operators are implemented, since all custom LINQ operator structs also implement `IEnumerable<T>`, if an operator/input type combination is not implemented, the system LINQ extension method will be called instead, which will cause the boxing of all the structs the LINQ chain is composed of. ~Until the corresponding Rosylyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.~ **Use `NullGC.Analyzer` to produce warnings on these scenarios.**
+*For now only a portion of LINQ operators are implemented, since all custom LINQ operator structs also implement `IEnumerable<T>`, if an operator/input type combination is not implemented, the system LINQ extension method will be called instead, which will cause the boxing of all the structs the LINQ chain is composed of.
+~Until the corresponding Rosylyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.~
+**Use `NullGC.Analyzer` to produce warnings on these scenarios.**
 
 ## Things to do
 
@@ -179,10 +197,9 @@ TArg someTArg;
 2. Larger test coverage.
 3. More collection types.
 4. More LINQ operators, support more input types.
-5. Roslyn analyzer for struct lifetime/ownership enforcing. (The actual lifetime is not being enforced, such as the early dispose from the owner side or mutation from the borrower side is still unpreventable, static analysis with attribute markers should be the way to go.) ****Borrow() analyzer has been implemented, more sophisticated lifetime analyzing will be in the future.***
+5. Roslyn analyzer for struct lifetime/ownership enforcing. (The actual lifetime is not being enforced, such as the early dispose from the owner side or mutation from the borrower side is still unpreventable, static analysis with attribute markers should be the way to go.) ****Partially implemented.***
 6. ~Roslyn analyzer for unintended boxing when using NullGC.Linq~
-7. ~Vsix extension for analyzers~
-8. Rider extension for analyzers
+7. ~Vsix extension for analyzers~ (It seems digital signing is required for the extension to be updatable, stay away from the mess for now)
 
 ## Thanks to
 
@@ -194,4 +211,4 @@ Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob
 
 ## How to contribute
 
-Project like this one will not become generally useful without being battle tested in real world. If your project can protentially benefit from this library, feel free to submit an Issue and talk about your use case. Any type of contributions are welcomed.
+Project like this one will not become generally useful without being battle tested in real world. If your project can protentially benefit from this library, feel free to talk about your use case in the [Discussions](https://github.com/fryderykhuang/NullGC/discussions) area. Any form of contributions are welcomed.

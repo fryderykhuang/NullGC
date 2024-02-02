@@ -14,7 +14,7 @@ namespace NullGC.Collections;
 
 // modified from the code of .NET Core Stack<>.
 [DebuggerDisplay("Count = {Count}, IsAllocated = {IsAllocated}")]
-public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISingleDisposable<ValueStack<T>>,
+public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, IExplicitOwnership<ValueStack<T>>,
     ICollection, IReadOnlyCollection<T>, IUnmanagedArray<T> where T : unmanaged
 {
     private ValueArray<T> _array; // Storage for stack elements. Do not rename (binary serialization)
@@ -351,6 +351,7 @@ public struct ValueStack<T> : ILinqEnumerable<T, ValueStack<T>.Enumerator>, ISin
     public bool IsAllocated => _array.IsAllocated;
 
     public ValueStack<T> Borrow() => new(_array.Borrow(), _size);
+    public ValueStack<T> Take() => new(_array.Take(), _size);
 
     public void Dispose() => _array.Dispose();
 }

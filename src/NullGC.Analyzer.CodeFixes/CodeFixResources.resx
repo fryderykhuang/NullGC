@@ -117,10 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddBorrow_Title" xml:space="preserve">
+    <value>Add call to Borrow()</value>
+  </data>
+  <data name="AddReadOnlyOnParameter_Title" xml:space="preserve">
+    <value>Add [ReadOnly] attribute on target parameter</value>
+  </data>
+  <data name="AddTake_Title" xml:space="preserve">
+    <value>Add call to Take()</value>
+  </data>
   <data name="NGC12_Title" xml:space="preserve">
     <value>Submit feature request</value>
   </data>
-  <data name="NGC20_Title" xml:space="preserve">
-    <value>Add call to Borrow()</value>
+  <data name="SuppressByComment_Title" xml:space="preserve">
+    <value>Suppress this explicit ownership violation</value>
   </data>
 </root>

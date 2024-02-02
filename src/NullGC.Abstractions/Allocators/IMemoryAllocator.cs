@@ -2,7 +2,7 @@
 
 namespace NullGC.Allocators;
 
-public interface IMemoryAllocator
+public static class MemoryConstants
 {
     public static readonly uint DefaultAlignment = (uint) (Environment.Is64BitProcess ? 16 : 8);
 // #if TARGET_64BIT
@@ -11,7 +11,10 @@ public interface IMemoryAllocator
 //             8
 // #endif
 //         ;
+}
 
+public interface IMemoryAllocator
+{
     UIntPtr Allocate(nuint size);
 
     /// <summary>

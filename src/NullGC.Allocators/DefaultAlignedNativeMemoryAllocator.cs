@@ -6,7 +6,7 @@ using NullGC.Diagnostics;
 namespace NullGC.Allocators;
 
 /// <summary>
-/// Native memory allocator with alignment defaults to <see cref="IMemoryAllocator.DefaultAlignment"/> 
+/// Native memory allocator with alignment defaults to <see cref="MemoryConstants.DefaultAlignment"/> 
 /// </summary>
 public class DefaultAlignedNativeMemoryAllocator : IMemoryAllocator, IAllocatorProvider
 {
@@ -17,10 +17,10 @@ public class DefaultAlignedNativeMemoryAllocator : IMemoryAllocator, IAllocatorP
     {
         unsafe
         {
-            var ptr = (UIntPtr) NativeMemory.AlignedAlloc(size, IMemoryAllocator.DefaultAlignment);
+            var ptr = (UIntPtr) NativeMemory.AlignedAlloc(size, MemoryConstants.DefaultAlignment);
             TraceOn.MemAlloc(nameof(DefaultAlignedNativeMemoryAllocator),
-                $"Allocated {ptr:X} with size {size:N} [{IMemoryAllocator.DefaultAlignment}]");
-            Debug.Assert(ptr % IMemoryAllocator.DefaultAlignment == 0);
+                $"Allocated {ptr:X} with size {size:N} [{MemoryConstants.DefaultAlignment}]");
+            Debug.Assert(ptr % MemoryConstants.DefaultAlignment == 0);
             return ptr;
         }
     }
@@ -34,15 +34,15 @@ public class DefaultAlignedNativeMemoryAllocator : IMemoryAllocator, IAllocatorP
         {
 #if TRACE_MEM_ALLOC
             var oldPtr = ptr;
-            TraceOn.MemAlloc(nameof(DefaultAlignedNativeMemoryAllocator), $"Before resize {oldPtr:X} to {minSize:N} {maxSize:N} [{IMemoryAllocator.DefaultAlignment}]");
+            TraceOn.MemAlloc(nameof(DefaultAlignedNativeMemoryAllocator), $"Before resize {oldPtr:X} to {minSize:N} {maxSize:N} [{MemoryConstants.DefaultAlignment}]");
 #endif
-            Debug.Assert(ptr % IMemoryAllocator.DefaultAlignment == 0);
-            ptr = (UIntPtr) NativeMemory.AlignedRealloc(ptr.ToPointer(), maxSize, IMemoryAllocator.DefaultAlignment);
-            Debug.Assert(ptr % IMemoryAllocator.DefaultAlignment == 0);
+            Debug.Assert(ptr % MemoryConstants.DefaultAlignment == 0);
+            ptr = (UIntPtr) NativeMemory.AlignedRealloc(ptr.ToPointer(), maxSize, MemoryConstants.DefaultAlignment);
+            Debug.Assert(ptr % MemoryConstants.DefaultAlignment == 0);
             
 #if TRACE_MEM_ALLOC
             TraceOn.MemAlloc(nameof(DefaultAlignedNativeMemoryAllocator),
-                $"Resized {oldPtr:X} to {ptr:X} {minSize:N} {maxSize:N} [{IMemoryAllocator.DefaultAlignment}]");
+                $"Resized {oldPtr:X} to {ptr:X} {minSize:N} {maxSize:N} [{MemoryConstants.DefaultAlignment}]");
 #endif
         }
 
@@ -58,7 +58,7 @@ public class DefaultAlignedNativeMemoryAllocator : IMemoryAllocator, IAllocatorP
         unsafe
         {
             TraceOn.MemAlloc(nameof(DefaultAlignedNativeMemoryAllocator), $"Before free {ptr:X}");
-            Debug.Assert(ptr % IMemoryAllocator.DefaultAlignment == 0);
+            Debug.Assert(ptr % MemoryConstants.DefaultAlignment == 0);
             NativeMemory.AlignedFree((void*) ptr);
         }
     }

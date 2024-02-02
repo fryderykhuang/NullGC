@@ -19,7 +19,10 @@ namespace NullGC.Analyzer;
 public class NullGCAnalyzerCodeFixProvider : CodeFixProvider
 {
     public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-        ImmutableArray.Create(NullGCAnalyzer.BoxingOnNotImplementedLinqOperationDiagnosticId, NullGCAnalyzer.ShouldBorrowDiagnosticId);
+        ImmutableArray.Create(NullGCAnalyzer.BoxingOnNotImplementedLinqOperationDiagnosticId,
+            NullGCAnalyzer.OwnershipShouldBeExplicitOnValuePassingParameterDiagnosticId,
+            NullGCAnalyzer.OwnershipShouldBeExplicitOnRefOrOutParametersDiagnosticId,
+            NullGCAnalyzer.PotentialDoubleFreeSituationSuggestExplicitOwnershipDiagnosticId);
 
     public sealed override FixAllProvider GetFixAllProvider()
     {
@@ -39,17 +42,50 @@ public class NullGCAnalyzerCodeFixProvider : CodeFixProvider
                         nameof(CodeFixResources.NGC12_Title)),
                     diag);
             }
-            else if (diag.Id == NullGCAnalyzer.ShouldBorrowDiagnosticId)
+            else if (diag.Id is NullGCAnalyzer.OwnershipShouldBeExplicitOnValuePassingParameterDiagnosticId
+                     or NullGCAnalyzer.OwnershipShouldBeExplicitOnRefOrOutParametersDiagnosticId
+                     or NullGCAnalyzer.PotentialDoubleFreeSituationSuggestExplicitOwnershipDiagnosticId)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(
-                        CodeFixResources.NGC20_Title,
-                        c => AddCallToBorrowAsync(context, diag, c),
-                        nameof(CodeFixResources.NGC20_Title)),
+                        CodeFixResources.AddBorrow_Title,
+                        c => AddCallAsync(context, diag, "Borrow", c),
+                        nameof(CodeFixResources.AddBorrow_Title)),
+                    diag);
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        CodeFixResources.AddTake_Title,
+                        c => AddCallAsync(context, diag, "Take", c),
+                        nameof(CodeFixResources.AddTake_Title)),
+                    diag);
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        CodeFixResources.SuppressByComment_Title,
+                        c => AddLeadingCommentAsync(context, diag, "/*ReadOnly*/", c),
+                        nameof(CodeFixResources.SuppressByComment_Title)),
                     diag);
             }
 
         return Task.CompletedTask;
+    }
+
+    private async Task<Document> AddLeadingCommentAsync(CodeFixContext context, Diagnostic diag, string comment, CancellationToken cancellationToken)
+    {
+        var root = await context.Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+        var node = root?.FindNode(diag.Location.SourceSpan);
+        if (node is not ArgumentSyntax)
+        {
+            node = node?.Parent;
+        }
+
+        if (node is ArgumentSyntax argSyntax)
+        {
+            var updatedArgSyntax = argSyntax.WithLeadingTrivia(SyntaxFactory.Comment(comment));
+            return context.Document.WithSyntaxRoot(root.ReplaceNode(argSyntax, updatedArgSyntax));
+        }
+
+        return context.Document;
+
     }
 
     private async Task<Solution> ReportAsync(CodeFixContext context, Diagnostic diag, CancellationToken c)
@@ -92,17 +128,29 @@ Click to submit a feature request:
         return context.Document.Project.Solution;
     }
 
-    private async Task<Solution> AddCallToBorrowAsync(CodeFixContext context, Diagnostic diag, CancellationToken cancellationToken)
+    private async Task<Document> AddCallAsync(CodeFixContext context, Diagnostic diag, string methodName,
+        CancellationToken cancellationToken)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        if (root?.FindNode(diag.Location.SourceSpan) is ArgumentSyntax argSyntax)
+        var root = await context.Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+        if (root is null) return context.Document;
+        var node = root.FindNode(diag.Location.SourceSpan);
+        if (node is ExpressionSyntax exprSyn)
         {
-            var updatedArgSyntax = SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, argSyntax.Expression,
-                    SyntaxFactory.IdentifierName("Borrow"))));
-            return context.Document.WithSyntaxRoot(root.ReplaceNode(argSyntax, updatedArgSyntax)).Project.Solution;
+            // TODO deal with explicit interface implementation
+            var updatedNode = SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, exprSyn,
+                    SyntaxFactory.IdentifierName(methodName)));
+            return context.Document.WithSyntaxRoot(root.ReplaceNode(node, updatedNode));
+        }
+        else if (node is ArgumentSyntax argSyn)
+        {
+            // TODO deal with explicit interface implementation
+            var updatedNode = SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, argSyn.Expression,
+                    SyntaxFactory.IdentifierName(methodName))));
+            return context.Document.WithSyntaxRoot(root.ReplaceNode(node, updatedNode));
         }
 
-        return context.Document.Project.Solution;
+        return context.Document;
     }
 }

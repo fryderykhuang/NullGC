@@ -13,7 +13,7 @@ namespace NullGC.Collections;
 // modified from the .NET Core EnumerableSorter<>
 public struct ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> : IComparer<int>,
     IValueEnumerableSorter<TElement>,
-    ISingleDisposable<ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext>>
+    IExplicitOwnership<ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext>>
     where TKeySel : struct
     where TElement : unmanaged
     where TComparer : IComparer<TKey>
@@ -405,6 +405,12 @@ public struct ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> :
     {
         return new ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext>(_keySelector, _comparer, _flags,
             _allocatorProviderId, _keys.Borrow(), _next);
+    }
+
+    public ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext> Take()
+    {
+        return new ValueEnumerableSorter<TElement, TKey, TKeySel, TComparer, TNext>(_keySelector, _comparer, _flags,
+            _allocatorProviderId, _keys.Take(), _next);
     }
 
     public void Dispose()

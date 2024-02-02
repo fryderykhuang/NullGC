@@ -12,7 +12,7 @@ namespace NullGC.Collections;
 
 [DebuggerDisplay("Count = {Length}, IsAllocated = {IsAllocated}")]
 public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IList<T>,
-    ISingleDisposable<ValueArray<T>> where T : unmanaged
+    IExplicitOwnership<ValueArray<T>> where T : unmanaged
 {
     public readonly ValueArray<T> WithAllocationProviderId(int id)
     {
@@ -32,7 +32,7 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
         unsafe
         {
             Debug.Assert(length == 0 || allocatorProviderId != (int) AllocatorTypes.Invalid);
-            AllocatorProviderId = allocatorProviderId;
+            _allocatorProviderId = allocatorProviderId;
             if (length == 0)
                 return;
             var size = (nuint) sizeof(T) * (nuint) length;
@@ -59,7 +59,7 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
         
         _items = buf;
         _length = length;
-        AllocatorProviderId = (int) AllocatorTypes.Invalid;
+        _allocatorProviderId = (int) AllocatorTypes.Invalid;
     }
 
     private unsafe ValueArray(T* buf, int length, int allocatorProviderId)
@@ -68,12 +68,13 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
         Debug.Assert((UIntPtr) buf % (nuint) UIntPtr.Size == 0);
         _items = buf;
         _length = length;
-        AllocatorProviderId = allocatorProviderId;
+        _allocatorProviderId = allocatorProviderId;
     }
 
     private unsafe T* _items;
     private int _length;
-    public readonly int AllocatorProviderId;
+    public int AllocatorProviderId => _allocatorProviderId;
+    public int _allocatorProviderId;
 
     public readonly unsafe T* Items
     {
@@ -161,15 +162,25 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
         }
     }
 
+    public ValueArray<T> Take()
+    {
+        unsafe
+        {
+            var allocId = _allocatorProviderId;
+            _allocatorProviderId = (int) AllocatorTypes.Invalid;
+            return new ValueArray<T>(_items, _length, allocId);
+        }
+    }
+
     public void Dispose()
     {
         unsafe
         {
-            if (AllocatorProviderId != (int) AllocatorTypes.Invalid)
+            if (_allocatorProviderId != (int) AllocatorTypes.Invalid)
             {
                 _length = 0;
                 if (_items == (void*) 0) return;
-                AllocatorContext.GetAllocator(AllocatorProviderId).Free((UIntPtr) _items);
+                AllocatorContext.GetAllocator(_allocatorProviderId).Free((UIntPtr) _items);
                 _items = (T*) 0;
             }
         }
@@ -254,12 +265,12 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
     {
         if (minLength <= _length)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(minLength));
-        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
+        if (_allocatorProviderId == (int) AllocatorTypes.Invalid)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowInvalidOperationException("Invalid allocator provider.");
 
         unsafe
         {
-            var allocator = AllocatorContext.GetAllocator(AllocatorProviderId);
+            var allocator = AllocatorContext.GetAllocator(_allocatorProviderId);
             if (minLength > 0)
             {
 #if DEBUG
@@ -273,7 +284,7 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
                     .SequenceEqual(bak));
 #endif
 
-                Debug.Assert(reallocResult.Ptr % IMemoryAllocator.DefaultAlignment == 0);
+                Debug.Assert((reallocResult.Ptr % (nuint) MemoryConstants.DefaultAlignment) == 0);
                 minLength = (int) (reallocResult.ActualSize / (nuint) sizeof(T));
                 if (!noClear && minLength > _length)
                     UnsafeHelper.InitBlockUnaligned(((T*) reallocResult.Ptr) + _length, 0,
@@ -297,9 +308,9 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
 
     internal void ResizeByAllocateNew(int newLength, bool noClear = false)
     {
-        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
+        if (_allocatorProviderId == (int) AllocatorTypes.Invalid)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowInvalidOperationException("Invalid allocator provider.");
-        var allocator = AllocatorContext.GetAllocator(AllocatorProviderId);
+        var allocator = AllocatorContext.GetAllocator(_allocatorProviderId);
         unsafe
         {
             var size = (nuint) newLength * (nuint) sizeof(T);
@@ -323,7 +334,7 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
 
     internal int Grow(int minLength, int maxLength, bool noClear = false)
     {
-        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
+        if (_allocatorProviderId == (int) AllocatorTypes.Invalid)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowInvalidOperationException("Invalid allocator provider ID.");
         if (minLength <= _length)
             CommunityToolkit.Diagnostics.ThrowHelper.ThrowArgumentOutOfRangeException(nameof(minLength));
@@ -332,7 +343,7 @@ public struct ValueArray<T> : IUnmanagedArray<T>, ILinqEnumerable<T, UnmanagedAr
         {
             var minSize = (nuint) minLength * (nuint) sizeof(T);
             var maxSize = (nuint) maxLength * (nuint) sizeof(T);
-            var allocator = AllocatorContext.GetAllocator(AllocatorProviderId);
+            var allocator = AllocatorContext.GetAllocator(_allocatorProviderId);
             var items = _items;
             var reallocResult = allocator.TryRealloc((UIntPtr) items, minSize, maxSize);
             if (reallocResult.Success)
