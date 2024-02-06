@@ -79,6 +79,8 @@ jobs:
         run: $Env:NUGET_API_KEY='${{ secrets.NUGET_API_KEY }}'; .\scripts\PublishNuget.ps1
 
   publish-vsix:
+    # Disable for now, unsigned extension will not be updated on manifest version change. https://learn.microsoft.com/en-us/visualstudio/extensibility/how-to-update-a-visual-studio-extension?view=vs-2022#to-publish-an-update-of-an-extension
+    if: false
     needs: build
     runs-on: windows-latest
     steps:

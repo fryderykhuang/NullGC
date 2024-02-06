@@ -18,7 +18,7 @@ namespace NullGC.Collections;
 // modified from the code of .NET Core Dictionary<,>.
 [DebuggerDisplay("Count = {Count}, IsAllocated = {IsInitialized}")]
 public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
-    ISingleDisposable<ValueDictionary<TKey, TValue>>,
+    IExplicitOwnership<ValueDictionary<TKey, TValue>>,
     ILinqEnumerable<ValueDictionary<TKey, TValue>.Entry, ValueDictionary<TKey, TValue>.Enumerator>,
     ICollection<ValueDictionary<TKey, TValue>.Entry>, IReadOnlyCollection<ValueDictionary<TKey, TValue>.Entry>
     where TKey : unmanaged where TValue : unmanaged
@@ -1204,6 +1204,15 @@ public struct ValueDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     public ValueDictionary<TKey, TValue> Borrow()
     {
         return new ValueDictionary<TKey, TValue>(_buckets.Borrow(), _entries.Borrow(),
+#if TARGET_64BIT
+            _fastModMultiplier,
+#endif
+            _count, _freeList, _freeCount, _comparer);
+    }
+
+    public ValueDictionary<TKey, TValue> Take()
+    {
+        return new ValueDictionary<TKey, TValue>(_buckets.Take(), _entries.Take(),
 #if TARGET_64BIT
             _fastModMultiplier,
 #endif

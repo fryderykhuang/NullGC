@@ -6,7 +6,7 @@ using NullGC.Linq;
 
 namespace NullGC.Collections;
 
-public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>, IList<T> where T : unmanaged
+public struct ValueFixedSizeDeque<T> : IExplicitOwnership<ValueFixedSizeDeque<T>>, IList<T> where T : unmanaged
 {
     private ValueArray<T> _items;
     private int _head = 0;
@@ -387,6 +387,11 @@ public struct ValueFixedSizeDeque<T> : ISingleDisposable<ValueFixedSizeDeque<T>>
     public ValueFixedSizeDeque<T> Borrow()
     {
         return new ValueFixedSizeDeque<T>(_items.Borrow(), _head, _afterTail);
+    }
+
+    public ValueFixedSizeDeque<T> Take()
+    {
+        return new ValueFixedSizeDeque<T>(_items.Take(), _head, _afterTail);
     }
 
     public void Dispose()

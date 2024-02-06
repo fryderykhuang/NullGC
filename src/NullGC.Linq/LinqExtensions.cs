@@ -171,70 +171,72 @@ public static partial class LinqExtensions
     #region Value collection types as RefEnumerable
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator> LinqRef<T>(this ValueFixedSizeDeque<T> src)
+    public static LinqFixedRefEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator> LinqRef<T>(
+        [ReadOnly] this ValueFixedSizeDeque<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, ValueQueue<T>.Enumerator> LinqRef<T>(this ValueQueue<T> src)
+    public static LinqFixedRefEnumerable<T, ValueQueue<T>.Enumerator> LinqRef<T>([ReadOnly] this ValueQueue<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T, ValueQueue<T>.Enumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, ValueStack<T>.Enumerator> LinqRef<T>(this ValueStack<T> src)
+    public static LinqFixedRefEnumerable<T, ValueStack<T>.Enumerator> LinqRef<T>([ReadOnly] this ValueStack<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T, ValueStack<T>.Enumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>(this ValueList<T> src)
+    public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>([ReadOnly] this ValueList<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator> LinqValue<T>(this ValueFixedSizeDeque<T> src)
+    public static LinqValueEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator> LinqValue<T>(
+        [ReadOnly] this ValueFixedSizeDeque<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, ValueFixedSizeDeque<T>.ForwardEnumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, ValueQueue<T>.Enumerator> LinqValue<T>(this ValueQueue<T> src)
+    public static LinqValueEnumerable<T, ValueQueue<T>.Enumerator> LinqValue<T>([ReadOnly] this ValueQueue<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, ValueQueue<T>.Enumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, ValueStack<T>.Enumerator> LinqValue<T>(this ValueStack<T> src)
+    public static LinqValueEnumerable<T, ValueStack<T>.Enumerator> LinqValue<T>([ReadOnly] this ValueStack<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, ValueStack<T>.Enumerator>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>> LinqValue<T>(this ValueList<T> src)
+    public static LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>> LinqValue<T>([ReadOnly] this ValueList<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>> LinqPtr<T>(this ValueList<T> src)
+    public static LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>> LinqPtr<T>([ReadOnly] this ValueList<T> src)
         where T : unmanaged
     {
         return new LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>(this ValueArray<T> src)
+    public static LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>> LinqRef<T>([ReadOnly] this ValueArray<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
@@ -242,7 +244,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator> LinqRef<T>(
-        this ValueLinkedList<T> src)
+        [ReadOnly] this ValueLinkedList<T> src)
         where T : unmanaged
     {
         return new LinqFixedRefEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator>(
@@ -250,35 +252,36 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>> LinqPtr<T>(this ValueArray<T> src)
+    public static LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>> LinqPtr<T>([ReadOnly] this ValueArray<T> src)
         where T : unmanaged
     {
         return new LinqPtrEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqRefEnumerable<T, ArrayLinqRefEnumerator<T>> LinqRef<T>(this T[] src)
+    public static LinqRefEnumerable<T, ArrayLinqRefEnumerator<T>> LinqRef<T>([ReadOnly] this T[] src)
         where T : unmanaged
     {
         return new LinqRefEnumerable<T, ArrayLinqRefEnumerator<T>>(new ArrayLinqRefEnumerator<T>(src));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, ArrayLinqRefEnumerator<T>> LinqValue<T>(this T[] src)
+    public static LinqValueEnumerable<T, ArrayLinqRefEnumerator<T>> LinqValue<T>([ReadOnly] this T[] src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, ArrayLinqRefEnumerator<T>>(new ArrayLinqRefEnumerator<T>(src));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, IListLinqValueEnumerator<T>> LinqValue<T>(this IList<T> src)
+    public static LinqValueEnumerable<T, IListLinqValueEnumerator<T>> LinqValue<T>([ReadOnly] this IList<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, IListLinqValueEnumerator<T>>(new IListLinqValueEnumerator<T>(src));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, IReadOnlyListLinqValueEnumerator<T>> LinqValue<T>(this IReadOnlyList<T> src)
+    public static LinqValueEnumerable<T, IReadOnlyListLinqValueEnumerator<T>> LinqValue<T>(
+        [ReadOnly] this IReadOnlyList<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, IReadOnlyListLinqValueEnumerator<T>>(
@@ -286,7 +289,8 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, ICollectionLinqValueEnumerator<T>> LinqValue<T>(this ICollection<T> src)
+    public static LinqValueEnumerable<T, ICollectionLinqValueEnumerator<T>> LinqValue<T>(
+        [ReadOnly] this ICollection<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, ICollectionLinqValueEnumerator<T>>(
@@ -295,7 +299,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqValueEnumerable<T, IReadOnlyCollectionLinqValueEnumerator<T>> LinqValue<T>(
-        this IReadOnlyCollection<T> src)
+        [ReadOnly] this IReadOnlyCollection<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, IReadOnlyCollectionLinqValueEnumerator<T>>(
@@ -303,7 +307,8 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, IEnumerableLinqValueEnumerator<T>> LinqValue<T>(this IEnumerable<T> src)
+    public static LinqValueEnumerable<T, IEnumerableLinqValueEnumerator<T>> LinqValue<T>(
+        [ReadOnly] this IEnumerable<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, IEnumerableLinqValueEnumerator<T>>(
@@ -311,7 +316,7 @@ public static partial class LinqExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>> LinqValue<T>(this ValueArray<T> src)
+    public static LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>> LinqValue<T>([ReadOnly] this ValueArray<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<T, UnmanagedArrayEnumerator<T>>(src.GetEnumerator());
@@ -319,7 +324,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqValueEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator> LinqValue<T>(
-        this ValueLinkedList<T> src)
+        [ReadOnly] this ValueLinkedList<T> src)
         where T : unmanaged
     {
         return new LinqValueEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator>(
@@ -328,7 +333,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<ValueDictionary<TKey, TValue>.Entry, ValueDictionary<TKey, TValue>.Enumerator>
-        LinqRef<TKey, TValue>(this ValueDictionary<TKey, TValue> src)
+        LinqRef<TKey, TValue>([ReadOnly] this ValueDictionary<TKey, TValue> src)
         where TValue : unmanaged where TKey : unmanaged
     {
         return new
@@ -338,7 +343,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<TKey, ValueDictionary<TKey, TValue>.KeyCollection.Enumerator>
-        LinqRef<TKey, TValue>(this ValueDictionary<TKey, TValue>.KeyCollection src)
+        LinqRef<TKey, TValue>([ReadOnly] this ValueDictionary<TKey, TValue>.KeyCollection src)
         where TValue : unmanaged where TKey : unmanaged
     {
         return new LinqFixedRefEnumerable<TKey, ValueDictionary<TKey, TValue>.KeyCollection.Enumerator>(
@@ -347,7 +352,7 @@ public static partial class LinqExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LinqFixedRefEnumerable<TValue, ValueDictionary<TKey, TValue>.ValueCollection.Enumerator>
-        LinqRef<TKey, TValue>(this ValueDictionary<TKey, TValue>.ValueCollection src)
+        LinqRef<TKey, TValue>([ReadOnly] this ValueDictionary<TKey, TValue>.ValueCollection src)
         where TValue : unmanaged where TKey : unmanaged
     {
         return new LinqFixedRefEnumerable<TValue, ValueDictionary<TKey, TValue>.ValueCollection.Enumerator>(

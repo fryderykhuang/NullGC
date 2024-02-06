@@ -1,32 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
-using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CommunityToolkit.Diagnostics;
-using Microsoft.Build.Locator;
-using Microsoft.Build.Logging.StructuredLogger;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
-using Microsoft.CodeAnalysis.Text;
-using NullGC.Allocators;
-using NullGC.Collections;
-using NullGC.Linq;
-using static Microsoft.CodeAnalysis.Testing.ReferenceAssemblies;
 using Task = System.Threading.Tasks.Task;
-using VerifyCS = NullGC.Analyzer.Tests.CSharpCodeFixVerifier<
-    NullGC.Analyzer.NullGCAnalyzer,
-    NullGC.Analyzer.NullGCAnalyzerCodeFixProvider>;
 
 namespace NullGC.Analyzer.Tests
 {
@@ -68,8 +47,11 @@ namespace NullGC.Analyzer.Tests
             var diags = await compilation!
                 .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new NullGCAnalyzer()))
                 .GetAllDiagnosticsAsync();
-            diags.Single(x => x.Id == NullGCAnalyzer.BoxingOnNotImplementedLinqOperationDiagnosticId);
-            diags.Single(x => x.Id == NullGCAnalyzer.ShouldBorrowDiagnosticId);
+            Assert.AreEqual(1, diags.Count(x => x.Id == NullGCAnalyzer.BoxingOnNotImplementedLinqOperationDiagnosticId));
+            Assert.AreEqual(1, diags.Count(x => x.Id == NullGCAnalyzer.LinqStructWillBeBoxedDiagnosticId));
+            Assert.AreEqual(1,  diags.Count(x => x.Id == NullGCAnalyzer.OwnershipShouldBeExplicitOnValuePassingParameterDiagnosticId));
+            Assert.AreEqual(3,  diags.Count(x => x.Id == NullGCAnalyzer.PotentialDoubleFreeSituationSuggestExplicitOwnershipDiagnosticId));
+            Assert.AreEqual(1,  diags.Count(x => x.Id == NullGCAnalyzer.ReturnPathsArePartialExplicitDiagnosticId));
         }
     }
 }

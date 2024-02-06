@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NullGC.Abstractions\NullGC.Abstractions.csproj"/>
+        <ProjectReference Include="..\NullGC.Utilities\NullGC.Utilities.csproj" />
     </ItemGroup>
 
     <ItemGroup>

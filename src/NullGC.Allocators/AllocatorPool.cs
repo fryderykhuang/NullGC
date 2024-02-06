@@ -60,8 +60,10 @@ public class AllocatorPool<T> : IAllocatorPool, IAllocatorProvider, IAllocatorCa
     public ulong SelfTotalAllocated => 0;
 
     public ulong SelfTotalFreed => 0;
+    public bool IsAllFreed => SelfTotalAllocated == SelfTotalFreed;
     public ulong ClientTotalAllocated => _clientAllocatedBytes;
     public ulong ClientTotalFreed => _clientFreedBytes;
+    public bool ClientIsAllFreed => ClientTotalAllocated == ClientTotalFreed;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IMemoryAllocationTracker.ClientAllocate(ulong bytes)

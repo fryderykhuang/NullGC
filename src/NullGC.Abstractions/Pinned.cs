@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
 
@@ -11,15 +12,15 @@ namespace NullGC;
 /// <remarks>
 /// Since pin a managed object on the GC heap will reduce the effectiveness of GC compaction, either use and dispose in a short time or pin as early in the application lifetime as possible.
 /// </remarks>
-public struct Pinned<T> : IAddressFixed, ISingleDisposable<Pinned<T>> where T : class
+public struct Pinned<T> : IAddressFixed, IExplicitOwnership<Pinned<T>> where T : class
 {
     public readonly unsafe T* Ptr;
     private GCHandle _pin;
 
-    private unsafe Pinned(T* ptr)
+    private unsafe Pinned(T* ptr, GCHandle pin = default)
     {
         Ptr = ptr;
-        _pin = default;
+        _pin = pin;
     }
     
     public Pinned(T obj)
@@ -47,6 +48,15 @@ public struct Pinned<T> : IAddressFixed, ISingleDisposable<Pinned<T>> where T : 
         unsafe
         {
             return new Pinned<T>(Ptr);
+        }
+    }
+
+    public Pinned<T> Take()
+    {
+        unsafe
+        {
+            _pin = default;
+            return new Pinned<T>(Ptr, _pin);
         }
     }
 

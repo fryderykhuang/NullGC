@@ -13,8 +13,9 @@ namespace NullGC.Collections;
 
 // modified from the code of .NET Core List<>.
 [DebuggerDisplay("Count = {Count}, IsAllocated = {IsAllocated}")]
-public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IUnmanagedArray<T>, IList<T>, IReadOnlyList<T>,
-    ISingleDisposable<ValueList<T>> where T : unmanaged
+public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IUnmanagedArray<T>, IList<T>,
+    IReadOnlyList<T>,
+    IExplicitOwnership<ValueList<T>> where T : unmanaged
 {
     private const int DefaultCapacity = 4;
     private ValueArray<T> _items;
@@ -160,17 +161,13 @@ public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IU
     {
         var size = _size;
         if ((uint) size < (uint) _items.Length)
-        {
             unsafe
             {
                 _size = size + 1;
                 _items.Items[size] = item;
             }
-        }
         else
-        {
             AddWithResize(item);
-        }
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -401,13 +398,16 @@ public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IU
         return -1;
     }
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+    {
+        return Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    }
 
     public readonly UnmanagedArrayEnumerator<T> GetEnumerator()
     {
         unsafe
         {
-            return new UnmanagedArrayEnumerator<T>(this._items.Items, this._size);
+            return new UnmanagedArrayEnumerator<T>(_items.Items, _size);
         }
     }
 
@@ -423,7 +423,10 @@ public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IU
     //     return list;
     // }
 
-    public readonly int IndexOf(T item) => _items.IndexOf(item, 0, _size);
+    public readonly int IndexOf(T item)
+    {
+        return _items.IndexOf(item, 0, _size);
+    }
 
     public readonly int IndexOf(T item, int index)
     {
@@ -641,17 +644,30 @@ public struct ValueList<T> : ILinqEnumerable<T, UnmanagedArrayEnumerator<T>>, IU
         return true;
     }
 
-    public ValueList<T> Borrow() => new(_items.Borrow(), _size);
+    public ValueList<T> Borrow()
+    {
+        return new ValueList<T>(_items.Borrow(), _size);
+    }
+
+    public ValueList<T> Take()
+    {
+        return new ValueList<T>(_items.Take(), _size);
+    }
 
     public void Dispose()
     {
         _items.Dispose();
     }
 
-    public readonly ValueArray<T> GetInnerArray() => _items;
+    public readonly ValueArray<T> GetInnerArray()
+    {
+        return _items;
+    }
 
-    readonly IEnumerator IEnumerable.GetEnumerator() =>
-        Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    readonly IEnumerator IEnumerable.GetEnumerator()
+    {
+        return Count == 0 ? GenericEmptyEnumerator<T>.Instance : GetEnumerator();
+    }
 
     public readonly unsafe T* Items => _items.Items;
     readonly int IUnmanagedArray<T>.Length => _size;

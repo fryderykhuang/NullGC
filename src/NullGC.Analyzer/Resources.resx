@@ -148,9 +148,72 @@
     <value />
   </data>
   <data name="NGC20_MessageFormat" xml:space="preserve">
-    <value>.Borrow() should be called on '{0}' which is being passed by value</value>
+    <value>Borrow() or Take() should be called on IExplicitOwnership`1 typed argument when being passed by value</value>
   </data>
   <data name="NGC20_Title" xml:space="preserve">
-    <value>.Borrow() should be called when passing by value</value>
+    <value>Borrow() or Take() should be called when passed by value</value>
+  </data>
+  <data name="NGC21_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC21_MessageFormat" xml:space="preserve">
+    <value>You can specify either Owned or Borrowed attribute but not both</value>
+  </data>
+  <data name="NGC21_Title" xml:space="preserve">
+    <value>Conflict explicit ownership attributes</value>
+  </data>
+  <data name="NGC22_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC22_MessageFormat" xml:space="preserve">
+    <value>Borrow() or Take() should be called on IExplicitOwnership`1 typed value that assigns to `ref` or `out` parameter</value>
+  </data>
+  <data name="NGC22_Title" xml:space="preserve">
+    <value>Borrow() or Take() should be called on `ref` or `out` parameter</value>
+  </data>
+  <data name="NGC23_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC23_MessageFormat" xml:space="preserve">
+    <value>Borrow() or Take() should be called on return value that is IExplicitOwnership`1 typed</value>
+  </data>
+  <data name="NGC23_Title" xml:space="preserve">
+    <value>Borrow() or Take() should be called on return value</value>
+  </data>
+  <data name="NGC24_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC24_MessageFormat" xml:space="preserve">
+    <value>The ownership kind of source of assignment '{0}' is incompatible with the target of assignment '{1}'</value>
+  </data>
+  <data name="NGC24_Title" xml:space="preserve">
+    <value>Incompatible ownership kind between source and target of assignment</value>
+  </data>
+  <data name="NGC25_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC25_MessageFormat" xml:space="preserve">
+    <value>The callee can potentially call Dispose() on the IExplicitOwnership`1 typed argument, thus either examine the callee's behavior carefully to ensure no Dispose() will be called or make the ownership explicit by calling Borrow()/Take() or Tag the argument value with ownership attributes</value>
+  </data>
+  <data name="NGC25_Title" xml:space="preserve">
+    <value>Potential double-free situation if the callee may call Dispose() on argument value</value>
+  </data>
+  <data name="NGC26_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC26_MessageFormat" xml:space="preserve">
+    <value>Ownership of some return path(s) in the method body are not explicitly specified</value>
+  </data>
+  <data name="NGC26_Title" xml:space="preserve">
+    <value>Ownership of some return path(s) are not explicitly specified</value>
+  </data>
+  <data name="NGC27_Description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NGC27_MessageFormat" xml:space="preserve">
+    <value>Not all return paths have the same ownership kind.</value>
+  </data>
+  <data name="NGC27_Title" xml:space="preserve">
+    <value>Not all return paths have the same ownership kind.</value>
   </data>
 </root>

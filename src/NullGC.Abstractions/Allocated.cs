@@ -11,15 +11,16 @@ namespace NullGC;
 /// <remarks>
 /// <see cref="Borrow"/> is needed when passed by value to avoid double-free.
 /// </remarks>
-public readonly struct Allocated<T> : ISingleDisposable<Allocated<T>> where T : unmanaged
+public struct Allocated<T> : IExplicitOwnership<Allocated<T>> where T : unmanaged
 {
     public readonly unsafe T* Value;
-    public readonly int AllocatorProviderId;
+    private int _allocatorProviderId;
+    public int AllocatorProviderId => _allocatorProviderId;
 
     private unsafe Allocated(T* value, int allocatorProviderId)
     {
         Value = value;
-        AllocatorProviderId = allocatorProviderId;
+        _allocatorProviderId = allocatorProviderId;
     }
 
     public Allocated(AllocatorTypes allocatorProviderId) : this((int) allocatorProviderId)
@@ -28,7 +29,7 @@ public readonly struct Allocated<T> : ISingleDisposable<Allocated<T>> where T : 
 
     public Allocated(int allocatorProviderId = (int) AllocatorTypes.Default)
     {
-        AllocatorProviderId = allocatorProviderId;
+        _allocatorProviderId = allocatorProviderId;
         unsafe
         {
             var ptr = AllocatorContext.GetAllocator(allocatorProviderId).Allocate((uint) sizeof(T))
@@ -67,18 +68,28 @@ public readonly struct Allocated<T> : ISingleDisposable<Allocated<T>> where T : 
     {
         unsafe
         {
-            return new Allocated<T>(Value, AllocatorProviderId);
+            return new Allocated<T>(Value, _allocatorProviderId);
+        }
+    }
+
+    public Allocated<T> Take()
+    {
+        unsafe
+        {
+            var allocId = AllocatorProviderId;
+            _allocatorProviderId = (int) AllocatorTypes.Invalid;
+            return new Allocated<T>(Value, allocId);
         }
     }
 
     public void Dispose()
     {
-        if (AllocatorProviderId == (int) AllocatorTypes.Invalid)
+        if (_allocatorProviderId == (int) AllocatorTypes.Invalid)
             return;
 
         unsafe
         {
-            AllocatorContext.GetAllocator(AllocatorProviderId).Free((UIntPtr) Value);
+            AllocatorContext.GetAllocator(_allocatorProviderId).Free((UIntPtr) Value);
         }
     }
 }

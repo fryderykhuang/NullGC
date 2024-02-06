@@ -19,7 +19,7 @@ public static class ValueLinkedList
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [DebuggerDisplay("Count = {Count}")]
-public struct ValueLinkedList<T> : IUnmanagedArray<ValueLinkedList<T>.Node>, ISingleDisposable<ValueLinkedList<T>>,
+public struct ValueLinkedList<T> : IUnmanagedArray<ValueLinkedList<T>.Node>, IExplicitOwnership<ValueLinkedList<T>>,
     ILinqEnumerable<ValueLinkedList<T>.Node, ValueLinkedList<T>.ForwardEnumerator>, IDisposable where T : unmanaged
 {
     public struct ForwardEnumerator : ILinqRefEnumerator<Node>, ILinqValueEnumerator<Node>, IAddressFixed
@@ -445,6 +445,11 @@ public struct ValueLinkedList<T> : IUnmanagedArray<ValueLinkedList<T>.Node>, ISi
     public ValueLinkedList<T> Borrow()
     {
         return new ValueLinkedList<T>(_items.Borrow(), _head, _tail, _endIndex, _freeHead, _freeCount);
+    }
+
+    public ValueLinkedList<T> Take()
+    {
+        return new ValueLinkedList<T>(_items.Take(), _head, _tail, _endIndex, _freeHead, _freeCount);
     }
 
     public void Dispose() => _items.Dispose();

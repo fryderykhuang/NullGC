@@ -14,7 +14,7 @@ namespace NullGC.Collections;
 // A simple Queue of generic objects.  Internally it is implemented as a
 // circular buffer, so Enqueue can be O(n).  Dequeue is O(1).
 [DebuggerDisplay("Count = {Count}, IsAllocated = {IsAllocated}")]
-public struct ValueQueue<T> : IHasUnmanagedResource, ISingleDisposable<ValueQueue<T>>,
+public struct ValueQueue<T> : IHasUnmanagedResource, IExplicitOwnership<ValueQueue<T>>,
     ILinqEnumerable<T, ValueQueue<T>.Enumerator> where T : unmanaged
 {
     private ValueArray<T> _array;
@@ -492,6 +492,11 @@ public struct ValueQueue<T> : IHasUnmanagedResource, ISingleDisposable<ValueQueu
     public ValueQueue<T> Borrow()
     {
         return new ValueQueue<T>(_array.Borrow(), _head, _tail, _size);
+    }
+
+    public ValueQueue<T> Take()
+    {
+        return new ValueQueue<T>(_array.Take(), _head, _tail, _size);
     }
 
     public void Dispose()
