@@ -17,11 +17,12 @@ This project was born mostly out of my curiosity on how far can it go to entirel
 
 ## Usage
 
-Currently this project contains 3 main components:
+Currently this project contains 4 main components:
 
 1. Unmanaged memory allocator
 2. Value type (struct) only collections
 3. Linq operators
+4. Struct ownership analyzer
 
 ### Setup
 
@@ -92,7 +93,7 @@ list.Dispose(); // ok.
 
 ### Double-free problem when using explicit lifetime
 
-First of all, collections with unscoped allocator type needs to call `Dispose()` to free the unmanaged memory allocated inside. Typical `Dispose()` implementation will be: If the unmanaged pointer is NULL, ignore; If not NULL, pass the pointer to the native free() function and reset the pointer to NULL. This seems to prevent the double-free, but is it? 
+First of all, collections with unscoped allocator type needs to call `Dispose()` to free the unmanaged memory allocated inside. Typical `Dispose()` implementation will be: If the unmanaged pointer is NULL, ignore; If not NULL, pass the pointer to the native free() function and reset the pointer to NULL. This seems to prevent the double-free, but is it?
 
 ```csharp
 struct BadGuy : IDisposable {
@@ -115,21 +116,9 @@ using (var badGuy = new BadGuy(list)) {
 list.Dispose(); // Since 'list' is NOT in the disposed state, this will cause the double-free.
 ```
 
-So to prevent double-free, when these value collections are passed by value, `Borrow()` (from interface `IExplicitOwnership<TSelf>`) should be used.
-
-```csharp
-void SomeMethod(ValueList<T> lst){ // 'lst' is a copy of 'list' below.
-    lst.Dispose(); // Does nothing.
-}
-
-var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
-SomeMethod(list.Borrow()); // The borrowed one's Dispose() is a no-op.
-list.Dispose(); // Ok.
-```
-
 ### Explicit ownership management
 
-As mentioned in the above code, `IExplicitOwnership<TSelf>` is introduced to tackle the issue regarding vague struct ownership (*The 'ownership' here only focuses on who should be dispose the disposable struct, may extend to true ownership semantic in the future) when the struct is being copied such as passed by value.
+With the double-free problem discussed above, `IExplicitOwnership<TSelf>` is introduced to tackle the issue regarding vague struct ownership (*The 'ownership' here currently only focuses on who should be dispose the disposable struct, in theory should at least include immutability on the borrowed copy, may extend to rust-like true ownership semantic in the future) when the struct is being copied such as passed by value. The interface is defined as following:
 
 ```csharp
 public interface IExplicitOwnership<out T> : IDisposable where T : struct, IDisposable
@@ -142,7 +131,23 @@ public interface IExplicitOwnership<out T> : IDisposable where T : struct, IDisp
 }
 ```
 
-When a struct needs to be disposable, this interface should be implemented. It contains two methods `Borrow()` and `Take()`. `Borrow` should return a copy of the struct itself with `Dispose()` changed to a no-op. `Take` should also return a copy of self but with the `Dispose()` method of the original struct be changed to a no-op. Semantically, the responsibility of calling the `Dispose()` for the 'borrowed' struct is on the original struct, for the 'taken' struct, it is on the returned struct from calling the `Take()`.
+When a struct needs to be disposable, this interface should be implemented. It contains two methods `Borrow()` and `Take()`. `Borrow` should return a copy of the struct itself with `Dispose()` changed to a no-op. `Take` should also return a copy of itself but instead with the `Dispose()` method of the original struct be changed to a no-op (*See implementation in `ValueArray<T>`). Semantically, the responsibility of calling the `Dispose()` for the 'borrowed' struct is on the original struct, for the 'taken' struct, it is on the returned struct from calling the `Take()`.
+
+With that in mind, to prevent double-free, when the implementer of `IExplicitOwnership<TSelf>` are passed by value, `Borrow()` should be used:
+
+```csharp
+void SomeMethod(ValueList<T> lst){ // 'lst' is a copy of 'list' below.
+    lst.Dispose(); // Does nothing.
+}
+
+var list = new ValueList<T>(AllocatorTypes.DefaultUnscoped);
+SomeMethod(list.Borrow()); // The borrowed one's Dispose() is a no-op.
+list.Dispose(); // Ok.
+```
+
+If another `TSelf` returning method or property getter already have ***borrowed*** or ***owned*** semantic, you can tag the return value with the corresponding attribute, after that, the return value obtained from calling this method will have that kind of explicit ownership. Also, attribute on base type or interface will be inherited on derived types, as you can see, `IExplicitOwnership<TSelf>` is implemented this way.
+
+The `[Borrowed]/[Owned]` attributes are used to tag the return value as a ***borrowed*** (with no-op `Dispose()`) copy or a ***owned*** (same as original) copy, as long as the attribute is defined
 
 **Installing `NullGC.Analyzer` is required to make sure the user code be analyzed according to the ownership semantic discussed above and specific warnings be given out to the developer at IntelliSense and compile time.**
 
@@ -151,7 +156,7 @@ When a struct needs to be disposable, this interface should be implemented. It c
 If you have to use managed object (i.e. class) inside a struct, you can use
 `Pinned<T>` to pin the object down so that its address is fixed and can be stored on a non-GC rooted place.
 
-*Since .NET 5 there's a specific heap type for pinned object called [POH](https://devblogs.microsoft.com/dotnet/internals-of-the-poh/), the performance impact will be quite low.
+*Start from .NET 5 there's a specific heap type for pinned object called [POH](https://devblogs.microsoft.com/dotnet/internals-of-the-poh/), the performance impact will be quite low.
 
 ### Linq
 
@@ -163,7 +168,7 @@ The extreme performance boils down to:
 2. No boxing (except for some case of interface casting that cannot be optimized away).
 3. Exploit the traits of previous stage as much as possible. (e.g. if the previous of OrderBy is `IAddressFixed`(contains only unmanaged structs rooted on fixed address object or stack, or gc-pinned managed objects), we can store the pointer instead of the whole struct)
 
-Proper usage is with the built-in value typed collections, but good old IEnumerable&lt;T&gt; is also supported. You can still get some benefit on LINQ operators that need to buffer data such as OrderBy.
+Proper usage is with the built-in value typed collections, but good old `IEnumerable<T>` is also supported. You can still get some benefit on LINQ operators that need to buffer data such as OrderBy.
 The LINQ interface has 2 variations:
 
 ```csharp
@@ -188,7 +193,7 @@ TArg someTArg;
 ```
 
 *For now only a portion of LINQ operators are implemented, since all custom LINQ operator structs also implement `IEnumerable<T>`, if an operator/input type combination is not implemented, the system LINQ extension method will be called instead, which will cause the boxing of all the structs the LINQ chain is composed of.
-~Until the corresponding Rosylyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.~
+~Until the corresponding Roslyn analyzer is implemented or some boxing/heap allocation analyzer is used, this situation should be examined carefully.~
 **Use `NullGC.Analyzer` to produce warnings on these scenarios.**
 
 ## Things to do
@@ -211,4 +216,4 @@ Details in [THIRD-PARTY-NOTICES.md](https://github.com/fryderykhuang/NullGC/blob
 
 ## How to contribute
 
-Project like this one will not become generally useful without being battle tested in real world. If your project can protentially benefit from this library, feel free to talk about your use case in the [Discussions](https://github.com/fryderykhuang/NullGC/discussions) area. Any form of contributions are welcomed.
+Project like this will not become generally useful without being battle tested in real world. If your project can potentially benefit from this library, feel free to talk about your use case in the [Discussions](https://github.com/fryderykhuang/NullGC/discussions) area. Any form of contributions are welcomed.
